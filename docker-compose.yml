@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  api-gateway:
+    container_name: api-gateway
+    image: metro/api-gateway:latest
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    depends_on:
+      - user-service
+    networks:
+      - metro
+  user-service:
+    container_name: user-service
+    image: metro/user-service:latest
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - metro
+#volumes:
+
+networks:
+  metro:
