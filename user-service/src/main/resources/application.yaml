@@ -1,16 +1,20 @@
 server:
   port: 8080
   servlet:
-    context-path: /user
+    context-path: /user-service
 spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:mysql://159.223.78.15 :3306/metro_db
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+
+
+

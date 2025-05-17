@@ -24,7 +24,7 @@ import lombok.experimental.FieldDefaults;
         value = {"createdDate", "lastModifiedDate"},
         allowGetters = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public abstract class AbstractAuditingEntity<ID> implements Serializable {
+public abstract class AbstractAuditingEntity implements Serializable {
     static final long serialVersionUID = 1L;
 
     @CreatedDate
