@@ -1,4 +1,4 @@
-package com.metro.common_lib.dto.response;
+package com.metro.user_service.dto.response.user;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

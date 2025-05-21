@@ -1,4 +1,4 @@
-package com.metro.common_lib.dto.request;
+package com.metro.user_service.dto.request.auth;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,10 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequest {
-    String id;
+public class AuthenticationRequest {
     String username;
     String password;
-    String firstName;
-    String lastName;
 }
