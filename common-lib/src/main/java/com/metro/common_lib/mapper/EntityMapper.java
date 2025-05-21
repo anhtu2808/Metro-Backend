@@ -1,15 +1,11 @@
 package com.metro.common_lib.mapper;
 
-import org.mapstruct.*;
-
 import java.util.List;
 
-public interface EntityMapper<D, E> {
-    E toEntity(D dto );
 
-    D toDto(E entity);
-
-    List<D> toDto(List<E> entities);
-
-    List<E> toEntity(List<D> dtos);
+public interface EntityMapper<E,RE,RP> {
+    E toEntity(RE request);
+    RP toResponse(E entity);
+    List<E> toEntity(List<RE> requestList);
+    List<RE> toRequest(List<E> entityList);
 }

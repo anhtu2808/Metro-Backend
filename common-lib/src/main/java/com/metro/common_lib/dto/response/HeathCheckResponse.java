@@ -1,5 +1,7 @@
 package com.metro.common_lib.dto.response;
 
+import java.time.LocalDateTime;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,10 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String username;
-    String password;
-    String firstName;
-    String lastName;
+public class HeathCheckResponse {
+    String status;
+    LocalDateTime timestamp;
 }

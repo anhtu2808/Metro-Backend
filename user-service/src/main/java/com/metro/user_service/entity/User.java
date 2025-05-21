@@ -1,9 +1,12 @@
 package com.metro.user_service.entity;
 
+import com.metro.common_lib.entity.AbstractAuditingEntity;
+import com.metro.user_service.enums.RoleType;
 import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.SQLDelete;
 
 @Getter
 @Setter
@@ -12,13 +15,21 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@SQLDelete(sql = "UPDATE user SET deleted = 1 WHERE id = ?")
 public class User extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
+    @Column(length = 100, unique = true)
     String username;
+    @Column(length = 100, unique = true)
+    String email;
+    @Column(length = 100)
     String password;
-    String firstName;
-    String lastName;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    UserProfile profile;
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    Role role;
+
 }
