@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -19,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/users/register", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh"
+            "/users/register", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check"
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
@@ -44,7 +46,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
 
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+                request.requestMatchers(PUBLIC_ENDPOINTS)
                         .permitAll()
                         .requestMatchers(SWAGGER_ENDPOINTS).permitAll() // Allow Swagger endpoints
                         .anyRequest()
@@ -73,5 +75,18 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*") // hoặc cụ thể như "http://localhost:8080"
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*");
+            }
+        };
     }
 }

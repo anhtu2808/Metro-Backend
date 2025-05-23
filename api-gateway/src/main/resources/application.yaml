@@ -21,5 +21,3 @@ springdoc:
     urls:
       - name: user-service
         url: /user-service/v3/api-docs
-      - name: ticket-service
-        url: /ticket-service/v3/api-docs
