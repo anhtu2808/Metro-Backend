@@ -22,15 +22,12 @@ jwt:
   signerKey: ${JWT_SIGNER_KEY}
   valid-duration: 3600 # in second
   refreshable-duration: 36000 # in seconds
-openapi:
-  service:
-    api-docs: SAT-BACKEND API
-    server: http://localhost:8080
-    title: SAT-BACKEND
-    version: 1.0.0
+
 springdoc:
+  api-docs:
+    path: /v3/api-docs
   swagger-ui:
-    enabled: true
+    path: /swagger-ui.html
 
 
 

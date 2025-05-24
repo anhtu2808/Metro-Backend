@@ -9,19 +9,21 @@ import com.metro.common_lib.dto.response.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -31,11 +33,27 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
     ObjectMapper objectMapper;
 
+    @NonFinal
+    private String[] publicUserServiceEndpoint = {
+            "/auth/token",
+            "/auth/introspect"
+    }; // Khi nào thêm service khác muốn một số public thì khai báo thêm
+
+    @NonFinal
+    private String[] publicCommonEndpoint = {
+            "/v3/api-docs",
+            "/health-chezck"
+    };
+
+    private String apiPrefix = "";
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String path = exchange.getRequest().getPath().value();
+        if (isPublicEndpoint(exchange.getRequest(), "/user-service", publicUserServiceEndpoint)) {
+            return chain.filter(exchange);
+        } // Khi nào thêm service khác muốn một số public thì khai báo thêm
 
-        if (path.contains("/v3/api-docs") || path.contains("/swagger-ui") || path.contains("/swagger-config")) {
+        if (isPublicCommonEndpoint(exchange.getRequest())) {
             return chain.filter(exchange);
         }
 
@@ -59,7 +77,22 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return -1;
     }
 
-    Mono<Void> unauthenticated(ServerHttpResponse response){
+    private boolean isPublicEndpoint(ServerHttpRequest request, String servicePath, String[] publicEndpoints) {
+        String requestPath = request.getURI().getPath();
+        System.out.println("Request Path: " + requestPath); // Log the request path
+        return Arrays.stream(publicEndpoints).anyMatch(
+                endpoint -> (requestPath.matches(apiPrefix + servicePath + endpoint))
+        );
+    }
+
+    private boolean isPublicCommonEndpoint(ServerHttpRequest request) {
+        String path = request.getURI().getPath();
+        return Arrays.stream(publicCommonEndpoint)
+                .anyMatch(path::contains);
+    }
+
+
+    Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
                 .message("Unauthenticated")

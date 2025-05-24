@@ -12,12 +12,9 @@ spring:
             - Path=/user-service/**
 
 springdoc:
-  api-docs:
-    path: /v3/api-docs        # endpoint sinh JSON OpenAPI (mặc định là /v3/api-docs)
   swagger-ui:
-    path: /swagger-ui/index.html   # truy cập UI tại /swagger-ui.html
-    operationsSorter: alpha
-    tagsSorter: alpha
     urls:
-      - name: user-service
+      - name: user-service (via gateway)
         url: /user-service/v3/api-docs
+      - name: user-service (direct 8080)
+        url: http://localhost:8080/user-service/v3/api-docs
