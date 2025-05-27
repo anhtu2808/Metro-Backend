@@ -1,5 +1,7 @@
 server:
   port: 8888
+app:
+  api-prefix: /api/v1
 spring:
   application:
     name: api-gateway
@@ -9,12 +11,59 @@ spring:
         - id: user-service
           uri: http://localhost:8080
           predicates:
-            - Path=/user-service/**
+            - Path=${app.api-prefix}/user/**
+          filters:
+            - StripPrefix=2
+        - id: payment-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=${app.api-prefix}/payment/**
+          filters:
+            - StripPrefix=2
+        - id: ticket-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=${app.api-prefix}/ticket/**
+          filters:
+            - StripPrefix=2
+        - id: notification-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=${app.api-prefix}/notification/**
+          filters:
+            - StripPrefix=2
+        - id: route-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=${app.api-prefix}/route/**
+          filters:
+            - StripPrefix=2
 
 springdoc:
   swagger-ui:
     urls:
       - name: user-service (via gateway)
-        url: /user-service/v3/api-docs
+        url: /user/v3/api-docs
+      - name: payment-service (via gateway)
+        url: /payment/v3/api-docs
+      - name: ticket-service (via gateway)
+        url: /ticket/v3/api-docs
+      - name: notification-service (via gateway)
+        url: /notification/v3/api-docs
+      - name: route-service (via gateway)
+        url: /route/v3/api-docs
+      - name: content-service (via gateway)
+        url: /content/v3/api-docs
+
       - name: user-service (direct 8080)
-        url: http://localhost:8080/user-service/v3/api-docs
+        url: http://localhost:8080/user/v3/api-docs
+      - name: payment-service (direct 8081)
+        url: http://localhost:8081/payment/v3/api-docs
+      - name: ticket-service (direct 8082)
+        url: http://localhost:8082/ticket/v3/api-docs
+      - name: notification-service (direct 8083)
+        url: http://localhost:8083/notification/v3/api-docs
+      - name: route-service (direct 8084)
+        url: http://localhost:8084/route/v3/api-docs
+      - name: content-service (direct 8085)
+        url: http://localhost:8085/content/v3/api-docs

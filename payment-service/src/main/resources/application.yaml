@@ -1,11 +1,11 @@
 server:
-  port: 8084
+  port: 8081
   servlet:
-    context-path: /payment-service
-
+    context-path: /payment
 spring:
   application:
     name: payment-service
+
   datasource:
     url: jdbc:mysql://localhost:3306/payment_db
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -26,7 +26,7 @@ spring:
   openapi:
     service:
       api-docs: SAT-BACKEND API
-      server: http://localhost:8080
+      server: http://localhost:8081
       title: SAT-BACKEND
       version: 1.0.0
   springdoc:
