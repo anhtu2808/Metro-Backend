@@ -1,29 +1,27 @@
 server:
   port: 8085
   servlet:
-    context-path: /content-service
+    context-path: /content
 spring:
   application:
     name: content-service
-  spring:
-    application:
-      name: content-service
-    datasource:
-      url: jdbc:mysql://localhost:3306/demo
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      username: root
-      password: root
-    jpa:
-      hibernate:
-        ddl-auto: update
-      show-sql: true
-    security:
-      user:
-        name: admin
-        password: 123456
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/content_db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    user:
+      name: admin
+      password: 123456
   jwt:
     signerKey: ${JWT_SIGNER_KEY}
-    valid-duration: 3600 # in second
+    valid-duration: 3600 # in seconds
     refreshable-duration: 36000 # in seconds
   openapi:
     service:

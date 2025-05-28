@@ -1,13 +1,13 @@
-package org.example.contentservice.dto.response;
+package com.metro.route_service.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ContentResponse {
+public class StationRequest {
     Long id;
 }

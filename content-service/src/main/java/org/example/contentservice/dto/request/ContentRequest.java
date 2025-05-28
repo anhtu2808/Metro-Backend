@@ -9,6 +9,5 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContentRequest {
-
-
+    Long id;
 }

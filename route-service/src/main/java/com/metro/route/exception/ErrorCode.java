@@ -1,8 +1,7 @@
-package org.example.contentservice.exception;
+package com.metro.route_service.exception;
 
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
@@ -27,3 +26,4 @@ public enum ErrorCode {
     private final String message;
     private final HttpStatusCode statusCode;
 }
+
