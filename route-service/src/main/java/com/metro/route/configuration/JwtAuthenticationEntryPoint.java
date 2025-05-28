@@ -1,10 +1,10 @@
-package com.metro.route_service.configuration;
+package com.metro.route.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metro.common_lib.dto.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.metro.route_service.exception.ErrorCode;
+import com.metro.route.exception.ErrorCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

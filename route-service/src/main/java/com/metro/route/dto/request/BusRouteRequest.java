@@ -1,4 +1,4 @@
-package com.metro.route_service.dto.request;
+package com.metro.route.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

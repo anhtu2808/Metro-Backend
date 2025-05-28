@@ -1,4 +1,4 @@
-package com.metro.route_service;
+package com.metro.route;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

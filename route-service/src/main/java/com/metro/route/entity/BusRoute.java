@@ -1,4 +1,4 @@
-package com.metro.route_service.entity;
+package com.metro.route.entity;
 import java.util.Set;
 
 import com.metro.common_lib.entity.AbstractAuditingEntity;

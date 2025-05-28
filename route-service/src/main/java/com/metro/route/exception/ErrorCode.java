@@ -1,4 +1,4 @@
-package com.metro.route_service.exception;
+package com.metro.route.exception;
 
 
 import lombok.Getter;

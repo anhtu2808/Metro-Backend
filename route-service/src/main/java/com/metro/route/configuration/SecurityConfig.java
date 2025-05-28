@@ -1,4 +1,4 @@
-package com.metro.route_service.configuration;
+package com.metro.route.configuration;
 
 
 import org.springframework.context.annotation.Bean;
