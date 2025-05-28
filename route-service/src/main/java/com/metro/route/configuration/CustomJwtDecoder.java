@@ -1,4 +1,4 @@
-package com.metro.route_service.configuration;
+package com.metro.route.configuration;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.oauth2.jwt.Jwt;

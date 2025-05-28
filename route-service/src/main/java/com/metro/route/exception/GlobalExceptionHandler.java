@@ -1,4 +1,4 @@
-package com.metro.route_service.exception;
+package com.metro.route.exception;
 
 
 import com.metro.common_lib.dto.response.ApiResponse;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Map;
 import java.util.Objects;
+
 
 @ControllerAdvice
 @Slf4j
