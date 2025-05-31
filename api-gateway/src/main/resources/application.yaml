@@ -38,6 +38,18 @@ spring:
             - Path=${app.api-prefix}/route/**
           filters:
             - StripPrefix=2
+        - id: content-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=${app.api-prefix}/content/**
+          filters:
+            - StripPrefix=2
+        - id: order-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=${app.api-prefix}/order/**
+          filters:
+            - StripPrefix=2
 
 springdoc:
   swagger-ui:
@@ -54,6 +66,8 @@ springdoc:
         url: /route/v3/api-docs
       - name: content-service (via gateway)
         url: /content/v3/api-docs
+      - name: order-service (via gateway)
+        url: /order/v3/api-docs
 
       - name: user-service (direct 8080)
         url: http://localhost:8080/user/v3/api-docs
@@ -67,3 +81,5 @@ springdoc:
         url: http://localhost:8084/route/v3/api-docs
       - name: content-service (direct 8085)
         url: http://localhost:8085/content/v3/api-docs
+      - name: order-service (direct 8086)
+        url: http://localhost:8086/order/v3/api-docs
