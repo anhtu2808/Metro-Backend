@@ -26,7 +26,7 @@ spring:
   openapi:
     service:
       api-docs: SAT-BACKEND API
-      server: http://localhost:8080
+      server: http://localhost:8086
       title: SAT-BACKEND
       version: 1.0.0
   springdoc:
