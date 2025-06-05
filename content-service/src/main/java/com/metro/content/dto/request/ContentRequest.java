@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,7 +19,7 @@ public class ContentRequest {
     String body;
     String summary;
     String status;
-    LocalDate publishAt;
+    LocalDateTime publishAt;
     Long userId;
     List<String> imageUrls;
 }

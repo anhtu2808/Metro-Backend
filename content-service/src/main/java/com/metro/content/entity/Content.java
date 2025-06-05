@@ -10,6 +10,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -34,7 +35,7 @@ public class Content extends AbstractAuditingEntity {
     String summary;
     String status;
     @Column(name = "publish_at")
-    LocalDate publishAt;
+    LocalDateTime publishAt;
     @Column(name = "user_id")
     Long userId;
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)

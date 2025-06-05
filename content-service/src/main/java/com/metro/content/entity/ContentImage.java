@@ -8,12 +8,13 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@Table(name = "image_content")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE content SET deleted = 1 WHERE id = ?")
+@SQLDelete(sql = "UPDATE image_content SET deleted = 1 WHERE id = ?")
 @SQLRestriction("deleted = 0")
 public class ContentImage extends AbstractAuditingEntity {
     @Id
