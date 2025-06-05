@@ -1,13 +1,14 @@
-package com.metro.route.dto.request;
+package com.metro.notification.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusRouteRequest {
-    Long id;
+public class Recipient {
+    String name;
+    String email;
 }

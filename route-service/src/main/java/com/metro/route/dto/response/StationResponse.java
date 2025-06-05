@@ -10,4 +10,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StationResponse {
     Long id;
+    String stationCode;
+    String name;
+    String imageUrl;
+    String address;
+    String latitude;
+    String longitude;
 }

@@ -32,3 +32,8 @@ spring:
   springdoc:
     swagger-ui:
       enabled: true
+
+notification:
+  email:
+    brevo-url: https://api.brevo.com
+    brevo-apikey: <key>

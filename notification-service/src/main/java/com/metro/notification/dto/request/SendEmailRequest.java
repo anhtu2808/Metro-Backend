@@ -1,4 +1,4 @@
-package com.metro.route.dto.request;
+package com.metro.notification.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StationRequest {
-    Long id;
-}
+public class SendEmailRequest {
+    Recipient to;
+    String subject;
+    String htmlContent;}
