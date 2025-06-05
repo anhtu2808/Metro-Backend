@@ -5,6 +5,8 @@ import com.metro.payment.enums.PaymentStatusEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,5 +17,5 @@ public class PaymentResponse {
     String transactionCode;
     PaymentStatusEnum paymentStatus;
     Long orderTicketId;
-    float amount;
+    BigDecimal amount;
 }

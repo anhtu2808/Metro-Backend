@@ -6,6 +6,8 @@ import com.metro.payment.enums.PaymentMethodEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,6 +16,6 @@ import lombok.experimental.FieldDefaults;
 public class PaymentRequest {
     Long id;
     PaymentMethodEnum paymentMethod;
-    float amount;
+    BigDecimal amount;
     Long orderTicketId;
 }

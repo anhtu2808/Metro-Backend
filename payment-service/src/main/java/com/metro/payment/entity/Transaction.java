@@ -9,22 +9,24 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.math.BigDecimal;
+
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE Payment SET deleted = 1 WHERE id = ?")
+@SQLDelete(sql = "UPDATE transaction SET deleted = 1 WHERE id = ?")
 @SQLRestriction("deleted = 0")
-public class Payment extends AbstractAuditingEntity {
+public class Transaction extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "user_id",nullable = false)
     Long userId;
     @Column(nullable = false)
-    float amount;
+    BigDecimal amount;
     @Column(nullable = false, unique = true)
     String transactionCode;
     @Enumerated(EnumType.STRING)
