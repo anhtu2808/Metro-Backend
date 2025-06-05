@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Permission extends AbstractAuditingEntity {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
