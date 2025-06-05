@@ -1,19 +1,23 @@
-package com.metro.route.dto.response;
+package com.metro.route.dto.request.line;
 
-import com.metro.route.entity.Station;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LineResponse {
-    Long id;
+public class LineUpdateRequest {
+
     String lineCode;
+
     String name;
+
     String description;
-    Station startStation;
-    Station finalStation;
+
+    Long startStationId;
+
+    Long finalStationId;
 }
