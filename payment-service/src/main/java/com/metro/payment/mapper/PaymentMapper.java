@@ -4,10 +4,10 @@ import com.metro.common_lib.mapper.DefaultConfigMapper;
 import com.metro.common_lib.mapper.EntityMapper;
 import com.metro.payment.dto.request.PaymentRequest;
 import com.metro.payment.dto.response.PaymentResponse;
-import com.metro.payment.entity.Payment;
+import com.metro.payment.entity.Transaction;
 import org.mapstruct.Mapper;
 
 @Mapper(config = DefaultConfigMapper.class)
-public interface PaymentMapper extends EntityMapper<Payment, PaymentRequest, PaymentResponse> {
+public interface PaymentMapper extends EntityMapper<Transaction, PaymentRequest, PaymentResponse> {
 
 }
