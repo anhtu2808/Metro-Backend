@@ -1,9 +1,9 @@
 package com.metro.route.repository;
 
-import com.metro.route.entity.BusRoute;
+import com.metro.route.entity.LineSegment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BusRouteRepository extends JpaRepository<BusRoute,Long> {
+public interface LineSegmentRepository extends JpaRepository<LineSegment, Long> {
 }

@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusRouteRequest {
+public class LineSegmentRequest {
     Long id;
-    String busCode;
-    String stationId;
 }

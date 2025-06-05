@@ -1,5 +1,7 @@
 package com.metro.route.dto.response;
 
+import com.metro.route.entity.Station;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,4 +12,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BusRouteResponse {
     Long id;
+    String busCode;
+    String startLocation;
+    String endLocation;
+    int headwayMinutes;
+    Float distanceToStation;
+    String busStationName;
 }

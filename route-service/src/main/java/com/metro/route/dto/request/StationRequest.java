@@ -1,5 +1,6 @@
 package com.metro.route.dto.request;
 
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,4 +11,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StationRequest {
     Long id;
+    String stationCode;
 }

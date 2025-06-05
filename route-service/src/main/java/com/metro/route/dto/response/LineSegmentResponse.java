@@ -1,4 +1,4 @@
-package com.metro.route.dto.request;
+package com.metro.route.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusRouteRequest {
+public class LineSegmentResponse {
     Long id;
-    String busCode;
-    String stationId;
 }

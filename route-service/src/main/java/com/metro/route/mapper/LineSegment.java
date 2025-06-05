@@ -2,13 +2,12 @@ package com.metro.route.mapper;
 
 import com.metro.common_lib.mapper.DefaultConfigMapper;
 import com.metro.common_lib.mapper.EntityMapper;
-import com.metro.route.dto.request.LineRequest;
-import com.metro.route.dto.response.LineResponse;
-import com.metro.route.entity.Line;
+import com.metro.route.dto.request.LineSegmentRequest;
+import com.metro.route.dto.response.LineSegmentResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(
         config = DefaultConfigMapper.class
 )
-public interface LineMapper extends EntityMapper <Line, LineRequest, LineResponse> {
+public interface LineSegment extends EntityMapper<LineSegment, LineSegmentRequest, LineSegmentResponse> {
 }
