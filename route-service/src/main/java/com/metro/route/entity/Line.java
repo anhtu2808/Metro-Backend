@@ -14,9 +14,9 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@SQLDelete(sql = "UPDATE bus_routes SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE metro_line SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
-@Table(name = "metro_lines")
+@Table(name = "metro_line")
 public class Line extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

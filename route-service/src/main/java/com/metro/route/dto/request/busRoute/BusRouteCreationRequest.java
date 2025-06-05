@@ -13,8 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BusRouteCreationRequest {
-    @NotBlank(message = "Bus code is required")
-    String busCode;
 
     @NotBlank(message = "Start location is required")
     String startLocation;

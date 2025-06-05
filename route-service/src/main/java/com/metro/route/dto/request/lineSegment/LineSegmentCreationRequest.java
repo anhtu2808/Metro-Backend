@@ -11,9 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LineSegmentCreationRequest {
-    @NotNull(message = "Segment order is required")
-    @Positive(message = "Segment order must be positive")
-    Integer order;
 
     @NotNull(message = "Duration is required")
     @Positive(message = "Duration must be positive")
@@ -31,3 +28,4 @@ public class LineSegmentCreationRequest {
 
     @NotNull(message = "End station ID is required")
     Long endStationId;
+}

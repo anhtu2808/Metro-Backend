@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StationUpdateRequest {
-    @NotNull(message = "Station ID is required")
-    Long id;
 
     String stationCode;
 

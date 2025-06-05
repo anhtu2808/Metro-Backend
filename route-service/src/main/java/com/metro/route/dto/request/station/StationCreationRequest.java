@@ -11,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StationCreationRequest {
-    @NotBlank(message = "Station code is required")
-    String stationCode;
 
     @NotBlank(message = "Name is required")
     String name;

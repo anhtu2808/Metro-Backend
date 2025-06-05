@@ -11,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LineCreationRequest {
-    @NotBlank(message = "Line code is required")
-    String lineCode;
 
     @NotBlank(message = "Name is required")
     String name;

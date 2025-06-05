@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LineUpdateRequest {
-    @NotNull(message = "Line ID is required")
-    Long id;
 
     String lineCode;
 

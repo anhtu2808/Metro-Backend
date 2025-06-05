@@ -11,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LineSegmentUpdateRequest {
-    @NotNull(message = "Line segment ID is required")
-    Long id;
 
     @Positive(message = "Segment order must be positive")
     Integer order;
