@@ -11,12 +11,11 @@ import org.hibernate.annotations.SQLRestriction;
 
 
 @Entity
-@Table(name = "transactions")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE transactions  SET deleted = 1 WHERE id = ?")
+@SQLDelete(sql = "UPDATE Payment SET deleted = 1 WHERE id = ?")
 @SQLRestriction("deleted = 0")
 public class Payment extends AbstractAuditingEntity {
     @Id
