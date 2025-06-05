@@ -7,8 +7,7 @@ import com.metro.payment.dto.response.PaymentResponse;
 import com.metro.payment.entity.Payment;
 import org.mapstruct.Mapper;
 
-@Mapper(
-        config = DefaultConfigMapper.class
-)
+@Mapper(config = DefaultConfigMapper.class)
 public interface PaymentMapper extends EntityMapper<Payment, PaymentRequest, PaymentResponse> {
+
 }
