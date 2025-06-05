@@ -5,13 +5,10 @@ import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.Exception.AppException;
 import com.metro.user.entity.Role;
 import com.metro.user.entity.User;
-import com.metro.user.entity.UserProfile;
 import com.metro.user.enums.ErrorCode;
 import com.metro.user.enums.RoleType;
 import com.metro.user.mapper.UserMapper;
-import com.metro.user.mapper.UserProfileMapper;
 import com.metro.user.repository.RoleRepository;
-import com.metro.user.repository.UserProfileRepository;
 import com.metro.user.repository.UserRepository;
 import com.metro.user.service.UserService;
 import lombok.AccessLevel;
@@ -32,21 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
-    UserProfileMapper userProfileMapper;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
-    UserProfileRepository userProfileRepository;
-
     @Override
     @Transactional
     public UserResponse createUser(UserRequest request, RoleType roleType) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
-        UserProfile userProfile = userProfileMapper.toEntity(request);
-        Role role = roleRepository.findByName(roleType).orElseThrow();
+        Role role = roleRepository.findByName(roleType).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
         String hashedPassword = passwordEncoder.encode(request.getPassword());
-        User user = userMapper.toUser(request, userProfile, role, hashedPassword);
-        userProfile.setUser(user);
+        User user = userMapper.toUser(request, role, hashedPassword);
         user = userRepository.save(user);
         return userMapper.toUserResponse(user);
     }

@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,6 +18,7 @@ import org.hibernate.annotations.SQLDelete;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @SQLDelete(sql = "UPDATE user SET deleted = 1 WHERE id = ?")
+@SQLRestriction("deleted = 0")
 public class User extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +29,16 @@ public class User extends AbstractAuditingEntity {
     String email;
     @Column(length = 100)
     String password;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    UserProfile profile;
+    @Builder.Default
+    boolean isStudentVerified = false;
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     Role role;
-
+    String firstName;
+    String lastName;
+    String address;
+    String phone;
+    String avatarUrl;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<StudentVerification> studentVerifications;
 }
