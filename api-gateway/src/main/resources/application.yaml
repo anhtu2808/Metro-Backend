@@ -1,67 +1,77 @@
 server:
   port: 8888
+
 app:
   api-prefix: /api/v1
+
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
       routes:
         - id: user-service
           uri: http://localhost:8080
           predicates:
-            - Path=${app.api-prefix}/user-service/**
+            - Path=${app.api-prefix}/users/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: payment-service
           uri: http://localhost:8081
           predicates:
             - Path=${app.api-prefix}/payment/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: ticket-service
           uri: http://localhost:8082
           predicates:
             - Path=${app.api-prefix}/ticket/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: notification-service
           uri: http://localhost:8083
           predicates:
             - Path=${app.api-prefix}/notification/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: route-service
           uri: http://localhost:8084
           predicates:
             - Path=${app.api-prefix}/route/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: content-service
           uri: http://localhost:8085
           predicates:
             - Path=${app.api-prefix}/content/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: order-service
           uri: http://localhost:8086
           predicates:
             - Path=${app.api-prefix}/order/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
+
         - id: scanner-service
           uri: http://localhost:8087
           predicates:
             - Path=${app.api-prefix}/scanner/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=3
 
 springdoc:
   swagger-ui:
     urls:
       - name: user-service (via gateway)
-        url: ${app.api-prefix}/user-service/v3/api-docs
+        url: ${app.api-prefix}/users/v3/api-docs
       - name: payment-service (via gateway)
         url: ${app.api-prefix}/payment/v3/api-docs
       - name: ticket-service (via gateway)
@@ -78,7 +88,7 @@ springdoc:
         url: ${app.api-prefix}/scanner/v3/api-docs
 
       - name: user-service (direct 8080)
-        url: http://localhost:8080/user/v3/api-docs
+        url: http://localhost:8080/v3/api-docs
       - name: payment-service (direct 8081)
         url: http://localhost:8081/payment/v3/api-docs
       - name: ticket-service (direct 8082)
@@ -92,4 +102,4 @@ springdoc:
       - name: order-service (direct 8086)
         url: http://localhost:8086/order/v3/api-docs
       - name: scanner-service (direct 8087)
-        url: http://localhost:8087/scanner/v3/api-docs
+        url: http://localhost:8087/scanner/v3/api-doc

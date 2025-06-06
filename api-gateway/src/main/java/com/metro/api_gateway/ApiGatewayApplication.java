@@ -8,6 +8,7 @@ public class ApiGatewayApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiGatewayApplication.class, args);
+		System.out.println("Swagger UI available at: http://localhost:8888/webjars/swagger-ui/index.html");
 	}
 
 }

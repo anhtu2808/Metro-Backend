@@ -23,6 +23,8 @@ public interface UserMapper{
 
     @Mapping(target = "isStudentVerified",ignore = true)
     @Mapping(target = "studentVerifications", ignore = true)
+    @Mapping(target = "password", source = "hashedPassword")
+    @Mapping(target = "role", source = "role")
     User toUser(UserRequest request, Role role, String hashedPassword);
 
 

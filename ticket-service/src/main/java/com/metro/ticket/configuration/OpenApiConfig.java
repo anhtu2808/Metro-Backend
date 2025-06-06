@@ -1,4 +1,4 @@
-package com.metro.user.configuration;
+package com.metro.ticket.configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -6,9 +6,9 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
-        info = @Info(title = "User Service API", version = "v1"),
+        info = @Info(title = "Ticket Service API", version = "v1"),
         servers = {
-                @Server(url = "/api/v1/users", description = "Via API Gateway"),
+                @Server(url = "/api/v1/tickets", description = "Via API Gateway"),
                 @Server(url = "/", description = "Direct"),
         }
 )

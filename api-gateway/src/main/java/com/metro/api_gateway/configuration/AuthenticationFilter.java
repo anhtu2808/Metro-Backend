@@ -35,21 +35,22 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @NonFinal
     private String[] publicUserServiceEndpoint = {
-            "/auth/token",
-            "/auth/introspect"
+            "/auth/login",
+            "/auth/introspect",
+            "/register",
     }; // Khi nào thêm service khác muốn một số public thì khai báo thêm
 
     @NonFinal
     private String[] publicCommonEndpoint = {
             "/v3/api-docs",
-            "/health-chezck"
+            "/health-check"
     };
 
-    private String apiPrefix = "";
+    private String apiPrefix = "/api/v1";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if (isPublicEndpoint(exchange.getRequest(), "/user-service", publicUserServiceEndpoint)) {
+        if (isPublicEndpoint(exchange.getRequest(), "/users", publicUserServiceEndpoint)) {
             return chain.filter(exchange);
         } // Khi nào thêm service khác muốn một số public thì khai báo thêm
 

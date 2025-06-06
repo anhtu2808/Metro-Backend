@@ -39,6 +39,6 @@ public class User extends AbstractAuditingEntity {
     String address;
     String phone;
     String avatarUrl;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<StudentVerification> studentVerifications;
 }
