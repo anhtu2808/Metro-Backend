@@ -1,6 +1,6 @@
-package com.metro.ticket.service.impl;
+package com.metro.order.service.impl;
 
-import com.metro.ticket.service.TicketTypeService;
+import com.metro.order.service.TicketOrderService;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -13,5 +13,5 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Builder
 @Slf4j
-public class DynamicPriceServiceImpl implements TicketTypeService {
+public class TicketOrderServiceImpl  implements TicketOrderService {
 }
