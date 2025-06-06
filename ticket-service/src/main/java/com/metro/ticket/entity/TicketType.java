@@ -8,7 +8,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,16 +16,19 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@SQLDelete(sql = "UPDATE dynamic_price_master SET deleted = 1 WHERE id = ?")
+@SQLDelete(sql = "UPDATE ticket_type SET deleted = 1 WHERE id = ?")
 @SQLRestriction("deleted = 0")
-public class DynamicPriceMaster extends AbstractAuditingEntity {
+public class TicketType extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    BigDecimal startPrice;
-    BigDecimal pricePerKm;
-    BigDecimal startRange;
-    Long lineId;
-    @OneToMany(mappedBy = "dynamicPriceMaster", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<DynamicPrice> dynamicPrices;
+    @Column(nullable = false, unique = true)
+    String name;
+    String description;
+    Integer validityDays;
+    @Builder.Default
+    Boolean isStudent = false;
+    @Builder.Default
+    boolean isStatic = true;
+    BigDecimal price;
 }

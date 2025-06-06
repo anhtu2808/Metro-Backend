@@ -8,6 +8,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TicketResponse {
-    Long id;
+public class DynamicPriceMasterResponse {
+    Long lineId;
+    String startPrice;
+    String pricePerKm;
+    String startRange;
 }
