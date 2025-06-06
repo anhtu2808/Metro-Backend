@@ -1,4 +1,4 @@
-package com.metro.order.dto.request;
+package com.metro.order.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,10 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderRequest {
+public class TicketTypeResponse {
     Long id;
-    Long ticketTypeId;
-    Long startStationId;
-    Long endStationId;
-    Long userId;
+
 }

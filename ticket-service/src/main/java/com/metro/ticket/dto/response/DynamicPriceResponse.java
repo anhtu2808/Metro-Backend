@@ -1,17 +1,19 @@
-package com.metro.order.dto.request;
+package com.metro.ticket.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderRequest {
+public class DynamicPriceResponse {
     Long id;
-    Long ticketTypeId;
     Long startStationId;
     Long endStationId;
-    Long userId;
+    Long lineId;
+    BigDecimal price;
 }

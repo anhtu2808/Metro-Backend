@@ -4,7 +4,6 @@ import com.metro.common_lib.mapper.DefaultConfigMapper;
 import com.metro.common_lib.mapper.EntityMapper;
 import com.metro.order.dto.request.OrderRequest;
 import com.metro.order.dto.response.OrderResponse;
-import com.metro.order.entity.Order;
 import org.mapstruct.Mapper;
 
 @Mapper(
