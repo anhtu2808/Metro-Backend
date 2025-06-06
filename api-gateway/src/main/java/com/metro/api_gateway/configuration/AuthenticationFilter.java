@@ -35,15 +35,20 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @NonFinal
     private String[] publicUserServiceEndpoint = {
-            "/auth/login",
-            "/auth/introspect",
-            "/register",
+           "/register",
     }; // Khi nào thêm service khác muốn một số public thì khai báo thêm
+
+    @NonFinal
+    private String[] publicAuthEndpoint = {
+            "/login",
+            "/introspect",
+            "/register",
+    };
 
     @NonFinal
     private String[] publicCommonEndpoint = {
             "/v3/api-docs",
-            "/health-check"
+            "/health-check",
     };
 
     private String apiPrefix = "/api/v1";
@@ -53,6 +58,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         if (isPublicEndpoint(exchange.getRequest(), "/users", publicUserServiceEndpoint)) {
             return chain.filter(exchange);
         } // Khi nào thêm service khác muốn một số public thì khai báo thêm
+
+        if (isPublicEndpoint(exchange.getRequest(), "/auth", publicAuthEndpoint)) {
+            return chain.filter(exchange);
+        }
 
         if (isPublicCommonEndpoint(exchange.getRequest())) {
             return chain.filter(exchange);
