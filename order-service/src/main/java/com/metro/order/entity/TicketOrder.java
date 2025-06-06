@@ -23,7 +23,7 @@ public class TicketOrder extends AbstractAuditingEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    Long ticketCode;
+    String ticketCode;
     Long userId;
     Long transactionId;
     Long ticketTypeId;
