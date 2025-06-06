@@ -20,7 +20,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/users/register", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check"
+            "/users/register",
+            "/auth/login",
+            "/auth/introspect",
+            "/auth/logout",
+            "/auth/refresh",
+            "/health-check"
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
