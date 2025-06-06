@@ -196,17 +196,17 @@ springdoc:
       - name: user-service (direct 8080)
         url: http://localhost:8080/v3/api-docs
       - name: payment-service (direct 8081)
-        url: http://localhost:8081/payment/v3/api-docs
+        url: http://localhost:8081/v3/api-docs
       - name: ticket-service (direct 8082)
-        url: http://localhost:8082/ticket/v3/api-docs
+        url: http://localhost:8082/v3/api-docs
       - name: notification-service (direct 8083)
-        url: http://localhost:8083/notification/v3/api-docs
+        url: http://localhost:8083/v3/api-docs
       - name: route-service (direct 8084)
-        url: http://localhost:8084/route/v3/api-docs
+        url: http://localhost:8084/v3/api-docs
       - name: content-service (direct 8085)
-        url: http://localhost:8085/content/v3/api-docs
+        url: http://localhost:8085/v3/api-docs
       - name: order-service (direct 8086)
-        url: http://localhost:8086/order/v3/api-docs
+        url: http://localhost:8086/v3/api-docs
       - name: scanner-service (direct 8087)
-        url: http://localhost:8087/scanner/v3/api-docs
+        url: http://localhost:8087/v3/api-docs
 
