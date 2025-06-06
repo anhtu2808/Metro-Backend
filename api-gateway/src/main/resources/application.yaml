@@ -131,7 +131,7 @@ spring:
           uri: http://localhost:8085
           predicates:
             - >-
-              Path=${app.api-prefix}/content-services/v3/api-docs/**
+              Path=${app.api-prefix}/content-service/v3/api-docs/**
           filters:
             - StripPrefix=3
 
