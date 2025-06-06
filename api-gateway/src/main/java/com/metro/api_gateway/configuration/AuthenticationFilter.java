@@ -49,7 +49,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if (isPublicEndpoint(exchange.getRequest(), "/user-service", publicUserServiceEndpoint)) {
+        if (isPublicEndpoint(exchange.getRequest(), "/user", publicUserServiceEndpoint)) {
             return chain.filter(exchange);
         } // Khi nào thêm service khác muốn một số public thì khai báo thêm
 
