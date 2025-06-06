@@ -1,0 +1,33 @@
+server:
+  port: 8087
+  servlet:
+    context-path: /scanner
+spring:
+  application:
+    name: scanner-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/scanner_db
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    user:
+      name: admin
+      password: 123456
+  jwt:
+    signerKey: ${JWT_SIGNER_KEY}
+    valid-duration: 3600 # in seconds
+    refreshable-duration: 36000 # in seconds
+  openapi:
+    service:
+      api-docs: SAT-BACKEND API
+      server: http://localhost:8087
+      title: SAT-BACKEND
+      version: 1.0.0
+  springdoc:
+    swagger-ui:
+      enabled: true
