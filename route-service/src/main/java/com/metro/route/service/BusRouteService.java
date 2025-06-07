@@ -69,22 +69,27 @@ public class BusRouteService extends AbstractService<
         busRouteMapper.updateEntityFromRequest(newEntity, oldEntity);
     }
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('busroute:create')")
     public BusRouteResponse create(BusRouteCreationRequest request) {
         return super.create(request);
     }
     @Override
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasAuthority('busroute:read')")
     public BusRouteResponse findById(Long id) {
         return super.findById(id);
     }
     @Override
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasAuthority('busroute:read')")
     public PageResponse<BusRouteResponse> findAll(int page, int size, String arrange) {
         return super.findAll(page, size, arrange);
     }
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('busroute:update')")
+    public BusRouteResponse update(Long id, BusRouteUpdateRequest request) {
+        return super.update(id, request);
+    }
+    @Override
+    @PreAuthorize("hasAuthority('busroute:delete')")
     public void delete(Long id) {
         super.delete(id);
     }
