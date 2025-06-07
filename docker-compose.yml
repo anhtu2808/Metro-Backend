@@ -19,15 +19,25 @@ services:
       context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - USER_SERVICE_HOST=user-service
+      - PAYMENT_SERVICE_HOST=payment-service
+      - TICKET_SERVICE_HOST=ticket-service
+      - NOTIFICATION_SERVICE_HOST=notification-service
+      - ROUTE_SERVICE_HOST=route-service
+      - CONTENT_SERVICE_HOST=content-service
+      - ORDER_SERVICE_HOST=order-service
+      - SCANNER_SERVICE_HOST=scanner-service
     depends_on:
       - user-service
-#      - payment-service
-#      - ticket-service
-#      - notification-service
-#      - route-service
-#      - content-service
-#      - order-service
-#      - scanner-service
+      - payment-service
+      - ticket-service
+      - notification-service
+      - route-service
+      - content-service
+      - order-service
+      - scanner-service
     ports:
       - "8888:8888"
     networks:
@@ -53,131 +63,131 @@ services:
     networks:
       - metro
 
-#  payment-service:
-#    image: metro/payment-service:latest
-#    build:
-#      context: ./payment-service
-#      dockerfile: Dockerfile
-#    container_name: payment-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/payment_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8081:8081"
-#    networks:
-#      - metro
-#
-#  ticket-service:
-#    image: metro/ticket-service:latest
-#    build:
-#      context: ./ticket-service
-#      dockerfile: Dockerfile
-#    container_name: ticket-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ticket_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8082:8082"
-#    networks:
-#      - metro
-#
-#  notification-service:
-#    image: metro/notification-service:latest
-#    build:
-#      context: ./notification-service
-#      dockerfile: Dockerfile
-#    container_name: notification-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/notification_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8083:8083"
-#    networks:
-#      - metro
-#
-#  route-service:
-#    image: metro/route-service:latest
-#    build:
-#      context: ./route-service
-#      dockerfile: Dockerfile
-#    container_name: route-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/route_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8084:8084"
-#    networks:
-#      - metro
-#
-#  content-service:
-#    image: metro/content-service:latest
-#    build:
-#      context: ./content-service
-#      dockerfile: Dockerfile
-#    container_name: content-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/content_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8085:8085"
-#    networks:
-#      - metro
-#
-#  order-service:
-#    image: metro/order-service:latest
-#    build:
-#      context: ./order-service
-#      dockerfile: Dockerfile
-#    container_name: order-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8086:8086"
-#    networks:
-#      - metro
-#
-#  scanner-service:
-#    image: metro/scanner-service:latest
-#    build:
-#      context: ./scanner-service
-#      dockerfile: Dockerfile
-#    container_name: scanner-service
-#    depends_on:
-#      - mysql
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/scanner_db
-#      - SPRING_DATASOURCE_USERNAME=root
-#      - SPRING_DATASOURCE_PASSWORD=root
-#      - JWT_SIGNER_KEY=secret
-#    ports:
-#      - "8087:8087"
-#    networks:
-#      - metro
+  payment-service:
+    image: metro/payment-service:latest
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/payment_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8081:8081"
+    networks:
+      - metro
+
+  ticket-service:
+    image: metro/ticket-service:latest
+    build:
+      context: ./ticket-service
+      dockerfile: Dockerfile
+    container_name: ticket-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ticket_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8082:8082"
+    networks:
+      - metro
+
+  notification-service:
+    image: metro/notification-service:latest
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/notification_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8083:8083"
+    networks:
+      - metro
+
+  route-service:
+    image: metro/route-service:latest
+    build:
+      context: ./route-service
+      dockerfile: Dockerfile
+    container_name: route-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/route_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8084:8084"
+    networks:
+      - metro
+
+  content-service:
+    image: metro/content-service:latest
+    build:
+      context: ./content-service
+      dockerfile: Dockerfile
+    container_name: content-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/content_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8085:8085"
+    networks:
+      - metro
+
+  order-service:
+    image: metro/order-service:latest
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8086:8086"
+    networks:
+      - metro
+
+  scanner-service:
+    image: metro/scanner-service:latest
+    build:
+      context: ./scanner-service
+      dockerfile: Dockerfile
+    container_name: scanner-service
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/scanner_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SIGNER_KEY=secret
+    ports:
+      - "8087:8087"
+    networks:
+      - metro
 
 networks:
   metro:

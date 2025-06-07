@@ -1,5 +1,5 @@
 # Stage 1: Tạo JDK tối ưu với Jlink
-FROM eclipse-temurin:23-jdk-alpine AS build
+FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /opt
 

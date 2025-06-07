@@ -36,18 +36,18 @@ public class ApplicationInitConfig {
 
     // Mô tả tiếng Anh cho từng RoleType
     private static final Map<RoleType, String> DESCRIPTIONS = new EnumMap<>(RoleType.class);
+
     static {
         DESCRIPTIONS.put(RoleType.CUSTOMER, "Ticket purchasing customer");
-        DESCRIPTIONS.put(RoleType.STAFF,    "Ticket sales staff member");
-        DESCRIPTIONS.put(RoleType.MANAGER,  "Ticket sales manager");
+        DESCRIPTIONS.put(RoleType.STAFF, "Ticket sales staff member");
+        DESCRIPTIONS.put(RoleType.MANAGER, "Ticket sales manager");
     }
 
     @Bean
     @ConditionalOnProperty(
             prefix = "spring.datasource",
-            name   = "driver-class-name",
-            havingValue = "com.mysql.cj.jdbc.Driver"
-    )
+            name = "driver-class-name",
+            havingValue = "com.mysql.cj.jdbc.Driver")
     public ApplicationRunner initializer(UserRepository userRepo, RoleRepository roleRepo) {
         return new ApplicationRunner() {
             @Override
@@ -71,8 +71,7 @@ public class ApplicationInitConfig {
                 Optional<User> adminOpt = userRepo.findByUsername(ADMIN_USERNAME);
                 if (adminOpt.isEmpty()) {
                     // Lấy RoleManager
-                    Role managerRole = roleRepo
-                            .findByName(RoleType.MANAGER)
+                    Role managerRole = roleRepo.findByName(RoleType.MANAGER)
                             .orElseThrow(() -> new IllegalStateException("Manager role not found"));
 
                     User admin = User.builder()
@@ -83,8 +82,8 @@ public class ApplicationInitConfig {
                     userRepo.save(admin);
                     log.warn(
                             "Default admin created (username='{}', password='{}'), please change password immediately",
-                            ADMIN_USERNAME, ADMIN_PASSWORD
-                    );
+                            ADMIN_USERNAME,
+                            ADMIN_PASSWORD);
                 }
 
                 log.info("-- Application initialization completed --");
