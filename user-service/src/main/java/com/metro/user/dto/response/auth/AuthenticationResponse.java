@@ -1,9 +1,9 @@
 package com.metro.user.dto.response.auth;
 
+import java.sql.Date;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.sql.Date;
 
 @Data
 @NoArgsConstructor

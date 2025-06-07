@@ -1,19 +1,20 @@
 package com.metro.user.mapper;
 
-import com.metro.user.dto.request.role.RoleRequest;
-import com.metro.user.dto.response.role.RoleResponse;
-import com.metro.user.entity.Permission;
-import com.metro.user.entity.Role;
+import java.util.Set;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.Set;
+import com.metro.user.dto.request.role.RoleRequest;
+import com.metro.user.dto.response.role.RoleResponse;
+import com.metro.user.entity.Permission;
+import com.metro.user.entity.Role;
 
-@Mapper(componentModel = "spring",
-       uses = {PermissionMapper.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(
+        componentModel = "spring",
+        uses = {PermissionMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface RoleMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -23,6 +24,4 @@ public interface RoleMapper {
     Role toRole(RoleRequest request, Set<Permission> permissions);
 
     RoleResponse toRoleResponse(Role role);
-
-
 }

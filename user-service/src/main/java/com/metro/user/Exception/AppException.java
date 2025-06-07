@@ -1,7 +1,7 @@
 package com.metro.user.Exception;
 
-
 import com.metro.user.enums.ErrorCode;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,5 +15,4 @@ public class AppException extends RuntimeException {
     }
 
     private ErrorCode errorCode;
-
 }

@@ -27,18 +27,17 @@ RUN apk add --no-cache bash tzdata curl
 # Sao chép JDK tối ưu từ stage trước
 COPY --from=build /opt/jdk /opt/jdk
 
-# Thiết lập biến môi trường
 ENV JAVA_HOME=/opt/jdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Tạo thư mục cho ứng dụng
 WORKDIR /app
 
-# Sao chép file JAR của user-service
-COPY target/user-service-0.0.1-SNAPSHOT.jar app.jar
+# Sao chép file JAR của scanner-service
+COPY target/scanner-service-0.0.1-SNAPSHOT.jar app.jar
 
-# Khai báo cổng của user-service
-EXPOSE 8080
+# Khai báo cổng của scanner-service
+EXPOSE 8087
 
 # Thiết lập entrypoint với tối ưu JVM và các cấu hình Spring AOP
 ENTRYPOINT ["java", \

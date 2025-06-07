@@ -1,7 +1,7 @@
 package com.metro.user.entity;
 
-import com.metro.common_lib.entity.AbstractAuditingEntity;
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,6 +22,4 @@ public class Permission {
 
     @Column(length = 255)
     String description;
-
-
 }

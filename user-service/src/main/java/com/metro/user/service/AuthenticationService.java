@@ -1,5 +1,7 @@
 package com.metro.user.service;
 
+import java.text.ParseException;
+
 import com.metro.user.dto.request.auth.AuthenticationRequest;
 import com.metro.user.dto.request.auth.IntrospectRequest;
 import com.metro.user.dto.request.auth.LogoutRequest;
@@ -7,8 +9,6 @@ import com.metro.user.dto.request.auth.RefreshRequest;
 import com.metro.user.dto.response.auth.AuthenticationResponse;
 import com.metro.user.dto.response.auth.IntrospectResponse;
 import com.nimbusds.jose.JOSEException;
-
-import java.text.ParseException;
 
 /**
  * Service interface for handling authentication and token management operations.

@@ -1,10 +1,9 @@
 package com.metro.user.dto.response.role;
 
-import com.metro.user.entity.Permission;
+import java.util.List;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
