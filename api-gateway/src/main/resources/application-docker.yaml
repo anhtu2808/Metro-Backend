@@ -12,7 +12,7 @@ spring:
     gateway:
       routes:
         - id: user-service
-          uri: http://${USER_SERVICE_HOST:localhost}:8080
+          uri: http://user-service:8080
           predicates:
             - >-
               Path=${app.api-prefix}/users/**,
@@ -21,7 +21,7 @@ spring:
             - StripPrefix=2
 
         - id: user-service-doc
-          uri: http://${USER_SERVICE_HOST:localhost}:8080
+          uri: http://user-service:8080
           predicates:
             - >-
               Path=${app.api-prefix}/user-service/v3/api-docs/**
@@ -29,7 +29,7 @@ spring:
             - StripPrefix=3
 
         - id: payment-service
-          uri: http://${PAYMENT_SERVICE_HOST:localhost}:8081
+          uri: http://payment-service:8081
           predicates:
             - >-
               Path=${app.api-prefix}/transactions/**
@@ -37,7 +37,7 @@ spring:
             - StripPrefix=2
 
         - id: payment-service-doc
-          uri: http://${PAYMENT_SERVICE_HOST:localhost}:8081
+          uri: http://payment-service:8081
           predicates:
             - >-
               Path=${app.api-prefix}/payment-service/v3/api-docs/**
@@ -45,7 +45,7 @@ spring:
             - StripPrefix=3
 
         - id: ticket-service
-          uri: http://${TICKET_SERVICE_HOST:localhost}:8082
+          uri: http://ticket-service:8082
           predicates:
             - >-
               Path=${app.api-prefix}/ticket-types/**,
@@ -54,7 +54,7 @@ spring:
             - StripPrefix=2
 
         - id: ticket-service-doc
-          uri: http://${TICKET_SERVICE_HOST:localhost}:8082
+          uri: http://ticket-service:8082
           predicates:
             - >-
               Path=${app.api-prefix}/ticket-service/v3/api-docs/**
@@ -62,7 +62,7 @@ spring:
             - StripPrefix=3
 
         - id: notification-service
-          uri: http://${NOTIFICATION_SERVICE_HOST:localhost}:8083
+          uri: http://notification-service:8083
           predicates:
             - >-
               Path=${app.api-prefix}/notification/**
@@ -70,7 +70,7 @@ spring:
             - StripPrefix=2
 
         - id: notification-service-doc
-          uri: http://${NOTIFICATION_SERVICE_HOST:localhost}:8083
+          uri: http://notification-service:8083
           predicates:
             - >-
               Path=${app.api-prefix}/notification-service/v3/api-docs/**
@@ -78,7 +78,7 @@ spring:
             - StripPrefix=3
 
         - id: route-service
-          uri: http://${ROUTE_SERVICE_HOST:localhost}:8084
+          uri: http://route-service:8084
           predicates:
             - >-
               Path=${app.api-prefix}/bus-routes/**,
@@ -89,7 +89,7 @@ spring:
             - StripPrefix=2
 
         - id: route-service-doc
-          uri: http://${ROUTE_SERVICE_HOST:localhost}:8084
+          uri: http://route-service:8084
           predicates:
             - >-
               Path=${app.api-prefix}/route-service/v3/api-docs/**
@@ -97,7 +97,7 @@ spring:
             - StripPrefix=3
 
         - id: content-service
-          uri: http://${CONTENT_SERVICE_HOST:localhost}:8085
+          uri: http://content-service:8085
           predicates:
             - >-
               Path=${app.api-prefix}/contents/**,
@@ -106,7 +106,7 @@ spring:
             - StripPrefix=2
 
         - id: content-service-doc
-          uri: http://${CONTENT_SERVICE_HOST:localhost}:8085
+          uri: http://content-service:8085
           predicates:
             - >-
               Path=${app.api-prefix}/content-service/v3/api-docs/**
@@ -114,7 +114,7 @@ spring:
             - StripPrefix=3
 
         - id: order-service
-          uri: http://${ORDER_SERVICE_HOST:localhost}:8086
+          uri: http://order-service:8086
           predicates:
             - >-
               Path=${app.api-prefix}/ticket-orders/**
@@ -122,7 +122,7 @@ spring:
             - StripPrefix=2
 
         - id: order-service-doc
-          uri: http://${ORDER_SERVICE_HOST:localhost}:8086
+          uri: http://order-service:8086
           predicates:
             - >-
               Path=${app.api-prefix}/order-service/v3/api-docs/**
@@ -130,7 +130,7 @@ spring:
             - StripPrefix=3
 
         - id: scanner-service
-          uri: http://${SCANNER_SERVICE_HOST:localhost}:8087
+          uri: http://scanner-service:8087
           predicates:
             - >-
               Path=${app.api-prefix}/scanner/**
@@ -138,48 +138,9 @@ spring:
             - StripPrefix=2
 
         - id: scanner-service-doc
-          uri: http://${SCANNER_SERVICE_HOST:localhost}:8087
+          uri: http://scanner-service:8087
           predicates:
             - >-
               Path=${app.api-prefix}/scanner-service/v3/api-docs/**
           filters:
             - StripPrefix=3
-
-springdoc:
-  swagger-ui:
-    urls:
-      # qua gateway
-      - name: user-service (via gateway)
-        url: ${app.api-prefix}/user-service/v3/api-docs
-      - name: payment-service (via gateway)
-        url: ${app.api-prefix}/payment-service/v3/api-docs
-      - name: ticket-service (via gateway)
-        url: ${app.api-prefix}/ticket-service/v3/api-docs
-      - name: notification-service (via gateway)
-        url: ${app.api-prefix}/notification-service/v3/api-docs
-      - name: route-service (via gateway)
-        url: ${app.api-prefix}/route-service/v3/api-docs
-      - name: content-service (via gateway)
-        url: ${app.api-prefix}/content-service/v3/api-docs
-      - name: order-service (via gateway)
-        url: ${app.api-prefix}/order-service/v3/api-docs
-      - name: scanner-service (via gateway)
-        url: ${app.api-prefix}/scanner-service/v3/api-docs
-
-      # direct (cho local)
-      - name: user-service (direct)
-        url: http://localhost:8080/v3/api-docs
-      - name: payment-service (direct)
-        url: http://localhost:8081/v3/api-docs
-      - name: ticket-service (direct)
-        url: http://localhost:8082/v3/api-docs
-      - name: notification-service (direct)
-        url: http://localhost:8083/v3/api-docs
-      - name: route-service (direct)
-        url: http://localhost:8084/v3/api-docs
-      - name: content-service (direct)
-        url: http://localhost:8085/v3/api-docs
-      - name: order-service (direct)
-        url: http://localhost:8086/v3/api-docs
-      - name: scanner-service (direct)
-        url: http://localhost:8087/v3/api-docs

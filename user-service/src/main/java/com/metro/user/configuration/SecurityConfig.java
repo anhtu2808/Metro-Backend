@@ -20,25 +20,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/users/register",
-            "/auth/login",
-            "/auth/introspect",
-            "/auth/logout",
-            "/auth/refresh",
-            "/health-check"
+        "/users/register", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check"
     };
     private final String[] SWAGGER_ENDPOINTS = {
-            "/swagger-ui/**",
-            "/api/v1/auth/**",
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui/**",
-            "/webjars/**"
+        "/swagger-ui/**",
+        "/api/v1/auth/**",
+        "/v2/api-docs",
+        "/v3/api-docs",
+        "/v3/api-docs/**",
+        "/swagger-resources",
+        "/swagger-resources/**",
+        "/configuration/ui",
+        "/configuration/security",
+        "/swagger-ui/**",
+        "/webjars/**"
     };
     private final CustomJwtDecoder customJwtDecoder;
 
@@ -48,13 +43,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request ->
-
-                request.requestMatchers(PUBLIC_ENDPOINTS)
-                        .permitAll()
-                        .requestMatchers(SWAGGER_ENDPOINTS).permitAll() // Allow Swagger endpoints
-                        .anyRequest()
-                        .authenticated());
+        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(SWAGGER_ENDPOINTS)
+                .permitAll() // Allow Swagger endpoints
+                .anyRequest()
+                .authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
