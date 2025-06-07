@@ -10,45 +10,26 @@ import com.metro.route.entity.Station;
 import com.metro.route.exception.AppException;
 import com.metro.route.exception.ErrorCode;
 import com.metro.route.repository.StationRepository;
-import org.mapstruct.Mapper;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(
         config = DefaultConfigMapper.class
 )
 public interface BusRouteMapper extends EntityMappers<BusRoute, BusRouteCreationRequest, BusRouteUpdateRequest, BusRouteResponse> {
-    BusRoute updateToEntity(BusRoute request);
-    @Override
-    default BusRoute toEntity(BusRouteCreationRequest request) {
-        if (request == null) {
-            return null;
-        }
-        BusRoute.BusRouteBuilder busRoute = BusRoute.builder();
-        busRoute.startLocation(request.getStartLocation());
-        busRoute.endLocation(request.getEndLocation());
-        busRoute.headwayMinutes(request.getHeadwayMinutes());
-        busRoute.distanceToStation(request.getDistanceToStation());
-        busRoute.busStationName(request.getBusStationName());
-        busRoute.busCode(request.getBusCode());
-        busRoute.station(Station.builder().id(request.getStationId()).build());
-        return busRoute.build();
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "station", ignore = true)
+    void updateEntityFromRequest(BusRoute request, @MappingTarget BusRoute entity);
+
+    @Mapping(target = "station", source = "stationId")
+    BusRoute toEntity(BusRouteCreationRequest request);
+
+    default Station map(Long stationId) {
+        return stationId == null
+                ? null
+                : Station.builder().id(stationId).build();
     }
-    @Override
-    default BusRoute updateToEntity(BusRouteUpdateRequest request) {
-        if (request == null) {
-            return null;
-        }
-        BusRoute.BusRouteBuilder busRoute = BusRoute.builder();
-        busRoute.startLocation(request.getStartLocation());
-        busRoute.endLocation(request.getEndLocation());
-        busRoute.headwayMinutes(request.getHeadwayMinutes());
-        busRoute.distanceToStation(request.getDistanceToStation());
-        busRoute.busStationName(request.getBusStationName());
-        busRoute.busCode(request.getBusCode());
-        busRoute.station(
-                Station.builder()
-                .id(request.getStationId())
-                .build());
-        return busRoute.build();
-    }
+    @Mapping(target = "station", source = "stationId")
+    BusRoute updateToEntity(BusRouteUpdateRequest request);
 }

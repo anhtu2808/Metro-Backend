@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/bus-routes")
-//@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BusRouteController extends AbstractController<
         BusRoute,
@@ -28,10 +27,4 @@ public class BusRouteController extends AbstractController<
     public BusRouteController(final BusRouteService service) {
         super(service);
     }
-//    @Override
-//    @PostMapping
-//    ApiResponse<R> create(@Valid @RequestBody Cre createRequest){
-//
-//    };
-
 }

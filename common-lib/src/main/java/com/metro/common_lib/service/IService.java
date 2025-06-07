@@ -12,6 +12,6 @@ public interface IService<
     R create(C createRequest);
     R findById(Long id);
     PageResponse<R> findAll(int page,int size,String sort);
-    Void delete(Long id);
+    void delete(Long id);
     R update(Long id, U updateRequest);
 }
