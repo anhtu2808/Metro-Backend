@@ -3,6 +3,7 @@ package com.metro.common_lib.controller;
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.common_lib.dto.response.PageResponse;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 public interface IController<E, C, U, R> {
     @GetMapping("/{id}")
@@ -13,9 +14,9 @@ public interface IController<E, C, U, R> {
                                     @RequestParam(defaultValue = "10") int size,
                                     @RequestParam(defaultValue = "id") String sort);
     @PostMapping
-    ApiResponse<R> create(@RequestBody C createRequest);
+    ApiResponse<R> create(@Valid @RequestBody C createRequest);
     @DeleteMapping("/{id}")
     ApiResponse<Void> delete(@PathVariable("id") Long id);
     @PutMapping("/{id}")
-    ApiResponse<R> update(@PathVariable Long id,@RequestBody U updateRequest);
+    ApiResponse<R> update(@PathVariable Long id,@Valid @RequestBody U updateRequest);
 }
