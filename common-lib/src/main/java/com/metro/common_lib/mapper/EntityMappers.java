@@ -2,14 +2,13 @@ package com.metro.common_lib.mapper;
 
 import java.util.List;
 
-public interface EntityMappers<E, CRE, UP, RP> {
-    E toEntity(CRE request);
 
-    void updateEntity(E entity, UP request);
-
-    RP toResponse(E entity);
-
-    List<E> toEntity(List<CRE> requestList);
-
-    List<RP> toResponse(List<E> entityList);
+import java.util.List;
+public interface EntityMappers<E, C, U, R> {
+    E toEntity(C createDto);
+    E updateToEntity(U updateDto);
+    R toResponse(E entity);
+    List<E> toEntityList(List<C> createDto);
+    List<R> toResponseList(List<E> entities);
 }
+

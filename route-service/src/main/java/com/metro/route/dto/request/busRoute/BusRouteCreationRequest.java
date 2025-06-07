@@ -17,6 +17,9 @@ public class BusRouteCreationRequest {
     @NotBlank(message = "Start location is required")
     String startLocation;
 
+    @NotBlank(message = "Bus Code is required")
+    String busCode;
+
     @NotBlank(message = "End location is required")
     String endLocation;
 

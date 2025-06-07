@@ -14,6 +14,9 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
+    BUS_ROUTE_NOT_FOUND(1008, "Bus Route NOT FOUND with given ID", HttpStatus.FORBIDDEN),
+    BUS_ROUTE_EXISTED(1009, "Bus Route with given ID already exists", HttpStatus.BAD_REQUEST),
+    STATION_NOT_FOUND(1010, "Station NOT FOUND with given ID", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
