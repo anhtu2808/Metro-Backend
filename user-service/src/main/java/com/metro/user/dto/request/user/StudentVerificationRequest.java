@@ -1,12 +1,11 @@
 package com.metro.user.dto.request.user;
-import com.metro.user.enums.StudentVerificationStatus;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+
+import com.metro.user.enums.StudentVerificationStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor

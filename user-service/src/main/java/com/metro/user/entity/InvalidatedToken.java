@@ -1,9 +1,11 @@
 package com.metro.user.entity;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+
 import java.util.Date;
 
+import jakarta.persistence.*;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -16,5 +18,6 @@ public class InvalidatedToken {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+
     Date expiryTime;
 }

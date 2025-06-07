@@ -1,9 +1,11 @@
 package com.metro.user.dto.response.user;
-import com.metro.user.enums.StudentVerificationStatus;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+
+import com.metro.user.enums.StudentVerificationStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
