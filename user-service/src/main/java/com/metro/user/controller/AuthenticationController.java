@@ -1,23 +1,25 @@
 package com.metro.user.controller;
 
-import com.metro.user.dto.request.auth.AuthenticationRequest;
-import com.metro.user.dto.request.auth.IntrospectRequest;
-import com.metro.user.dto.request.auth.LogoutRequest;
-import com.metro.user.dto.request.auth.RefreshRequest;
-import com.metro.common_lib.dto.response.ApiResponse;
-import com.metro.user.dto.response.auth.AuthenticationResponse;
-import com.metro.user.dto.response.auth.IntrospectResponse;
-import com.metro.user.service.AuthenticationService;
-import com.nimbusds.jose.JOSEException;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.text.ParseException;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
+import com.metro.common_lib.dto.response.ApiResponse;
+import com.metro.user.dto.request.auth.AuthenticationRequest;
+import com.metro.user.dto.request.auth.IntrospectRequest;
+import com.metro.user.dto.request.auth.LogoutRequest;
+import com.metro.user.dto.request.auth.RefreshRequest;
+import com.metro.user.dto.response.auth.AuthenticationResponse;
+import com.metro.user.dto.response.auth.IntrospectResponse;
+import com.metro.user.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/auth")
@@ -26,7 +28,7 @@ import java.text.ParseException;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-    @PostMapping("/token")
+    @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();

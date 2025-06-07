@@ -6,7 +6,9 @@ import com.metro.user.enums.RoleType;
 
 public interface UserService {
     UserResponse createUser(UserRequest request, RoleType role);
+
     UserResponse updateUser(UserRequest request);
+
     UserResponse deleteUser(long id);
 
     UserResponse getUser(long id);

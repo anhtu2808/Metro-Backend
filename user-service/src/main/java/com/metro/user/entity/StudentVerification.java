@@ -1,14 +1,17 @@
 package com.metro.user.entity;
 
-import com.metro.common_lib.entity.AbstractAuditingEntity;
-import com.metro.user.enums.StudentVerificationStatus;
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDate;
+import com.metro.common_lib.entity.AbstractAuditingEntity;
+import com.metro.user.enums.StudentVerificationStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter

@@ -1,17 +1,17 @@
 package com.metro.user.configuration;
 
+import java.io.IOException;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.metro.common_lib.dto.response.ApiResponse;
-import com.metro.user.enums.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.metro.common_lib.dto.response.ApiResponse;
+import com.metro.user.enums.ErrorCode;
 
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override

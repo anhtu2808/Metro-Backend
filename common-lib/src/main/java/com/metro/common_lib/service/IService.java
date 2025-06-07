@@ -1,0 +1,17 @@
+package com.metro.common_lib.service;
+
+import com.metro.common_lib.dto.response.PageResponse;
+
+import java.util.List;
+
+public interface IService<
+        E,
+        C,
+        U,
+        R> {
+    R create(C createRequest);
+    R findById(Long id);
+    PageResponse<R> findAll(int page,int size,String sort);
+    Void delete(Long id);
+    R update(Long id, U updateRequest);
+}

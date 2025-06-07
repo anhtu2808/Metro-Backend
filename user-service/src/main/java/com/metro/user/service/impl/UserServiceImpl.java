@@ -1,8 +1,12 @@
 package com.metro.user.service.impl;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.response.user.UserResponse;
-import com.metro.user.Exception.AppException;
 import com.metro.user.entity.Role;
 import com.metro.user.entity.User;
 import com.metro.user.enums.ErrorCode;
@@ -11,15 +15,12 @@ import com.metro.user.mapper.UserMapper;
 import com.metro.user.repository.RoleRepository;
 import com.metro.user.repository.UserRepository;
 import com.metro.user.service.UserService;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
+
     @Override
     @Transactional
     public UserResponse createUser(UserRequest request, RoleType roleType) {

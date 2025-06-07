@@ -1,8 +1,9 @@
 package com.metro.user.enums;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+
+import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
@@ -16,7 +17,8 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
-;
+    ;
+
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;

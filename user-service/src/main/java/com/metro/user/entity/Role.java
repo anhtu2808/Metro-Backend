@@ -1,12 +1,13 @@
 package com.metro.user.entity;
 
-import com.metro.common_lib.entity.AbstractAuditingEntity;
-import com.metro.user.enums.RoleType;
+import java.util.Set;
+
 import jakarta.persistence.*;
+
+import com.metro.user.enums.RoleType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -19,17 +20,17 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false, unique = true)
     RoleType name;
+
     String description;
+
     @ManyToMany
     @JoinTable(
             name = "role_permissions",
             joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
     Set<Permission> permissions;
-
-
 }

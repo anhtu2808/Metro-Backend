@@ -1,7 +1,6 @@
 server:
   port: 8082
-  servlet:
-    context-path: /ticket
+
 spring:
   application:
     name: ticket-service
