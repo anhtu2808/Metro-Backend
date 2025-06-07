@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: PROD
+    environment: TEST
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: PROD
+    environment: TEST
     steps:
     - name: SSH to server and deploy
       uses: appleboy/ssh-action@master
@@ -51,7 +51,7 @@ jobs:
         key: ${{ secrets.SECRET_KEY }}
         script: |
           cd /var/docker/metro-app
-          echo "Deploying PROD environment..."
+          echo "Deploying TEST environment..."
           docker-compose pull
           docker-compose down --remove-orphans || true
           docker rm -f $(docker ps -a -q --filter "name=metro") || true

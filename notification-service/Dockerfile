@@ -41,8 +41,9 @@ EXPOSE 8083
 
 # Thiết lập entrypoint với tối ưu JVM và các cấu hình Spring AOP
 ENTRYPOINT ["java", \
-    "-Xms256m", \
-    "-Xmx512m", \
+    "-Xms128m", \
+    "-Xmx256m", \
+    "-XX:+UseSerialGC", 
     "-Dspring.aop.proxy-target-class=true", \
     "-Dspring.aop.auto=true", \
     "-jar", "/app/app.jar"]
