@@ -1,5 +1,6 @@
 package com.metro.route.service;
 
+import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.mapper.EntityMappers;
 import com.metro.common_lib.service.IService;
 import com.metro.route.exception.ErrorCode;
@@ -20,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -46,7 +48,6 @@ public class BusRouteService extends AbstractService<
 
     @Override
     protected void beforeCreate(BusRoute entity) {
-        // Kiểm tra stationId có tồn tại không
         Long id = entity.getId();
         if (id != null && busRouteRepository.existsById(id)) {
             throw new AppException(ErrorCode.BUS_ROUTE_EXISTED);
@@ -59,36 +60,32 @@ public class BusRouteService extends AbstractService<
 
     @Override
     protected void beforeUpdate(BusRoute oldEntity, BusRoute newEntity) {
-        // Nếu có cập nhật stationId, kiểm tra và cập nhật station
         if (newEntity.getStation() != null && newEntity.getStation().getId() != null) {
             Long newStationId = newEntity.getStation().getId();
             Station newStation = stationRepository.findById(newStationId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BUS_ROUTE_NOT_FOUND));
+                    .orElseThrow(() -> new AppException(ErrorCode.STATION_NOT_FOUND));
             oldEntity.setStation(newStation);
         }
-        oldEntity = busRouteMapper.updateToEntity(newEntity);
-//
-//        // Cập nhật các trường khác
-//        if (newEntity.getStartLocation() != null) {
-//            oldEntity.setStartLocation(newEntity.getStartLocation());
-//        }
-//        if (newEntity.getEndLocation() != null) {
-//            oldEntity.setEndLocation(newEntity.getEndLocation());
-//        }
-//        if (newEntity.getHeadwayMinutes() > 0) {
-//            oldEntity.setHeadwayMinutes(newEntity.getHeadwayMinutes());
-//        }
-//        if (newEntity.getDistanceToStation() != null) {
-//            oldEntity.setDistanceToStation(newEntity.getDistanceToStation());
-//        }
-//        if (newEntity.getBusStationName() != null) {
-//            oldEntity.setBusStationName(newEntity.getBusStationName());
-//        }
-//
-//        // Cập nhật busCode nếu startLocation hoặc endLocation thay đổi
-//        if (newEntity.getStartLocation() != null || newEntity.getEndLocation() != null) {
-//            String newStartLocation = newEntity.getStartLocation() != null ? newEntity.getStartLocation() : oldEntity.getStartLocation();
-//            String newEndLocation = newEntity.getEndLocation() != null ? newEntity.getEndLocation() : oldEntity.getEndLocation();
-//        }
+        busRouteMapper.updateEntityFromRequest(newEntity, oldEntity);
+    }
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public BusRouteResponse create(BusRouteCreationRequest request) {
+        return super.create(request);
+    }
+    @Override
+    @PreAuthorize("permitAll()")
+    public BusRouteResponse findById(Long id) {
+        return super.findById(id);
+    }
+    @Override
+    @PreAuthorize("permitAll()")
+    public PageResponse<BusRouteResponse> findAll(int page, int size, String arrange) {
+        return super.findAll(page, size, arrange);
+    }
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(Long id) {
+        super.delete(id);
     }
 }
