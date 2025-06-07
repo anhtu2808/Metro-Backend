@@ -17,6 +17,7 @@ public enum ErrorCode {
     BUS_ROUTE_NOT_FOUND(1008, "Bus Route NOT FOUND with given ID", HttpStatus.FORBIDDEN),
     BUS_ROUTE_EXISTED(1009, "Bus Route with given ID already exists", HttpStatus.BAD_REQUEST),
     STATION_NOT_FOUND(1010, "Station NOT FOUND with given ID", HttpStatus.NOT_FOUND),
+    BUS_ROUTE_ID_MISMATCH(1011, "Bus Route ID mismatch", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -3,6 +3,7 @@ import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.exception.AppException;
 import com.metro.common_lib.exception.ErrorCode;
 import com.metro.common_lib.mapper.EntityMappers;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,7 @@ public abstract class AbstractService<
     protected abstract void beforeUpdate(E oldEntity, E newEntity);
 
     @Override
-    public R create(C request) {
+    public R create(@Valid C request) {
         log.info("Creating new entity");
         E entity = entityMapper.toEntity(request);
         beforeCreate(entity);
@@ -42,7 +43,7 @@ public abstract class AbstractService<
     @Override
     public PageResponse<R> findAll(int page, int size, String arrange) {
         log.info("Fetching all entities");
-        List<E> entities = repository.findAll();
+//        List<E> entities = repository.findAll();
         if (arrange == null || arrange.isEmpty()) {
             arrange = "id";
         }
