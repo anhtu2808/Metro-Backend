@@ -6,6 +6,7 @@ import com.metro.route.dto.request.busRoute.BusRouteCreationRequest;
 import com.metro.route.dto.request.busRoute.BusRouteUpdateRequest;
 import com.metro.route.dto.response.BusRouteResponse;
 import com.metro.route.entity.BusRoute;
+import com.metro.route.entity.Station;
 import org.mapstruct.Mapper;
 
 @Mapper(
