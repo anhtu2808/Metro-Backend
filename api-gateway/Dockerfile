@@ -40,10 +40,4 @@ COPY target/api-gateway-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8888
 
 # Thiết lập entrypoint với tối ưu JVM và các cấu hình Spring AOP
-ENTRYPOINT ["java", \
-    "-Xms128m", \
-    "-Xmx256m", \
-    "-XX:+UseSerialGC",  
-    "-Dspring.aop.proxy-target-class=true", \
-    "-Dspring.aop.auto=true", \
-    "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-Xms128m", "-Xmx256m", "-XX:+UseSerialGC", "-Dspring.aop.proxy-target-class=true", "-Dspring.aop.auto=true", "-jar", "/app/app.jar"]

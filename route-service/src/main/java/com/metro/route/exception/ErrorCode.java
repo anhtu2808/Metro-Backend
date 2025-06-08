@@ -16,7 +16,10 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     BUS_ROUTE_NOT_FOUND(1008, "Bus Route NOT FOUND with given ID", HttpStatus.FORBIDDEN),
     BUS_ROUTE_EXISTED(1009, "Bus Route with given ID already exists", HttpStatus.BAD_REQUEST),
-    STATION_NOT_FOUND(1010, "Station NOT FOUND with given ID", HttpStatus.NOT_FOUND),
+    STATION_NOT_FOUND(1010, "Start station NOT FOUND with given ID", HttpStatus.NOT_FOUND),
+    BUS_ROUTE_ID_MISMATCH(1011, "Bus Route ID mismatch", HttpStatus.BAD_REQUEST),
+    START_STATION_NOT_FOUND(1012, "Start station does not exist", HttpStatus.NOT_FOUND),
+    FINAL_STATION_NOT_FOUND(1013, "Final station does not exist", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

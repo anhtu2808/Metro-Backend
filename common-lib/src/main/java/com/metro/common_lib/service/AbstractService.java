@@ -3,6 +3,7 @@ import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.exception.AppException;
 import com.metro.common_lib.exception.ErrorCode;
 import com.metro.common_lib.mapper.EntityMappers;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,18 +32,23 @@ public abstract class AbstractService<
     protected abstract void beforeUpdate(E oldEntity, E newEntity);
 
     @Override
-    public R create(C request) {
-        log.info("Creating new entity");
+    public R create(@Valid C request) {
+        log.info("Creating new {}", request.getClass().getSimpleName());
+        log.debug("Create request: {}", request);
         E entity = entityMapper.toEntity(request);
         beforeCreate(entity);
         entity = repository.save(entity);
+        log.info("Successfully created entity with ID: {}", request.getClass().getSimpleName());
         return entityMapper.toResponse(entity);
     }
 
     @Override
     public PageResponse<R> findAll(int page, int size, String arrange) {
-        log.info("Fetching all entities");
-        List<E> entities = repository.findAll();
+        log.info("Fetching entities of type with page: {}, size: {}, sort: {}",
+                page,
+                size,
+                arrange
+        );
         if (arrange == null || arrange.isEmpty()) {
             arrange = "id";
         }
@@ -53,6 +59,7 @@ public abstract class AbstractService<
             R R = entityMapper.toResponse(post);
             return R;
         }).toList();
+        log.info("Fetched {} entities for page {}", pageData.getTotalElements(), page);
             return PageResponse.<R>builder()
                     .currentPage(page)
                     .totalPages(pageData.getTotalPages())
@@ -66,15 +73,20 @@ public abstract class AbstractService<
     public R findById(Long id) {
         log.info("Fetching entity with ID: {}", id);
         E entity = repository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> {
+                        log.error("Entity with ID: {} not found", id);
+                        return new AppException(ErrorCode.ENTITY_NOT_FOUND);
+                });
         return entityMapper.toResponse(entity);
     }
 
     @Override
     public R update(Long id, U request) {
-        log.info("Updating entity with ID: {}", id);
+        log.info("Updating {} with ID: {}",request, id);
         E oldEntity = repository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> {
+                        log.error("Entity with ID: {} not found", id);
+                        return new AppException(ErrorCode.ENTITY_NOT_FOUND);});
         E newEntity = entityMapper.updateToEntity(request);
         beforeUpdate(oldEntity, newEntity);
         oldEntity = repository.save(oldEntity);
@@ -82,9 +94,10 @@ public abstract class AbstractService<
     }
 
     @Override
-    public Void delete(Long id) {
+    public void delete(Long id) {
         log.info("Deleting entity with ID: {}", id);
         repository.deleteById(id);
-        return null;
+        log.info("Successfully deleted entity with ID: {}", id);
+//        return null;
     }
 }

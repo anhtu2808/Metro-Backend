@@ -7,6 +7,13 @@ app:
 spring:
   application:
     name: api-gateway
+  security:
+    user:
+      name: admin
+      password: 123456
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
   cloud:
     gateway:
@@ -183,3 +190,5 @@ springdoc:
         url: http://localhost:8086/v3/api-docs
       - name: scanner-service (direct)
         url: http://localhost:8087/v3/api-docs
+    csrf:
+      enabled: false
