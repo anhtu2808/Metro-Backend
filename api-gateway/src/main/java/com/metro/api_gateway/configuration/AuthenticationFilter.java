@@ -49,6 +49,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     };
     
     @NonFinal
+    private String[] publicContentEndpoint = {
+            "/contents/.*",
+    };
+
+    @NonFinal
     private String[] publicCommonEndpoint = {
             "/v3/api-docs",
             "/health-check",
@@ -63,6 +68,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         } // Khi nào thêm service khác muốn một số public thì khai báo thêm
 
         if (isPublicEndpoint(exchange.getRequest(), "/auth", publicAuthEndpoint)) {
+            return chain.filter(exchange);
+        }
+
+        if (isPublicEndpoint(exchange.getRequest(), "/contents", publicContentEndpoint)) {
             return chain.filter(exchange);
         }
 
