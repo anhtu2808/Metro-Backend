@@ -20,7 +20,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "bus-routes/**"
+            "bus-routes/**",
+            "lines/**",
+            "line-segments/**",
+            "stations/**",
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
