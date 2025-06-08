@@ -20,6 +20,7 @@ public enum ErrorCode {
     BUS_ROUTE_ID_MISMATCH(1011, "Bus Route ID mismatch", HttpStatus.BAD_REQUEST),
     START_STATION_NOT_FOUND(1012, "Start station does not exist", HttpStatus.NOT_FOUND),
     FINAL_STATION_NOT_FOUND(1013, "Final station does not exist", HttpStatus.NOT_FOUND),
+    END_STATION_NOT_FOUND(1014, "End station does not exist", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
