@@ -12,6 +12,7 @@ import com.metro.route.entity.Station;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 @Mapper(
         config = DefaultConfigMapper.class
@@ -19,30 +20,20 @@ import org.mapstruct.MappingTarget;
 public interface LineMapper extends EntityMappers<Line, LineCreationRequest, LineUpdateRequest, LineResponse> {
     @Mapping(target = "id", ignore = true)
     void updateEntity(@MappingTarget Line oldEntity, Line newEntity);
-    @Override
-    default Line toEntity(LineCreationRequest request) {
-        if (request == null) {
+
+    @Mapping(target = "startStation", source = "startStationId", qualifiedByName = "mapToStation")
+    @Mapping(target = "finalStation", source = "finalStationId", qualifiedByName = "mapToStation")
+    Line toEntity(LineCreationRequest request);
+
+    @Mapping(target = "startStation", source = "startStationId", qualifiedByName = "mapToStation")
+    @Mapping(target = "finalStation", source = "finalStationId", qualifiedByName = "mapToStation")
+    Line updateToEntity(LineUpdateRequest request);
+
+    @Named("mapToStation")
+    default Station mapToStation(Long stationId) {
+        if (stationId == null) {
             return null;
         }
-        return Line.builder()
-                .name(request.getName())
-                .lineCode(request.getLineCode())
-                .description(request.getDescription())
-                .startStation(request.getStartStationId() == null ? null : Station.builder().id(request.getStartStationId()).build())
-                .finalStation(request.getFinalStationId() == null ? null : Station.builder().id(request.getFinalStationId()).build())
-                .build();
-    }
-    @Override
-    default Line updateToEntity(LineUpdateRequest request) {
-        if (request == null) {
-            return null;
-        }
-        return Line.builder()
-                .name(request.getName())
-                .lineCode(request.getLineCode())
-                .description(request.getDescription())
-                .startStation(request.getStartStationId() == null ? null : Station.builder().id(request.getStartStationId()).build())
-                .finalStation(request.getFinalStationId() == null ? null : Station.builder().id(request.getFinalStationId()).build())
-                .build();
+        return Station.builder().id(stationId).build();
     }
 }
