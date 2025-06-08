@@ -153,6 +153,8 @@ spring:
               Path=${app.api-prefix}/scanner-service/v3/api-docs/**
           filters:
             - StripPrefix=3
+user-service:
+  base-url: http://${USER_SERVICE_HOST:localhost}:8080
 
 springdoc:
   swagger-ui:
