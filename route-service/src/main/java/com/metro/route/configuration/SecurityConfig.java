@@ -22,6 +22,8 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "bus-routes/**",
             "stations/**",
+            "lines/**",
+            "line-segments/**",
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
