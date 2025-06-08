@@ -65,30 +65,30 @@ public class BusRouteService extends AbstractService<
                     .orElseThrow(() -> new AppException(ErrorCode.STATION_NOT_FOUND));
             oldEntity.setStation(newStation);
         }
-        busRouteMapper.updateEntityFromRequest(newEntity, oldEntity);
+        busRouteMapper.updateEntity(oldEntity, newEntity);
     }
     @Override
-    @PreAuthorize("hasAuthority('busroute:create')")
+//    @PreAuthorize("hasAuthority('busroute:create')")
     public BusRouteResponse create(BusRouteCreationRequest request) {
         return super.create(request);
     }
     @Override
-    @PreAuthorize("hasAuthority('busroute:read')")
+//    @PreAuthorize("hasAuthority('busroute:read')")
     public BusRouteResponse findById(Long id) {
         return super.findById(id);
     }
     @Override
-    @PreAuthorize("hasAuthority('busroute:read')")
+//    @PreAuthorize("hasAuthority('busroute:read')")
     public PageResponse<BusRouteResponse> findAll(int page, int size, String arrange) {
         return super.findAll(page, size, arrange);
     }
     @Override
-    @PreAuthorize("hasAuthority('busroute:update')")
+//    @PreAuthorize("hasAuthority('busroute:update')")
     public BusRouteResponse update(Long id, BusRouteUpdateRequest request) {
         return super.update(id, request);
     }
     @Override
-    @PreAuthorize("hasAuthority('busroute:delete')")
+//    @PreAuthorize("hasAuthority('busroute:delete')")
     public void delete(Long id) {
         super.delete(id);
     }

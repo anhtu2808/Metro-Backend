@@ -20,7 +20,7 @@ public interface BusRouteMapper extends EntityMappers<BusRoute, BusRouteCreation
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "station", ignore = true)
-    void updateEntityFromRequest(BusRoute request, @MappingTarget BusRoute entity);
+    void updateEntity(@MappingTarget BusRoute oldEntity,  BusRoute newEntity);
 
     @Mapping(target = "station", source = "stationId")
     BusRoute toEntity(BusRouteCreationRequest request);
