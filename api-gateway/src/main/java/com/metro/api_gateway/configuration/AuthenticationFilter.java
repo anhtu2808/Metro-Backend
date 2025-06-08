@@ -44,6 +44,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/introspect",
             "/register",
     };
+    @NonFinal
+    private String[] publicRouteEndpoint = {
+    };
 
     @NonFinal
     private String[] publicCommonEndpoint = {
