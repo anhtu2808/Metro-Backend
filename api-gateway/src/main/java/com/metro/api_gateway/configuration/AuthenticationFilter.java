@@ -47,7 +47,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     @NonFinal
     private String[] publicRouteEndpoint = {
     };
-
+    
     @NonFinal
     private String[] publicCommonEndpoint = {
             "/v3/api-docs",
