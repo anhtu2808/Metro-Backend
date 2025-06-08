@@ -1,14 +1,95 @@
 package com.metro.content.service;
 
+import com.metro.common_lib.dto.response.PageResponse;
+import com.metro.common_lib.service.AbstractService;
+import com.metro.content.dto.request.ContentRequest;
+import com.metro.content.dto.request.ContentUpdateRequest;
+import com.metro.content.dto.response.ContentResponse;
+import com.metro.content.entity.Content;
+import com.metro.content.entity.ContentImage;
+import com.metro.content.mapper.ContentMapper;
+import com.metro.content.repository.ContentImageRepository;
+import com.metro.content.repository.ContentRepository;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@RequiredArgsConstructor
-@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ContentService {
+public class ContentService extends AbstractService<Content, ContentRequest, ContentUpdateRequest, ContentResponse> {
+
+    ContentImageRepository contentImageRepository;
+    ContentMapper contentMapper;
+
+    public ContentService(ContentRepository repository, ContentMapper contentMapper, ContentImageRepository contentImageRepository) {
+        super(repository, contentMapper);
+        this.contentImageRepository = contentImageRepository;
+        this.contentMapper = contentMapper;
+    }
+
+    @Override
+    protected void beforeCreate(Content entity) {
+        List<ContentImage> images = new ArrayList<>();
+        if (entity.getImages() != null) {
+            for (ContentImage image : entity.getImages()) {
+                image.setContent(entity);
+                images.add(image);
+            }
+        }
+        entity.setImages(images);
+    }
+
+    @Override
+    protected void beforeUpdate(Content oldEntity, Content newEntity) {
+        oldEntity.setTitle(newEntity.getTitle());
+        oldEntity.setBody(newEntity.getBody());
+        oldEntity.setSummary(newEntity.getSummary());
+        oldEntity.setStatus(newEntity.getStatus());
+        oldEntity.setType(newEntity.getType());
+        oldEntity.setPublishAt(newEntity.getPublishAt());
+
+        oldEntity.getImages().clear();
+
+        List<ContentImage> updatedImages = newEntity.getImages().stream()
+                .peek(img -> img.setContent(oldEntity))
+                .collect(Collectors.toList());
+
+        oldEntity.getImages().addAll(updatedImages);
+    }
+
+
+    @Override
+    @PreAuthorize("hasAuthority('content:create')")
+    public ContentResponse create(ContentRequest request) {
+        return super.create(request);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('content:read')")
+    public ContentResponse findById(Long id) {
+        return super.findById(id);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('content:read')")
+    public PageResponse<ContentResponse> findAll(int page, int size, String arrange) {
+        return super.findAll(page, size, arrange);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('content:update')")
+    public ContentResponse update(Long id, ContentUpdateRequest request) {
+        return super.update(id, request);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('content:delete')")
+    public void delete(Long id) {
+        super.delete(id);
+    }
 }

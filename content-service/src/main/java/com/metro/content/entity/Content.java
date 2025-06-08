@@ -1,6 +1,7 @@
 package com.metro.content.entity;
 
 import com.metro.common_lib.entity.AbstractAuditingEntity;
+import com.metro.content.enums.ContentStatus;
 import com.metro.content.enums.ContentType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +34,9 @@ public class Content extends AbstractAuditingEntity {
     @Column(columnDefinition = "TEXT")
     String body;
     String summary;
-    String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    ContentStatus status;
     @Column(name = "publish_at")
     LocalDateTime publishAt;
     @Column(name = "user_id")
