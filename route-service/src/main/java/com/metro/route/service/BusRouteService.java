@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BusRouteService extends AbstractService<
         BusRoute,

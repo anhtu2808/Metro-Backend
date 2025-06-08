@@ -24,6 +24,7 @@ public class SecurityConfig {
             "stations/**",
             "lines/**",
             "line-segments/**",
+            "stations/**",
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
