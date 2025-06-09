@@ -49,16 +49,13 @@ public class RoleServiceImpl implements RoleService {
         var existingRole = roleRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        if (roleRepository.existsByName(RoleType.valueOf(request.getName())) &&
-                !existingRole.getName().equals(RoleType.valueOf(request.getName()))) {
+        if (request.getName() != null &&
+                (roleRepository.existsByName(RoleType.valueOf(request.getName())) &&
+                !existingRole.getName().equals(RoleType.valueOf(request.getName())))) {
             throw new AppException(ErrorCode.ROLE_EXISTED);
         }
-        existingRole.setName(RoleType.valueOf(request.getName()));
-        existingRole.setDescription(request.getDescription());
-
         var permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissions()));
-        existingRole.setPermissions(permissions);
-
+        roleMapper.updateRole(existingRole, request, permissions);
         var updatedRole = roleRepository.save(existingRole);
         return roleMapper.toRoleResponse(updatedRole);
     }
