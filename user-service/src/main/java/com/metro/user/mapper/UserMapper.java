@@ -17,6 +17,7 @@ public interface UserMapper {
 
     @Mapping(target = "permissions", ignore = true)
     @Mapping(target = "role", source = "role.name")
+    @Mapping(target = "isStudentVerified", source = "studentVerified")
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "isStudentVerified", ignore = true)
