@@ -1,5 +1,6 @@
 package com.metro.user.service;
 
+import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.mapper.EntityMappers;
 import com.metro.common_lib.service.AbstractService;
 import com.metro.user.Exception.AppException;
@@ -14,7 +15,9 @@ import com.metro.user.repository.StudentVerificationRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import com.metro.user.enums.StudentVerificationStatus;
 
 import java.time.LocalDate;
 @Slf4j
@@ -30,16 +33,7 @@ public class StudentVerificationService extends AbstractService<
         super(repository, entityMapper);
         this.studentVerificationMapper = studentVerificationMapper;
     }
-//    Long id;
-//
-//    String schoolName;
-//
-//    String imageUrl;
-//
-//    LocalDate graduateDate;
-//    StudentVerificationStatus status;
-//
-//    User user;
+
     @Override
     protected void beforeCreate(StudentVerification entity) {
         if (entity.getUser().getId() == null) {
@@ -49,10 +43,36 @@ public class StudentVerificationService extends AbstractService<
 
     @Override
     protected void beforeUpdate(StudentVerification oldEntity, StudentVerification newEntity) {
-        if (newEntity.getUser().getId() == null){
-            throw new AppException(ErrorCode.STUDENT_USER_NOT_FOUND);
-        }
         studentVerificationMapper.updateToEntity(oldEntity,newEntity);
 
+    }
+    @Override
+    @PreAuthorize("hasAuthority('student_verification:create')")
+    public StudentVerificationResponse create(StudentVerificationCreationRequest request) {
+        return super.create(request);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('student_verification:read')")
+    public StudentVerificationResponse findById(Long id) {
+        return super.findById(id);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('student_verification:read')")
+    public PageResponse<StudentVerificationResponse> findAll(int page, int size, String sort) {
+        return super.findAll(page, size, sort);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('student_verification:update')")
+    public StudentVerificationResponse update(Long id, StudentVerificationUpdateRequest request) {
+        return super.update(id, request);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('student_verification:delete')")
+    public void delete(Long id) {
+        super.delete(id);
     }
 }

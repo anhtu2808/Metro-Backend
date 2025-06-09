@@ -1,5 +1,6 @@
 package com.metro.user.dto.request.studentVerification;
 
+import com.metro.user.enums.StudentVerificationStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -30,4 +31,6 @@ public class StudentVerificationCreationRequest {
     @NotNull(message = "User ID is required")
     @Positive(message = "User ID must be a positive number")
     Long userId;
+
+    StudentVerificationStatus status = StudentVerificationStatus.PENDING; // Default status set to PENDING
 }

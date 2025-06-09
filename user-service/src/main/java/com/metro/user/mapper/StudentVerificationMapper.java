@@ -6,7 +6,6 @@ import com.metro.user.dto.request.studentVerification.StudentVerificationUpdateR
 import jdk.jfr.Name;
 import org.mapstruct.*;
 
-import com.metro.user.dto.request.user.StudentVerificationRequest;
 import com.metro.user.dto.response.user.StudentVerificationResponse;
 import com.metro.user.entity.StudentVerification;
 import com.metro.user.entity.User;
@@ -22,9 +21,9 @@ public interface StudentVerificationMapper extends EntityMappers<
     @Mapping(target = "id", ignore = true)
     StudentVerification toEntity(StudentVerificationCreationRequest request);
 
-    StudentVerification toStudentVerification(StudentVerificationRequest request, User user);
+    @Mapping(target = "id", ignore = true)
+    void updateToEntity(@MappingTarget StudentVerification oldEntity, StudentVerification newEntity);
 
-//    StudentVerificationResponse toStudentVerificationResponse(StudentVerification studentVerification);
     @Named("mapToUser")
     default User mapToUser(Long userId){
         if(userId == null){
@@ -32,7 +31,4 @@ public interface StudentVerificationMapper extends EntityMappers<
         }
         return User.builder().id(userId).build();
     }
-    @Mapping(target = "id", ignore = true)
-//    @Mapping(target = "user",source = "userId", qualifiedByName = "mapToUser")
-    void updateToEntity(@MappingTarget StudentVerification oldEntity, StudentVerification newEntity);
 }

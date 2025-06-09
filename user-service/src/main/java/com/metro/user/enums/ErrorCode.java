@@ -17,7 +17,10 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND(404, "Role not found", HttpStatus.NOT_FOUND),
-    STUDENT_USER_NOT_FOUND(1009,"User ID must be provided for Student Verification.",HttpStatus.NOT_FOUND)
+    STUDENT_USER_NOT_FOUND(1009,"User ID must be provided for Student Verification.",HttpStatus.NOT_FOUND),
+    PERMISSION_EXISTED(1010, "Permission already existed", HttpStatus.BAD_REQUEST),
+    PERMISSION_NOT_FOUND(1011, "Permission not found", HttpStatus.NOT_FOUND),
+    ROLE_EXISTED(1012, "Role already existed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
