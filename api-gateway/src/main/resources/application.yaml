@@ -23,7 +23,9 @@ spring:
           predicates:
             - >-
               Path=${app.api-prefix}/users/**,
-              ${app.api-prefix}/auth/**
+              ${app.api-prefix}/auth/**,
+              ${app.api-prefix}/roles/**,
+              ${app.api-prefix}/permissions/**,
           filters:
             - StripPrefix=2
 
@@ -151,6 +153,8 @@ spring:
               Path=${app.api-prefix}/scanner-service/v3/api-docs/**
           filters:
             - StripPrefix=3
+user-service:
+  base-url: http://${USER_SERVICE_HOST:localhost}:8080
 
 springdoc:
   swagger-ui:
