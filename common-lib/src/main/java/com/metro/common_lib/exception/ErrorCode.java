@@ -1,6 +1,5 @@
 package com.metro.common_lib.exception;
 
-
 import lombok.Getter;
 
 @Getter
