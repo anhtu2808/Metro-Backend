@@ -56,7 +56,7 @@ public class StudentVerificationService extends AbstractService<
         studentVerificationMapper.updateToEntity(oldEntity,newEntity);
     }
     @Override
-    @PreAuthorize("hasAuthority('student_verification:create')")
+//    @PreAuthorize("hasAuthority('student_verification:create')")
     public StudentVerificationResponse create(StudentVerificationCreationRequest request) {
         return super.create(request);
     }

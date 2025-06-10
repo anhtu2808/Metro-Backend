@@ -1,15 +1,21 @@
 package com.metro.user.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.metro.common_lib.mapper.EntityMappers;
+import com.metro.user.dto.request.studentVerification.StudentVerificationCreationRequest;
+import com.metro.user.dto.request.studentVerification.StudentVerificationUpdateRequest;
+import jdk.jfr.Name;
+import org.mapstruct.*;
 
-import com.metro.user.dto.request.user.StudentVerificationRequest;
 import com.metro.user.dto.response.user.StudentVerificationResponse;
 import com.metro.user.entity.StudentVerification;
 import com.metro.user.entity.User;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface StudentVerificationMapper {
+public interface StudentVerificationMapper extends EntityMappers<
+        StudentVerification,
+        StudentVerificationCreationRequest,
+        StudentVerificationUpdateRequest,
+        StudentVerificationResponse> {
 
     @Mapping(target = "user",ignore = true)
     @Mapping(target = "id", ignore = true)
@@ -26,7 +32,4 @@ public interface StudentVerificationMapper {
         }
         return User.builder().id(userId).build();
     }
-    StudentVerification toStudentVerification(StudentVerificationRequest request, User user);
-
-    StudentVerificationResponse toStudentVerificationResponse(StudentVerification studentVerification);
 }
