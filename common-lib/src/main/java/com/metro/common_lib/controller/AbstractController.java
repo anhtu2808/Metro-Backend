@@ -3,12 +3,8 @@ package com.metro.common_lib.controller;
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.service.AbstractService;
-public abstract class AbstractController<
-        E,
-        C,
-        U,
-        R>
-        implements IController<E, C, U, R> {
+
+public abstract class AbstractController<E, C, U, R> implements IController<E, C, U, R> {
     protected AbstractService<E, C, U, R> service;
 
     public AbstractController(AbstractService<E, C, U, R> service) {
@@ -32,6 +28,7 @@ public abstract class AbstractController<
                     .build();
         }
     }
+
     @Override
     public ApiResponse<R> findById(Long id) {
         try {
@@ -56,6 +53,7 @@ public abstract class AbstractController<
                     .build();
         }
     }
+
     @Override
     public ApiResponse<PageResponse<R>> findAll(int page, int size, String sort) {
         try {
@@ -73,6 +71,7 @@ public abstract class AbstractController<
                     .build();
         }
     }
+
     @Override
     public ApiResponse<R> update(Long id, U updateRequest) {
         try {
@@ -97,6 +96,7 @@ public abstract class AbstractController<
                     .build();
         }
     }
+
     @Override
     public ApiResponse<Void> delete(Long id) {
         try {
