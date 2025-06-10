@@ -57,7 +57,7 @@ public class ContentService extends AbstractService<Content, ContentRequest, Con
 
         List<ContentImage> updatedImages = newEntity.getImages().stream()
                 .peek(img -> img.setContent(oldEntity))
-                .collect(Collectors.toList());
+                .toList();
 
         oldEntity.getImages().addAll(updatedImages);
     }
@@ -70,13 +70,11 @@ public class ContentService extends AbstractService<Content, ContentRequest, Con
     }
 
     @Override
-    @PreAuthorize("hasAuthority('content:read')")
     public ContentResponse findById(Long id) {
         return super.findById(id);
     }
 
     @Override
-    @PreAuthorize("hasAuthority('content:read')")
     public PageResponse<ContentResponse> findAll(int page, int size, String arrange) {
         return super.findAll(page, size, arrange);
     }

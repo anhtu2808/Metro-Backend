@@ -1,5 +1,6 @@
 package com.metro.user.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,12 @@ public class UserController {
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@RequestBody UserRequest request) {
         var result = userService.createUser(request, RoleType.CUSTOMER);
+        return ApiResponse.<UserResponse>builder().result(result).build();
+    }
+
+    @GetMapping("/my-info")
+    public ApiResponse<UserResponse> getMyInfo() {
+        var result = userService.getMyInfo();
         return ApiResponse.<UserResponse>builder().result(result).build();
     }
 }

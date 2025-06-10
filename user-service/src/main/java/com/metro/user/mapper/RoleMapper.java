@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.metro.user.dto.request.role.RoleRequest;
@@ -24,4 +25,10 @@ public interface RoleMapper {
     Role toRole(RoleRequest request, Set<Permission> permissions);
 
     RoleResponse toRoleResponse(Role role);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", source = "request.name")
+    @Mapping(target = "description", source = "request.description")
+    @Mapping(target = "permissions", source = "permissions")
+    void updateRole(@MappingTarget Role role, RoleRequest request, Set<Permission> permissions);
 }

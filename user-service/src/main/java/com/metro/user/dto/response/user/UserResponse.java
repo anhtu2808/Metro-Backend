@@ -1,6 +1,7 @@
 package com.metro.user.dto.response.user;
 
 import java.util.List;
+import java.util.Set;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +21,7 @@ public class UserResponse {
     String avatarUrl;
     String address;
     String role;
-    List<String> permissions;
+    Set<String> permissions;
+    Boolean isStudentVerified;
     List<StudentVerificationResponse> studentVerifications;
 }

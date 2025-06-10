@@ -12,4 +12,11 @@ public interface UserService {
     UserResponse deleteUser(long id);
 
     UserResponse getUser(long id);
+
+    /**
+     * Retrieve information about the currently authenticated user.
+     *
+     * @return {@link UserResponse} representing the logged in user
+     */
+    UserResponse getMyInfo();
 }

@@ -1,5 +1,7 @@
 package com.metro.user.service.impl;
 
+import com.metro.user.entity.Permission;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,9 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +63,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUser(long id) {
         return null;
+    }
+
+    @Override
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Set<String> permissions = user.getRole().getPermissions().stream().map(Permission::getName).collect(Collectors.toSet());
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        userResponse.setPermissions(permissions);
+        return userResponse;
     }
 }
