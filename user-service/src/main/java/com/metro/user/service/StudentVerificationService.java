@@ -12,10 +12,12 @@ import com.metro.user.entity.User;
 import com.metro.user.enums.ErrorCode;
 import com.metro.user.mapper.StudentVerificationMapper;
 import com.metro.user.repository.StudentVerificationRepository;
+import com.metro.user.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.metro.user.enums.StudentVerificationStatus;
 
@@ -28,9 +30,11 @@ public class StudentVerificationService extends AbstractService<
         StudentVerificationCreationRequest,
         StudentVerificationUpdateRequest,
         StudentVerificationResponse> {
+    UserRepository userRepository;
     StudentVerificationMapper studentVerificationMapper;
-    protected StudentVerificationService(StudentVerificationRepository repository, StudentVerificationMapper entityMapper, StudentVerificationMapper studentVerificationMapper) {
+    protected StudentVerificationService(StudentVerificationRepository repository, StudentVerificationMapper entityMapper, UserRepository userRepository, StudentVerificationMapper studentVerificationMapper) {
         super(repository, entityMapper);
+        this.userRepository = userRepository;
         this.studentVerificationMapper = studentVerificationMapper;
     }
 
@@ -39,6 +43,9 @@ public class StudentVerificationService extends AbstractService<
         if (entity.getUser().getId() == null) {
             throw new AppException(ErrorCode.STUDENT_USER_NOT_FOUND);
         }
+        User user = userRepository.findById(Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        entity.setUser(user);
     }
 
     @Override

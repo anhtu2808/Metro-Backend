@@ -28,9 +28,5 @@ public class StudentVerificationCreationRequest {
     @PastOrPresent(message = "Graduate date must be in the present or future")
     LocalDate graduateDate;
 
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be a positive number")
-    Long userId;
-
     StudentVerificationStatus status = StudentVerificationStatus.PENDING; // Default status set to PENDING
 }

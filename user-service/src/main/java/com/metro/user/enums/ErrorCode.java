@@ -21,6 +21,7 @@ public enum ErrorCode {
     PERMISSION_EXISTED(1010, "Permission already existed", HttpStatus.BAD_REQUEST),
     PERMISSION_NOT_FOUND(1011, "Permission not found", HttpStatus.NOT_FOUND),
     ROLE_EXISTED(1012, "Role already existed", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(1013, "User not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
