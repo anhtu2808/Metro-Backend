@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.metro.user.enums.StudentVerificationStatus;
@@ -40,18 +41,19 @@ public class StudentVerificationService extends AbstractService<
 
     @Override
     protected void beforeCreate(StudentVerification entity) {
-        if (entity.getUser().getId() == null) {
-            throw new AppException(ErrorCode.STUDENT_USER_NOT_FOUND);
-        }
-        User user = userRepository.findById(Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName()))
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findById(Long.parseLong(authentication.getName()))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         entity.setUser(user);
     }
 
     @Override
     protected void beforeUpdate(StudentVerification oldEntity, StudentVerification newEntity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findById(Long.parseLong(authentication.getName()))
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        oldEntity.setUser(user);
         studentVerificationMapper.updateToEntity(oldEntity,newEntity);
-
     }
     @Override
     @PreAuthorize("hasAuthority('student_verification:create')")

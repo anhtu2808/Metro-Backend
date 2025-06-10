@@ -17,11 +17,12 @@ public interface StudentVerificationMapper extends EntityMappers<
         StudentVerificationUpdateRequest,
         StudentVerificationResponse> {
 
-    @Mapping(target = "user",source = "userId", qualifiedByName = "mapToUser")
+    @Mapping(target = "user",ignore = true)
     @Mapping(target = "id", ignore = true)
     StudentVerification toEntity(StudentVerificationCreationRequest request);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user",ignore = true)
     void updateToEntity(@MappingTarget StudentVerification oldEntity, StudentVerification newEntity);
 
     @Named("mapToUser")
