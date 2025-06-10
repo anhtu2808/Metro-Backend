@@ -1,9 +1,7 @@
 package com.metro.api_gateway.configuration;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.metro.api_gateway.service.IdentityService;
 import com.metro.common_lib.dto.response.ApiResponse;
 import lombok.AccessLevel;
@@ -14,97 +12,107 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationFilter implements GlobalFilter, Ordered {
+    // 1. Định nghĩa prefix chung
+    static final String API_PREFIX = "/api/v1";
+    private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+
     IdentityService identityService;
     ObjectMapper objectMapper;
 
+    // 2. Map HTTP method → danh sách các regex path public (chưa có prefix)
     @NonFinal
-    private String[] publicUserServiceEndpoint = {
-           "/register",
-    }; // Khi nào thêm service khác muốn một số public thì khai báo thêm
+    Map<HttpMethod, List<String>> publicEndpointsByMethod = new HashMap<>() {{
+        put(HttpMethod.GET, List.of(
+                //TODO: thêm các endpoint public cho method GET nếu có
+                "/contents/**",
+                "/v3/api-docs/**",
+                "/health-check",
+                "/users/my-info",
+                "/lines/**",
+                "/stations/**",
+                "/bus-routes/**"
+        ));
+        put(HttpMethod.POST, List.of(
+                // TODO: thêm các endpoint public cho method POST nếu có
+                "/users/register",
+                "/auth/login",
+                "/auth/introspect"
+        ));
+        put(HttpMethod.PUT, List.of(
+                //TODO : thêm các endpoint public cho method PUT nếu có
+        ));
+    }};
 
-    @NonFinal
-    private String[] publicAuthEndpoint = {
-            "/login",
-            "/introspect",
-            "/register",
-    };
-    @NonFinal
-    private String[] publicRouteEndpoint = {
-    };
-    
-    @NonFinal
-    private String[] publicContentEndpoint = {
-            "/contents/.*",
-    };
 
-    @NonFinal
-    private String[] publicCommonEndpoint = {
+    private final String[] publicCommonEndpoint = {
             "/v3/api-docs",
             "/health-check",
     };
 
-    private String apiPrefix = "/api/v1";
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if (isPublicEndpoint(exchange.getRequest(), "/users", publicUserServiceEndpoint)) {
-            return chain.filter(exchange);
-        } // Khi nào thêm service khác muốn một số public thì khai báo thêm
+        ServerHttpRequest request = exchange.getRequest();
+        HttpMethod method = request.getMethod();
+        String path = request.getURI().getPath();
 
-        if (isPublicEndpoint(exchange.getRequest(), "/auth", publicAuthEndpoint)) {
+        // 3. Nếu là public endpoint theo method + path thì bỏ qua auth
+        if (isPublicEndpoint(method, path)) {
+            return chain.filter(exchange);
+        }
+        // 3.1 Nếu là public endpoint theo common path thì bỏ qua auth
+        if (isPublicCommonEndpoint(request)) {
             return chain.filter(exchange);
         }
 
-        if (isPublicEndpoint(exchange.getRequest(), "/contents", publicContentEndpoint)) {
-            return chain.filter(exchange);
-        }
-
-        if (isPublicCommonEndpoint(exchange.getRequest())) {
-            return chain.filter(exchange);
-        }
-
-        // Get token from authorization header
-        List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (CollectionUtils.isEmpty(authHeader))
+        // 4. Lấy token từ header
+        List<String> authHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
+        if (CollectionUtils.isEmpty(authHeader)) {
             return unauthenticated(exchange.getResponse());
+        }
 
-        String token = authHeader.getFirst().replace("Bearer ", "");
-
-        return identityService.introspect(token).flatMap(introspectResponse -> {
-            if (introspectResponse.getResult().isValid())
-                return chain.filter(exchange);
-            else
-                return unauthenticated(exchange.getResponse());
-        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
+        String token = authHeader.get(0).replace("Bearer ", "");
+        return identityService.introspect(token)
+                .flatMap(resp -> resp.getResult().isValid()
+                        ? chain.filter(exchange)
+                        : unauthenticated(exchange.getResponse())
+                )
+                .onErrorResume(err -> unauthenticated(exchange.getResponse()));
     }
 
-    @Override
-    public int getOrder() {
-        return -1;
-    }
-
-    private boolean isPublicEndpoint(ServerHttpRequest request, String servicePath, String[] publicEndpoints) {
-        String requestPath = request.getURI().getPath();
-        System.out.println("Request Path: " + requestPath); // Log the request path
-        return Arrays.stream(publicEndpoints).anyMatch(
-                endpoint -> (requestPath.matches(apiPrefix + servicePath + endpoint))
-        );
+    /**
+     * Kiểm tra xem request có phải public endpoint không:
+     * - Lấy danh sách pattern theo HTTP method
+     * - Với mỗi pattern, nối thêm API_PREFIX trước khi matches()
+     */
+    private boolean isPublicEndpoint(HttpMethod method, String path) {
+        List<String> patterns = publicEndpointsByMethod.get(method);
+        if (patterns == null || patterns.isEmpty()) {
+            return false;
+        }
+        return patterns.stream()
+                .map(pat -> API_PREFIX + pat)
+                .anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 
     private boolean isPublicCommonEndpoint(ServerHttpRequest request) {
@@ -113,14 +121,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .anyMatch(path::contains);
     }
 
+    @Override
+    public int getOrder() {
+        return -1;
+    }
 
-    Mono<Void> unauthenticated(ServerHttpResponse response) {
+    private Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
                 .message("Unauthenticated")
                 .build();
 
-        String body = null;
+        String body;
         try {
             body = objectMapper.writeValueAsString(apiResponse);
         } catch (JsonProcessingException e) {
@@ -128,9 +140,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-
+        response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return response.writeWith(
-                Mono.just(response.bufferFactory().wrap(body.getBytes())));
+                Mono.just(response.bufferFactory().wrap(body.getBytes()))
+        );
     }
 }
