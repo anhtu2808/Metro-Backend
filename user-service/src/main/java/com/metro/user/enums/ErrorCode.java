@@ -23,6 +23,7 @@ public enum ErrorCode {
     ROLE_EXISTED(1012, "Role already existed", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1013, "User not found", HttpStatus.NOT_FOUND),
     INCORRECT_USERNAME_PASSWORD(1009, "Incorrect username or password", HttpStatus.UNAUTHORIZED),
+    EMAIL_EXISTED(1014, "Email already existed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

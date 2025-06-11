@@ -1,8 +1,7 @@
 package com.metro.user.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.metro.user.dto.request.user.UserUpdateRequest;
+import org.mapstruct.*;
 
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.response.user.UserResponse;
@@ -26,4 +25,8 @@ public interface UserMapper {
     @Mapping(target = "role", source = "role")
     @Mapping(target = "id", ignore = true)
     User toUser(UserRequest request, Role role, String hashedPassword);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserFromUpdateRequest(UserUpdateRequest request, @MappingTarget User user);
+
 }
