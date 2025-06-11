@@ -76,6 +76,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         HttpMethod method = request.getMethod();
         String path = request.getURI().getPath();
 
+        // 0. Bỏ qua authentication cho preflight requests
+        if (method == HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }
+
         // 3. Nếu là public endpoint theo method + path thì bỏ qua auth
         if (isPublicEndpoint(method, path)) {
             return chain.filter(exchange);
