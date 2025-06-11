@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
+    @PreAuthorize("hasAuthority('user:update')")
     @Override
     public UserResponse updateUser(UserUpdateRequest request, Long id) {
         User user = userRepository.findById(id)
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize(" hasAuthority('user:delete')")
     @Override
     public UserResponse deleteUser(long id) {
         User user = userRepository.findById(id)
@@ -79,7 +80,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('user:read')")
     @Override
     public UserResponse getUser(long id) {
         User user = userRepository.findById(id)
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
         return userResponse;
     }
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('user:read')")
     @Override
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
