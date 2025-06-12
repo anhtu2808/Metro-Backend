@@ -42,12 +42,10 @@ public class StationService extends AbstractService<
         return super.create(request);
     }
     @Override
-    @PreAuthorize("hasAuthority('station:read')")
     public StationResponse findById(Long id) {
         return super.findById(id);
     }
     @Override
-    @PreAuthorize("hasAuthority('station:read')")
     public PageResponse<StationResponse> findAll(int page, int size, String arrange) {
         return super.findAll(page, size, arrange);
     }
