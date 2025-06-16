@@ -83,7 +83,6 @@ public class GlobalExceptionHandler {
         if (exception.getFieldError() != null) {
             apiResponse.setResult(Map.of(exception.getFieldError().getField(), enumKey));
         }
-
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
