@@ -1,5 +1,6 @@
 package com.metro.user.configuration;
 
+import com.metro.user.service.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,7 +23,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
         "/users/register", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check","/permissions/**","/roles/**",
-           "/student-verifications/**",
+           "/student-verifications/**", "/oauth2/**", "/login/**", "/oauth2/authorization/**","/auth/oauth/google","/auth/oauth2/info"
+
     };
     private static final String[] PUBLIC_GET_ENDPOINTS = {
             "/bus-routes",
@@ -43,9 +45,11 @@ public class SecurityConfig {
         "/webjars/**"
     };
     private final CustomJwtDecoder customJwtDecoder;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    public SecurityConfig(CustomJwtDecoder customJwtDecoder) {
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder, OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.customJwtDecoder = customJwtDecoder;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
     }
 
     @Bean
@@ -58,6 +62,11 @@ public class SecurityConfig {
                 .permitAll() // Allow Swagger endpoints
                 .anyRequest()
                 .authenticated());
+
+        httpSecurity.oauth2Login(oauth2Login ->
+                oauth2Login
+                        .successHandler(oAuth2LoginSuccessHandler)
+        );
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)

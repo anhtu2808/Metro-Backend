@@ -29,4 +29,11 @@ public interface UserMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserFromUpdateRequest(UserUpdateRequest request, @MappingTarget User user);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "password", constant = "")
+    @Mapping(target = "username", source = "email")
+    @Mapping(target = "isStudentVerified", constant = "false")
+    User googleOAuthToUser(String email, String firstName, String lastName, String avatarUrl, Role role);
+
 }

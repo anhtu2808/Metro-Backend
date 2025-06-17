@@ -3,6 +3,7 @@ package com.metro.user.service.impl;
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.role.RoleRequest;
 import com.metro.user.dto.response.role.RoleResponse;
+import com.metro.user.entity.Role;
 import com.metro.user.enums.ErrorCode;
 import com.metro.user.enums.RoleType;
 import com.metro.user.mapper.RoleMapper;
@@ -73,5 +74,11 @@ public class RoleServiceImpl implements RoleService {
         throw new AppException(ErrorCode.ROLE_NOT_FOUND);
     }
         roleRepository.deleteById(role);
+    }
+
+    @Override
+    public Role getRoleWithPermissions(RoleType roleType) {
+        return roleRepository.findByName(roleType)
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
     }
 }

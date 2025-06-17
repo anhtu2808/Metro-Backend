@@ -59,7 +59,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 "/users/register",
                 "/auth/login",
                 "/auth/introspect",
-                "/auth/refresh"
+                "/auth/refresh",
+                "/auth/oauth/google"
         ));
         put(HttpMethod.PUT, List.of(
                 //TODO : thêm các endpoint public cho method PUT nếu có
