@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
         log.error("Exception: ", exception);
         ApiResponse apiResponse = new ApiResponse();
@@ -82,7 +82,9 @@ public class GlobalExceptionHandler {
                 Objects.nonNull(attributes)
                         ? mapAttribute(errorCode.getMessage(), attributes)
                         : errorCode.getMessage());
-
+        if (exception.getFieldError() != null) {
+            apiResponse.setResult(Map.of(exception.getFieldError().getField(), enumKey));
+        }
         return ResponseEntity.badRequest().body(apiResponse);
     }
 

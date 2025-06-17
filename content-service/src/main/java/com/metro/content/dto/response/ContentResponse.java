@@ -1,5 +1,6 @@
 package com.metro.content.dto.response;
 
+import com.metro.content.enums.ContentStatus;
 import com.metro.content.enums.ContentType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +20,7 @@ public class ContentResponse {
     String title;
     String body;
     String summary;
-    String status;
+    ContentStatus status;
     LocalDateTime publishAt;
     Long userId;
     List<String> imageUrls;

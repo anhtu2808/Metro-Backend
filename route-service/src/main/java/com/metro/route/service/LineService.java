@@ -66,13 +66,11 @@ public class LineService extends AbstractService<
     }
 
     @Override
-    @PreAuthorize("hasAuthority('line:read')")
     public LineResponse findById(Long id) {
         return super.findById(id);
     }
 
     @Override
-    @PreAuthorize("hasAuthority('line:read')")
     public PageResponse<LineResponse> findAll(int page, int size, String arrange) {
         return super.findAll(page, size, arrange);
     }

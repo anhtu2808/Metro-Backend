@@ -27,7 +27,7 @@ public interface AuthenticationService {
      * @param request credentials (username and password)
      * @return authentication response with the issued token
      */
-    AuthenticationResponse authenticate(AuthenticationRequest request);
+    AuthenticationResponse login(AuthenticationRequest request);
 
     /**
      * Invalidate a refresh or access token (logout operation).
@@ -45,4 +45,6 @@ public interface AuthenticationService {
      * @throws JOSEException if token verification fails
      */
     AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException;
+    AuthenticationResponse authenticateWithGoogle(String idToken);
+
 }

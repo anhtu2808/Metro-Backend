@@ -1,7 +1,9 @@
 package com.metro.user.configuration;
 
+import com.metro.user.service.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -20,7 +20,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/users/register", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check"
+        "/users/register", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check","/permissions/**","/roles/**",
+           "/student-verifications/**", "/oauth2/**", "/login/**", "/oauth2/authorization/**","/auth/oauth/google","/auth/oauth2/info"
+
     };
     private static final String[] PUBLIC_GET_ENDPOINTS = {
             "/bus-routes",
@@ -41,9 +43,11 @@ public class SecurityConfig {
         "/webjars/**"
     };
     private final CustomJwtDecoder customJwtDecoder;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    public SecurityConfig(CustomJwtDecoder customJwtDecoder) {
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder, OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.customJwtDecoder = customJwtDecoder;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
     }
 
     @Bean
@@ -51,10 +55,16 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(SWAGGER_ENDPOINTS)
                 .permitAll() // Allow Swagger endpoints
                 .anyRequest()
                 .authenticated());
+
+        httpSecurity.oauth2Login(oauth2Login ->
+                oauth2Login
+                        .successHandler(oAuth2LoginSuccessHandler)
+        );
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
@@ -81,16 +91,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(10);
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("*") // hoặc cụ thể như "http://localhost:8080"
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*");
-            }
-        };
-    }
 }
