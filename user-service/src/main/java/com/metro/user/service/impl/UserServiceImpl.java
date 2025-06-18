@@ -56,16 +56,37 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasAuthority('user:update')")
     @Override
     public UserResponse updateUser(UserUpdateRequest request, Long id) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = auth.getName();
+        List<String> roles = auth.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .collect(Collectors.toList());
+
+        if (roles.contains("ROLE_CUSTOMER")) {
+            User currentUser = userRepository.findByUsername(currentUsername)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+
+            if (!currentUser.getId().equals(id)) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        if (request.getUsername() != null && !user.getUsername().equals(request.getUsername())
-                && userRepository.existsByUsername(request.getUsername())) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+
+        if (request.getUsername() != null && !user.getUsername().equals(request.getUsername())) {
+            var existingUser = userRepository.findByUsername(request.getUsername());
+            if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                throw new AppException(ErrorCode.USER_EXISTED);
+            }
         }
-        if (request.getEmail() != null && !user.getEmail().equals(request.getEmail())
-                && userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
+
+        if (request.getEmail() != null && !user.getEmail().equals(request.getEmail())) {
+            var existingUser = userRepository.findByEmail(request.getEmail());
+            if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                throw new AppException(ErrorCode.EMAIL_EXISTED);
+            }
         }
+
         userMapper.updateUserFromUpdateRequest(request, user);
         user = userRepository.save(user);
         return userMapper.toUserResponse(user);
