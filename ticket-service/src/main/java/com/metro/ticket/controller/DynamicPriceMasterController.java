@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/dynamicPriceMasters")
+@RequestMapping("/dynamic-price-masters")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DynamicPriceMasterController extends AbstractController<DynamicPriceMaster,
         DynamicPriceMasterRequest,
