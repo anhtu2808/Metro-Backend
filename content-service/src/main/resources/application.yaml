@@ -30,3 +30,22 @@ spring:
   springdoc:
     swagger-ui:
       enabled: true
+
+
+aws:
+  s3:
+    region: ap-southeast-1
+    buckets:
+      user-avatar: ${USER_AVT_BUCKET}
+      station-image: ${STATION_BUCKET}
+      content-image: ${CONTENT_BUCKET}
+    credentials:
+      user-avatar:
+        access-key: ${USER_AVT_ACCESS_KEY}
+        secret-key: ${USER_AVT_SECRET_KEY}
+      station-image:
+        access-key: ${STATION_ACCESS_KEY}
+        secret-key: ${STATION_SECRET_KEY}
+      content-image:
+        access-key: ${CONTENT_ACCESS_KEY}
+        secret-key: ${CONTENT_SECRET_KEY}
