@@ -91,4 +91,11 @@ public class LineSegmentService extends AbstractService<
         super.delete(id);
     }
 
+    public java.util.List<LineSegmentResponse> findByLine(Long lineId) {
+        var segments = ((LineSegmentRepository) repository).findByLine_IdOrderByOrder(lineId);
+        return segments.stream()
+                .map(lineSegmentMapper::toResponse)
+                .toList();
+    }
+
 }

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DynamicPriceMasterRepository extends JpaRepository<DynamicPriceMaster, Long> {
-
+    java.util.Optional<DynamicPriceMaster> findByLineId(Long lineId);
 }
