@@ -21,6 +21,9 @@ public enum ErrorCode {
     START_STATION_NOT_FOUND(1012, "Start station does not exist", HttpStatus.NOT_FOUND),
     FINAL_STATION_NOT_FOUND(1013, "Final station does not exist", HttpStatus.NOT_FOUND),
     END_STATION_NOT_FOUND(1014, "End station does not exist", HttpStatus.NOT_FOUND),
+    LINE_NOT_FOUND(1015, "Line not found", HttpStatus.NOT_FOUND),
+    INVALID_LINE_ID(1016, "Invalid line ID", HttpStatus.BAD_REQUEST),
+    INVALID_START_STATION_ID(1017, "Invalid start station ID", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

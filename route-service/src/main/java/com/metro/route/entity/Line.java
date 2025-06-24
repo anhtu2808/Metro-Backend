@@ -37,5 +37,4 @@ public class Line extends AbstractAuditingEntity {
     @ManyToOne
     @JoinColumn(name = "final_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_final_station_id"))
     Station finalStation;
-
 }
