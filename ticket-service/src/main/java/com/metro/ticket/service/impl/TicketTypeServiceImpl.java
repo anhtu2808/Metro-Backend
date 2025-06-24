@@ -13,5 +13,5 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Builder
 @Slf4j
-public class TicketTypeServiceImpl implements TicketTypeService {
+public class TicketTypeServiceImpl  {
 }
