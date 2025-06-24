@@ -19,6 +19,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
         "/dynamic-prices/**", "dynamic-prices/**",
+        "/ticket-types/**",
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",
