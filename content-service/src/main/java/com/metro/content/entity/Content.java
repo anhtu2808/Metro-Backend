@@ -39,6 +39,8 @@ public class Content extends AbstractAuditingEntity {
     ContentStatus status;
     @Column(name = "publish_at")
     LocalDateTime publishAt;
+    @Column(name = "image_url")
+    String imageUrl;
     @Column(name = "user_id")
     Long userId;
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)

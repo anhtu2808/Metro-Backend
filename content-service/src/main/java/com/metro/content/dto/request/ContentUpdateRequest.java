@@ -25,6 +25,7 @@ public class ContentUpdateRequest {
     @NotBlank(message = "Summary is required")
     String summary;
     ContentStatus status;
+    String imageUrl;
     LocalDateTime publishAt;
     List<String> imageUrls;
 }
