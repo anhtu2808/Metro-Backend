@@ -24,7 +24,7 @@ public enum ErrorCode {
     LINE_NOT_FOUND(1015, "Line not found", HttpStatus.NOT_FOUND),
     INVALID_LINE_ID(1016, "Invalid line ID", HttpStatus.BAD_REQUEST),
     INVALID_START_STATION_ID(1017, "Invalid start station ID", HttpStatus.BAD_REQUEST),
-    ;
+    DYNAMIC_PRICE_NOT_FOUND(1018, "Dynamic price not found", HttpStatus.NOT_FOUND);
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

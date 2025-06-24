@@ -5,11 +5,10 @@ import com.metro.common_lib.mapper.EntityMappers;
 import com.metro.route.dto.request.station.StationCreationRequest;
 import com.metro.route.dto.request.station.StationUpdateRequest;
 import com.metro.route.dto.response.StationResponse;
+import com.metro.route.dto.response.lineSegment.EndStationResponse;
+import com.metro.route.dto.response.lineSegment.StartStationResponse;
 import com.metro.route.entity.Station;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 @Mapper(
         config = DefaultConfigMapper.class
@@ -17,4 +16,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StationMapper extends EntityMappers<Station, StationCreationRequest, StationUpdateRequest, StationResponse> {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(Station request,@MappingTarget Station entity);
+
+    @Mapping(target = "order", ignore = true)
+    StartStationResponse toStartStationResponse(Station station);
+
+    @Mapping(target = "order", ignore = true)
+    EndStationResponse toEndStationResponse(Station station);
 }

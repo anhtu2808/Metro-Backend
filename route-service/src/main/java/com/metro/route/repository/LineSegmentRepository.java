@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public interface LineSegmentRepository extends JpaRepository<LineSegment, Long> {
+    List<LineSegment> findByLine_IdOrderByOrder(Long lineId);
     Page<LineSegment> findByLineId(Long lineCode, Pageable pageable);
     List<LineSegment> findByLineIdAndOrderBetween(Long lineId, Integer startOrder, Integer endOrder);
     LineSegment findByLineIdAndStartStationId(Long lineId,Long startStationId);

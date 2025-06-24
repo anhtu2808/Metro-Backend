@@ -13,8 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Schema(description = "Trả về thông tin các ga bắt đầu của một tuyến đường")
 public class StartStationResponse {
 
-    @Schema(description = "ID của tuyến đường (metro line)", example = "1")
-    Long lineId;
 
     @Schema(description = "ID của ga bắt đầu", example = "2")
     Long id;
@@ -39,7 +37,4 @@ public class StartStationResponse {
 
     @Schema(description = "Thứ tự của ga bắt đầu trong tuyến đường", example = "1")
     Integer order;
-
-    @Schema(description = "Thời gian di chuyển từ ga bắt đầu đến ga kế tiếp (phút)", example = "7")
-    String duration;
 }

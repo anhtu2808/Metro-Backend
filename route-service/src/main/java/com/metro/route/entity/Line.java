@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -37,4 +39,7 @@ public class Line extends AbstractAuditingEntity {
     @ManyToOne
     @JoinColumn(name = "final_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_final_station_id"))
     Station finalStation;
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    List<LineSegment> lineSegments;
 }

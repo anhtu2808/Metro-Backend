@@ -90,6 +90,17 @@ public class DynamicPriceServiceImpl implements DynamicPriceService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<DynamicPriceResponse> getDynamicPricesByLineIdAndStartStationId(Long lineId, Long startStationId) {
+        List<DynamicPrice> prices = dynamicPriceRepository.findByLineIdAndStartStationId(lineId, startStationId);
+        if (prices.isEmpty()) {
+            throw new AppException(ErrorCode.DYNAMIC_PRICE_NOT_FOUND);
+        }
+        return prices.stream()
+                .map(dynamicPriceMapper::toDynamicPriceResponse)
+                .collect(Collectors.toList());
+    }
+
     private void calculateDynamicPriceRule(Long lineId, DynamicPriceMaster rule, List<DynamicPrice> prices, float distanceSum, long startStationId, long endStationId) {
         BigDecimal distance = BigDecimal.valueOf(distanceSum);
         BigDecimal price = rule.getStartPrice();

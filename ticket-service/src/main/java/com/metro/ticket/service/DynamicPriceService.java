@@ -11,4 +11,6 @@ public interface DynamicPriceService {
     List<DynamicPriceResponse> calculateDynamicPriceById(Long lineId);
 
     List<DynamicPriceResponse> getDynamicPricesByLineId(Long lineId);
+
+    List<DynamicPriceResponse> getDynamicPricesByLineIdAndStartStationId(Long lineId, Long startStationId);
 }

@@ -49,7 +49,7 @@ public interface LineSegmentMapper extends EntityMappers<LineSegment, LineSegmen
     @Mapping(target = "endStationId", source = "endStation.id")
     LineSegmentResponse toResponse(LineSegment entity);
 
-    @Mapping(target = "lineId", source = "line.id")
+//    @Mapping(target = "lineId", source = "line.id")
     @Mapping(target = "id", source = "startStation.id")
     @Mapping(target = "name", source = "startStation.name")
     @Mapping(target = "stationCode", source = "startStation.stationCode")
@@ -58,7 +58,7 @@ public interface LineSegmentMapper extends EntityMappers<LineSegment, LineSegmen
     @Mapping(target = "latitude", source = "startStation.latitude")
     @Mapping(target = "longitude", source = "startStation.longitude")
     @Mapping(target = "order", source = "order")
-    @Mapping(target = "duration", expression = "java(entity.getDuration() != null ? String.valueOf(entity.getDuration()) : null)")
+//    @Mapping(target = "duration", expression = "java(entity.getDuration() != null ? String.valueOf(entity.getDuration()) : null)")
     StartStationResponse toStartStationResponse(LineSegment entity);
 
     @Mapping(target = "lineId", source = "line.id")

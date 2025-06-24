@@ -20,4 +20,6 @@ public interface DynamicPriceRepository extends JpaRepository<DynamicPrice, Long
     @Transactional
     @Query("DELETE FROM DynamicPrice  WHERE lineId = :lineId")
     void deleteByLineId(@Param("lineId") Long lineId);
+
+    List<DynamicPrice> findByLineIdAndStartStationId(Long lineId, Long startStationId);
 }
