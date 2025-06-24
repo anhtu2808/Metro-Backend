@@ -14,11 +14,15 @@ import com.metro.route.repository.LineRepository;
 import com.metro.route.repository.StationRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class LineService extends AbstractService<
         Line,
         LineCreationRequest,
@@ -27,12 +31,14 @@ public class LineService extends AbstractService<
         > {
     StationRepository stationRepository;
     LineMapper lineMapper;
+    private final LineRepository lineRepository;
 
 
-    public LineService(LineRepository repository, LineMapper entityMapper, StationRepository stationRepository, LineMapper lineMapper) {
+    public LineService(LineRepository repository, LineMapper entityMapper, StationRepository stationRepository, LineMapper lineMapper, LineRepository lineRepository) {
         super(repository, entityMapper);
         this.stationRepository = stationRepository;
         this.lineMapper = lineMapper;
+        this.lineRepository = lineRepository;
     }
 
     @Override
@@ -85,5 +91,23 @@ public class LineService extends AbstractService<
     @PreAuthorize("hasAuthority('line:delete')")
     public void delete(Long id) {
         super.delete(id);
+    }
+
+    public PageResponse<LineResponse> findByLineCode(String lineCode, int page, int size, String arrange) {
+        if (arrange == null || arrange.isEmpty()) {
+            arrange = "id";
+        }
+        var pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, arrange));
+        var pageData = lineRepository.findByLineCode(lineCode, pageable);
+        var lineList = pageData.getContent().stream()
+                .map(lineMapper::toResponse)
+                .toList();
+        log.info("Fetched {} lines for line code: {}", lineList.size(), lineCode);
+        return PageResponse.<LineResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(lineList)
+                .build();
     }
 }

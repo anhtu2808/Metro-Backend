@@ -23,10 +23,20 @@ public class DynamicPriceController {
                 .result(dynamicPriceService.calculateDynamicPriceById(lineId))
                 .build();
     }
+
     @GetMapping("/{lineId}")
     ApiResponse<List<DynamicPriceResponse>> getDynamicPricesByLineId(@PathVariable("lineId") Long lineId) {
         return ApiResponse.<List<DynamicPriceResponse>>builder()
                 .result(dynamicPriceService.getDynamicPricesByLineId(lineId))
+                .build();
+    }
+
+    @GetMapping()
+    ApiResponse<List<DynamicPriceResponse>> getDynamicPricesByLineIdAndStartStationId(
+            @RequestParam("lineId") Long lineId,
+            @RequestParam("startStationId") Long startStationId) {
+        return ApiResponse.<List<DynamicPriceResponse>>builder()
+                .result(dynamicPriceService.getDynamicPricesByLineIdAndStartStationId(lineId, startStationId))
                 .build();
     }
 }

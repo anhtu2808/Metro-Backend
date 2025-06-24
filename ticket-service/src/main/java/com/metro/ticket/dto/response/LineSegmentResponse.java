@@ -14,7 +14,6 @@ public class LineSegmentResponse {
     Integer duration;     // in minutes
     Float distance;       // in kilometers
     String lineName;
-    Long lineId;
     Long startStationId; // Thêm trường này
     Long endStationId;
 }
