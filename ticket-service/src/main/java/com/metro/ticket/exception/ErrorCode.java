@@ -16,7 +16,10 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     DYNAMIC_PRICE_MASTER_NOT_FOUND(2001, "Dynamic price rule not found", HttpStatus.NOT_FOUND),
     LINE_SEGMENT_NOT_FOUND(2002, "Line segments not found", HttpStatus.NOT_FOUND),
-    DYNAMIC_PRICE_NOT_FOUND(2002, "Dynamic price not found", HttpStatus.NOT_FOUND );
+    DYNAMIC_PRICE_NOT_FOUND(2002, "Dynamic price not found", HttpStatus.NOT_FOUND ),
+    INVALID_REQUEST(3001, "Invalid request", HttpStatus.BAD_REQUEST),
+    INVALID_TICKET_PRICE(3002, "Ticket price must be greater than zero", HttpStatus.BAD_REQUEST),
+    INVALID_TICKET_NAME(3003, "Ticket name cannot be empty", HttpStatus.BAD_REQUEST),;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
