@@ -3,8 +3,10 @@ package com.metro.user.service.impl;
 import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.entity.Permission;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,7 +115,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
+        Authentication authentication = context.getAuthentication();
+        if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+            var expiresAt = jwtAuth.getToken().getExpiresAt();
+            if (expiresAt != null && expiresAt.isBefore(java.time.Instant.now())) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+        }
+        String username = authentication.getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Set<String> permissions = user.getRole().getPermissions().stream().map(Permission::getName).collect(Collectors.toSet());
         UserResponse userResponse = userMapper.toUserResponse(user);
