@@ -27,6 +27,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,14 +74,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (request.getUsername() != null && !user.getUsername().equals(request.getUsername())) {
+        if (request.getUsername() != null && !Objects.equals(user.getUsername(), request.getUsername())) {
             var existingUser = userRepository.findByUsername(request.getUsername());
             if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
                 throw new AppException(ErrorCode.USER_EXISTED);
             }
         }
 
-        if (request.getEmail() != null && !user.getEmail().equals(request.getEmail())) {
+        if (request.getEmail() != null && !Objects.equals(user.getEmail(), request.getEmail())) {
             var existingUser = userRepository.findByEmail(request.getEmail());
             if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
                 throw new AppException(ErrorCode.EMAIL_EXISTED);
