@@ -14,6 +14,10 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
+    USER_NOT_FOUND(1008, "User ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
+    TICKET_TYPE_NOT_FOUND(1009, "Ticket type ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
+    START_STATION_NOT_FOUND(1010, "Start station ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
+    END_STATION_NOT_FOUND(1011, "End station ID is required for creating a ticket order.", HttpStatus.NOT_FOUND)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
