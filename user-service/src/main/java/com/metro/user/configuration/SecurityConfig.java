@@ -1,6 +1,5 @@
 package com.metro.user.configuration;
 
-import com.metro.user.service.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,20 +13,31 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.metro.user.service.OAuth2LoginSuccessHandler;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/users/register", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/health-check","/permissions/**","/roles/**",
-           "/student-verifications/**", "/oauth2/**", "/login/**", "/oauth2/authorization/**","/auth/oauth/google","/auth/oauth2/info"
-
+        "/users/register",
+        "/auth/login",
+        "/auth/introspect",
+        "/auth/logout",
+        "/auth/refresh",
+        "/health-check",
+        "/permissions/**",
+        "/roles/**",
+        "/student-verifications/**",
+        "/oauth2/**",
+        "/login/**",
+        "/oauth2/authorization/**",
+        "/auth/oauth/google",
+        "/auth/oauth2/info"
     };
     private static final String[] PUBLIC_GET_ENDPOINTS = {
-            "/bus-routes",
-            "stations",
-            "/lines",
+        "/bus-routes", "stations", "/lines",
     };
     private final String[] SWAGGER_ENDPOINTS = {
         "/swagger-ui/**",
@@ -55,16 +65,14 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**")
+                .permitAll()
                 .requestMatchers(SWAGGER_ENDPOINTS)
                 .permitAll() // Allow Swagger endpoints
                 .anyRequest()
                 .authenticated());
 
-        httpSecurity.oauth2Login(oauth2Login ->
-                oauth2Login
-                        .successHandler(oAuth2LoginSuccessHandler)
-        );
+        httpSecurity.oauth2Login(oauth2Login -> oauth2Login.successHandler(oAuth2LoginSuccessHandler));
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
@@ -90,5 +98,4 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
-
 }

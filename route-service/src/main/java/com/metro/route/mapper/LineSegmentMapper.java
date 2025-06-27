@@ -16,7 +16,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 @Mapper(
-        config = DefaultConfigMapper.class
+        config = DefaultConfigMapper.class,
+        uses = {StationMapper.class}
 )
 public interface LineSegmentMapper extends EntityMappers<LineSegment, LineSegmentCreationRequest, LineSegmentUpdateRequest, LineSegmentResponse> {
     @Mapping(target = "id", ignore = true)
@@ -44,9 +45,11 @@ public interface LineSegmentMapper extends EntityMappers<LineSegment, LineSegmen
                 ? null
                 : Line.builder().id(lineId).build();
     }
-    @Mapping(target = "lineId", source = "line.id")
+
     @Mapping(target = "startStationId", source = "startStation.id")
     @Mapping(target = "endStationId", source = "endStation.id")
+    @Mapping(target = "startStation", source = "startStation")
+    @Mapping(target = "endStation", source = "endStation")
     LineSegmentResponse toResponse(LineSegment entity);
 
 //    @Mapping(target = "lineId", source = "line.id")
