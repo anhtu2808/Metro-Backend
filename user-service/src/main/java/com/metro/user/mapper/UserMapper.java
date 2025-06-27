@@ -1,9 +1,9 @@
 package com.metro.user.mapper;
 
-import com.metro.user.dto.request.user.UserUpdateRequest;
 import org.mapstruct.*;
 
 import com.metro.user.dto.request.user.UserRequest;
+import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.entity.Role;
 import com.metro.user.entity.User;
@@ -35,5 +35,4 @@ public interface UserMapper {
     @Mapping(target = "username", source = "email")
     @Mapping(target = "isStudentVerified", constant = "false")
     User googleOAuthToUser(String email, String firstName, String lastName, String avatarUrl, Role role);
-
 }

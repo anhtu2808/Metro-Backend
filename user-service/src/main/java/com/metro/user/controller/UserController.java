@@ -1,10 +1,12 @@
 package com.metro.user.controller;
 
-import com.metro.user.dto.request.user.UserUpdateRequest;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.user.dto.request.user.UserRequest;
+import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.enums.RoleType;
 import com.metro.user.service.UserService;
@@ -12,8 +14,6 @@ import com.metro.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

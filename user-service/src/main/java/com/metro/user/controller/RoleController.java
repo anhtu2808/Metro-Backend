@@ -1,16 +1,18 @@
 package com.metro.user.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.user.dto.request.role.RoleRequest;
 import com.metro.user.dto.response.role.RoleResponse;
 import com.metro.user.service.RoleService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/roles")

@@ -1,14 +1,15 @@
 package com.metro.user.dto.request.studentVerification;
 
-import com.metro.user.enums.StudentVerificationStatus;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+
+import com.metro.user.enums.StudentVerificationStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -22,13 +23,11 @@ public class StudentVerificationUpdateRequest {
 
     @Pattern(
             regexp = "^(https?://.*\\.(?:png|jpg|jpeg|gif|pdf))?$",
-            message = "Image URL must be a valid URL ending with .png, .jpg, .jpeg, .gif, or .pdf"
-    )
+            message = "Image URL must be a valid URL ending with .png, .jpg, .jpeg, .gif, or .pdf")
     String imageUrl;
 
     @PastOrPresent(message = "Graduate date must be in the future or present")
     LocalDate graduateDate;
 
     StudentVerificationStatus status;
-
 }
