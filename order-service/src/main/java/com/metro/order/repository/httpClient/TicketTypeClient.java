@@ -6,8 +6,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "ticket-service", url = "${app.services.ticket.url}")
+@FeignClient(name = "ticket-service",contextId = "ticketType", url = "${app.services.ticket.url}")
 public interface TicketTypeClient {
-    @GetMapping("/internal/ticket-types")
-    ApiResponse<TicketTypeResponse> getTicketTypesById(@PathVariable("ticketTypeId") Long ticketTypeId);
+    @GetMapping("/ticket-types/{id}")
+    ApiResponse<TicketTypeResponse> getTicketTypesById(@PathVariable("id") Long id);
 }

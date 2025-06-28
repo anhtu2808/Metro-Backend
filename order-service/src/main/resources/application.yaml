@@ -36,3 +36,5 @@ app:
       url: http://localhost:8080
     ticket:
       url: http://localhost:8082
+    route:
+        url: http://localhost:8084

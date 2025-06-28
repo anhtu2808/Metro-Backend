@@ -17,7 +17,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(1008, "User ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
     TICKET_TYPE_NOT_FOUND(1009, "Ticket type ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
     START_STATION_NOT_FOUND(1010, "Start station ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
-    END_STATION_NOT_FOUND(1011, "End station ID is required for creating a ticket order.", HttpStatus.NOT_FOUND)
+    END_STATION_NOT_FOUND(1011, "End station ID is required for creating a ticket order.", HttpStatus.NOT_FOUND),
+    DYNAMIC_PRICE_NOT_FOUND(1012, "Dynamic price not found for the given line and stations.", HttpStatus.NOT_FOUND),
+    INVALID_STATION_COMBINATION(1019, "Invalid station combination for the ticket order.", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -13,4 +13,6 @@ public interface DynamicPriceService {
     List<DynamicPriceResponse> getDynamicPricesByLineId(Long lineId);
 
     List<DynamicPriceResponse> getDynamicPricesByLineIdAndStartStationId(Long lineId, Long startStationId);
+    DynamicPriceResponse getPriceByStartAndEnd(Long lineId, Long startStationId, Long endStationId);
+
 }

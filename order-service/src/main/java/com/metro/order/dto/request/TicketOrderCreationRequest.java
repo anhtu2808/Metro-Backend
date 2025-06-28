@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Schema(description = "Yêu cầu tạo mới một đơn hàng vé (Ticket Order) trong hệ thống metro")
 public class TicketOrderCreationRequest {
 
-    @NotNull(message = "User ID is required")
+//    @NotNull(message = "User ID is required")
     @Positive(message = "User ID must be positive")
     @Schema(description = "ID của người dùng đặt vé", example = "1")
     Long userId;

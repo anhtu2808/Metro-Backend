@@ -118,4 +118,12 @@ public class DynamicPriceServiceImpl implements DynamicPriceService {
                 .dynamicPriceMaster(rule)
                 .build());
     }
+
+    @Override
+    public DynamicPriceResponse getPriceByStartAndEnd(Long lineId, Long startStationId, Long endStationId) {
+        DynamicPrice price = dynamicPriceRepository
+                .findByLineIdAndStartStationIdAndEndStationId(lineId, startStationId, endStationId)
+                .orElseThrow(() -> new AppException(ErrorCode.DYNAMIC_PRICE_NOT_FOUND));
+        return dynamicPriceMapper.toDynamicPriceResponse(price);
+    }
 }
