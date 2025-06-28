@@ -40,3 +40,10 @@ payment:
     version: ${VERSION}
     command: ${COMMAND}
     orderType: ${ORDER_TYPE}
+
+app:
+  services:
+    ticket_order:
+      url: http://localhost:8086
+    user:
+      url: http://localhost:8080

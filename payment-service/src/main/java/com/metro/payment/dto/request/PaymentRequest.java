@@ -14,8 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentRequest {
-    Long id;
+    Long ticketOrderId;
     PaymentMethodEnum paymentMethod;
-    BigDecimal amount;
-    Long orderTicketId;
+    String bankCode;
 }

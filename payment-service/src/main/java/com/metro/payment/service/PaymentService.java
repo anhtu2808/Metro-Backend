@@ -6,15 +6,17 @@ import com.metro.payment.dto.response.VNPayResponse;
 import com.metro.payment.entity.Transaction;
 import com.metro.payment.enums.PaymentMethodEnum;
 import com.metro.payment.enums.PaymentStatusEnum;
+import com.metro.payment.exception.AppException;
+import com.metro.payment.exception.ErrorCode;
 import com.metro.payment.repository.TransactionRepository;
+import com.metro.payment.repository.httpClient.TicketOrderClient;
+import com.metro.payment.repository.httpClient.UserClient;
 import com.metro.payment.utils.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,25 +27,47 @@ import java.util.Map;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentService {
-    private final VNPAYConfig vnPayConfig;
+    final VNPAYConfig vnPayConfig;
     TransactionRepository transactionRepository;
+    final TicketOrderClient ticketOrderClient;
+    UserClient userClient;
 
     private Long getCurrentUserId() {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return Long.valueOf(jwt.getClaimAsString("userId")); // hoặc getSubject() nếu userId nằm ở sub
+        try {
+            return userClient.getMyInfo().getResult().getId();
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy userId từ UserClient", e);
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
     }
 
 
-    public VNPayResponse createVnPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
-        String bankCode = request.getParameter("bankCode");
-        String ticketOrderId = request.getParameter("ticketOrderId");
+    public VNPayResponse createVnPayPayment(Long ticketOrderId, String bankCode, HttpServletRequest request) {
+        Long userId = getCurrentUserId();
+
+        var ticketOrder = ticketOrderClient.getTicketOrderById(ticketOrderId).getResult();
+        if (ticketOrder == null || ticketOrder.getPrice() == null) {
+            throw new AppException(ErrorCode.TICKET_ORDER_NOT_EXISTED);
+        }
+
+        BigDecimal amount = ticketOrder.getPrice();
         String transactionCode = VNPayUtil.getRandomNumber(10);
+        long vnpAmount = amount.multiply(BigDecimal.valueOf(100)).longValue();
+
+        // 🟢 Lưu giao dịch trước với PENDING
+        transactionRepository.save(Transaction.builder()
+                .transactionCode(transactionCode)
+                .amount(amount)
+                .status(PaymentStatusEnum.PENDING)
+                .paymentMethod(PaymentMethodEnum.VNPAY)
+                .orderTicketId(ticketOrderId)
+                .userId(userId)
+                .build());
 
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
-        vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
+        vnpParamsMap.put("vnp_Amount", String.valueOf(vnpAmount));
         vnpParamsMap.put("vnp_TxnRef", transactionCode);
-        vnpParamsMap.put("vnp_OrderInfo", ticketOrderId);
+        vnpParamsMap.put("vnp_OrderInfo", ticketOrderId.toString()); // chỉ cần ticketOrderId
         vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
 
         if (bankCode != null && !bankCode.isEmpty()) {
@@ -67,23 +91,32 @@ public class PaymentService {
     public VNPayResponse handleCallback(HttpServletRequest request) {
         String responseCode = request.getParameter("vnp_ResponseCode");
         String transactionCode = request.getParameter("vnp_TxnRef");
-        String amountStr = request.getParameter("vnp_Amount");
-        String orderIdStr = request.getParameter("vnp_OrderInfo");
-        Long userId = getCurrentUserId();
 
-        if ("00".equals(responseCode) && !transactionRepository.existsByTransactionCode(transactionCode)) {
-            Transaction transaction = Transaction.builder()
-                    .transactionCode(transactionCode)
-                    .amount(new BigDecimal(Long.parseLong(amountStr) / 100))
-                    .status(PaymentStatusEnum.SUCCESS)
-                    .paymentMethod(PaymentMethodEnum.VNPAY)
-                    .orderTicketId(Long.parseLong(orderIdStr))
-                    .userId(userId) // TODO: sau này lấy từ token hoặc request
-                    .build();
-            transactionRepository.save(transaction);
-            return new VNPayResponse("00", "Thanh toán thành công", null);
-        } else {
-            return new VNPayResponse("99", "Thanh toán thất bại hoặc đã tồn tại", null);
+        try {
+            var transactionOpt = transactionRepository.findByTransactionCode(transactionCode);
+            if (transactionOpt.isEmpty()) {
+                return new VNPayResponse("99", "Giao dịch không tồn tại", null);
+            }
+
+            Transaction transaction = transactionOpt.get();
+
+            if (transaction.getStatus() == PaymentStatusEnum.SUCCESS) {
+                return new VNPayResponse("00", "Giao dịch đã được xử lý", null);
+            }
+
+            if ("00".equals(responseCode)) {
+                transaction.setStatus(PaymentStatusEnum.SUCCESS);
+                transactionRepository.save(transaction);
+
+                return new VNPayResponse("00", "Thanh toán thành công", null);
+            } else {
+                transaction.setStatus(PaymentStatusEnum.FAILED);
+                transactionRepository.save(transaction);
+                return new VNPayResponse("99", "Thanh toán thất bại", null);
+            }
+        } catch (Exception e) {
+            log.error("Lỗi xử lý callback VNPay", e);
+            return new VNPayResponse("99", "Lỗi xử lý callback", null);
         }
     }
 }

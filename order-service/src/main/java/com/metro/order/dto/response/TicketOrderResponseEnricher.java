@@ -20,7 +20,7 @@ public class TicketOrderResponseEnricher {
 
     public boolean isAdmin() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                .contains(new SimpleGrantedAuthority("ROLE_MANAGER"));
     }
     public void enrich(TicketOrder entity, TicketOrderResponse response) {
         try {

@@ -31,7 +31,8 @@ public class SecurityConfig {
             "/configuration/ui",
             "/configuration/security",
             "/swagger-ui/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/payment/vnpay-callback"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
