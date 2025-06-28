@@ -101,4 +101,10 @@ public class LineSegmentService extends AbstractService<
                 .map(lineSegmentMapper::toResponse)
                 .toList();
     }
+
+    public Long findLineIdByStartAndEndStations(Long startStationId, Long endStationId) {
+        return ((LineSegmentRepository) repository)
+                .findLineIdByStartAndEndStations(startStationId, endStationId)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_STATION_COMBINATION));
+    }
 }

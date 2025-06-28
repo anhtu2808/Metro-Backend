@@ -1,5 +1,6 @@
 package com.metro.route.dto.response.lineSegment;
 
+import com.metro.route.dto.response.StationResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,18 +25,11 @@ public class LineSegmentResponse {
     @Schema(description = "Khoảng cách của đoạn tuyến đường (miles)", example = "0.715")
     Float distance;
 
-    @Schema(description = "Tên của tuyến đường (metro line)", example = "Tuyến 1")
-    String lineName;
-
-    @Schema(description = "ID của tuyến đường", example = "1")
-    Long lineId;
-
     @Schema(description = "ID của ga bắt đầu", example = "2")
     Long startStationId;
 
-    @Schema(description = "Tên của ga bắt đầu", example = "Nhà hát TP")
-    String startStationName;
-
     @Schema(description = "ID của ga đến", example = "1")
     Long endStationId;
+    StationResponse startStation;
+    StationResponse endStation;
 }

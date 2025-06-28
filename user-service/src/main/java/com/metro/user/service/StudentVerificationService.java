@@ -1,7 +1,11 @@
 package com.metro.user.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.metro.common_lib.dto.response.PageResponse;
-import com.metro.common_lib.mapper.EntityMappers;
 import com.metro.common_lib.service.AbstractService;
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.studentVerification.StudentVerificationCreationRequest;
@@ -13,27 +17,28 @@ import com.metro.user.enums.ErrorCode;
 import com.metro.user.mapper.StudentVerificationMapper;
 import com.metro.user.repository.StudentVerificationRepository;
 import com.metro.user.repository.UserRepository;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import com.metro.user.enums.StudentVerificationStatus;
 
-import java.time.LocalDate;
 @Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class StudentVerificationService extends AbstractService<
-        StudentVerification,
-        StudentVerificationCreationRequest,
-        StudentVerificationUpdateRequest,
-        StudentVerificationResponse> {
+public class StudentVerificationService
+        extends AbstractService<
+                StudentVerification,
+                StudentVerificationCreationRequest,
+                StudentVerificationUpdateRequest,
+                StudentVerificationResponse> {
     UserRepository userRepository;
     StudentVerificationMapper studentVerificationMapper;
-    protected StudentVerificationService(StudentVerificationRepository repository, StudentVerificationMapper entityMapper, UserRepository userRepository, StudentVerificationMapper studentVerificationMapper) {
+
+    protected StudentVerificationService(
+            StudentVerificationRepository repository,
+            StudentVerificationMapper entityMapper,
+            UserRepository userRepository,
+            StudentVerificationMapper studentVerificationMapper) {
         super(repository, entityMapper);
         this.userRepository = userRepository;
         this.studentVerificationMapper = studentVerificationMapper;
@@ -42,7 +47,8 @@ public class StudentVerificationService extends AbstractService<
     @Override
     protected void beforeCreate(StudentVerification entity) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findById(Long.parseLong(authentication.getName()))
+        User user = userRepository
+                .findById(Long.parseLong(authentication.getName()))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         entity.setUser(user);
     }
@@ -50,13 +56,15 @@ public class StudentVerificationService extends AbstractService<
     @Override
     protected void beforeUpdate(StudentVerification oldEntity, StudentVerification newEntity) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findById(Long.parseLong(authentication.getName()))
+        User user = userRepository
+                .findById(Long.parseLong(authentication.getName()))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         oldEntity.setUser(user);
-        studentVerificationMapper.updateToEntity(oldEntity,newEntity);
+        studentVerificationMapper.updateToEntity(oldEntity, newEntity);
     }
+
     @Override
-//    @PreAuthorize("hasAuthority('student_verification:create')")
+    //    @PreAuthorize("hasAuthority('student_verification:create')")
     public StudentVerificationResponse create(StudentVerificationCreationRequest request) {
         return super.create(request);
     }

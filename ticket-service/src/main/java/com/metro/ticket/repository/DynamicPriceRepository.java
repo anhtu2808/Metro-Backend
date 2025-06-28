@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DynamicPriceRepository extends JpaRepository<DynamicPrice, Long> {
@@ -22,4 +23,7 @@ public interface DynamicPriceRepository extends JpaRepository<DynamicPrice, Long
     void deleteByLineId(@Param("lineId") Long lineId);
 
     List<DynamicPrice> findByLineIdAndStartStationId(Long lineId, Long startStationId);
+
+    Optional<DynamicPrice> findByLineIdAndStartStationIdAndEndStationId(Long lineId, Long startStationId, Long endStationId);
+
 }

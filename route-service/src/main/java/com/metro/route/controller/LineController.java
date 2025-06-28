@@ -98,4 +98,18 @@ public class LineController extends AbstractController<
                 .code(200)
                 .build();
     }
+
+    @PostMapping("/{lineId}/stations")
+    public ApiResponse<LineResponse> addStationsToLine(
+            @PathVariable Long lineId,
+            @RequestBody List<Long> stationIds
+    ) {
+        LineResponse response = lineService.addStationToLine(lineId, stationIds);
+        return ApiResponse.<LineResponse>builder()
+                .result(response)
+                .message("Stations added to line successfully")
+                .code(200)
+                .build();
+    }
+
 }

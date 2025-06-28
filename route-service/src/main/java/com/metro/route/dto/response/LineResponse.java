@@ -1,8 +1,11 @@
 package com.metro.route.dto.response;
 
+import com.metro.route.dto.response.lineSegment.LineSegmentResponse;
 import com.metro.route.entity.Station;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -16,4 +19,5 @@ public class LineResponse {
     String description;
     Station startStation;
     Station finalStation;
+    List<LineSegmentResponse> lineSegments;
 }
