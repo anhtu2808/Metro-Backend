@@ -2,6 +2,7 @@ package com.metro.user.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.metro.common_lib.dto.response.ApiResponse;
@@ -25,6 +26,13 @@ public class UserController {
     @PostMapping("/register")
     public ApiResponse<UserResponse> register(@RequestBody UserRequest request) {
         var result = userService.createUser(request, RoleType.CUSTOMER);
+        return ApiResponse.<UserResponse>builder().result(result).build();
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('user:create')")
+    public ApiResponse<UserResponse> createUser(@RequestBody UserRequest request) {
+        var result = userService.createUser(request, request.getRoleType());
         return ApiResponse.<UserResponse>builder().result(result).build();
     }
 

@@ -1,5 +1,6 @@
 package com.metro.user.dto.request.user;
 
+import com.metro.user.enums.RoleType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -31,4 +32,5 @@ public class UserRequest {
 
     String address;
     String avatarUrl;
+    RoleType roleType = RoleType.CUSTOMER; // Default role type is CUSTOMER
 }
