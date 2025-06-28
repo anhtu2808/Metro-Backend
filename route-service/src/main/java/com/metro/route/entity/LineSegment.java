@@ -26,10 +26,12 @@ public class LineSegment extends AbstractAuditingEntity {
     Integer order;
 
     @Column(name = "duration", nullable = false)
-    Integer duration;
+    @Builder.Default
+    Integer duration = 0;
 
     @Column(name = "distance", nullable = false)
-    Float distance;
+    @Builder.Default
+    Float distance = 0.0f;
 
     @ManyToOne
     @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "line_segment_line_id_foreign"))
