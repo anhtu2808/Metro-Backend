@@ -39,4 +39,16 @@ public class DynamicPriceController {
                 .result(dynamicPriceService.getDynamicPricesByLineIdAndStartStationId(lineId, startStationId))
                 .build();
     }
+
+    @GetMapping("/single")
+    public ApiResponse<DynamicPriceResponse> getDynamicPriceByStartAndEnd(
+            @RequestParam("lineId") Long lineId,
+            @RequestParam("startStationId") Long startStationId,
+            @RequestParam("endStationId") Long endStationId
+    ) {
+        return ApiResponse.<DynamicPriceResponse>builder()
+                .result(dynamicPriceService.getPriceByStartAndEnd(lineId, startStationId, endStationId))
+                .build();
+    }
+
 }
