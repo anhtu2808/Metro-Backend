@@ -1,8 +1,8 @@
-package com.metro.order.repository.httpClient;
+package com.metro.payment.repository.httpClient;
 
 import com.metro.common_lib.dto.response.ApiResponse;
-import com.metro.order.configuration.FeignClientConfig;
-import com.metro.order.dto.response.UserResponse;
+import com.metro.payment.configuration.FeignClientConfig;
+import com.metro.payment.dto.response.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

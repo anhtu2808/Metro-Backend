@@ -30,3 +30,20 @@ spring:
   springdoc:
     swagger-ui:
       enabled: true
+
+payment:
+  vnPay:
+    url: ${PAY_URL}
+    tmnCode: ${TMN_CODE}
+    secretKey: ${SECRET_KEY}
+    returnUrl: ${RETURN_URL}
+    version: ${VERSION}
+    command: ${COMMAND}
+    orderType: ${ORDER_TYPE}
+
+app:
+  services:
+    ticket_order:
+      url: http://localhost:8086
+    user:
+      url: http://localhost:8080

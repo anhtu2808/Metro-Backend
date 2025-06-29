@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "ticket-service",contextId = "dynamicPrice", url = "${app.services.ticket.url}")
+@FeignClient(name = "ticket-service",contextId = "dynamicPrice", url = "${TICKET_SERVICE_HOST:http://localhost:8082}")
 public interface DynamicPriceClient {
     @GetMapping("/dynamic-prices/single")
     ApiResponse<DynamicPriceResponse> getPriceByStartAndEnd(

@@ -136,4 +136,13 @@ public class TicketOrderService extends AbstractService<
         responseEnricher.enrich(saved, response);
         return response;
     }
+
+    @Override
+    public TicketOrderResponse findById(Long id) {
+        TicketOrder entity = repository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
+        TicketOrderResponse response = entityMapper.toResponse(entity);
+        responseEnricher.enrich(entity, response);
+        return response;
+    }
 }

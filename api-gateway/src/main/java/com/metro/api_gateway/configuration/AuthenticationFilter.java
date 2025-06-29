@@ -53,7 +53,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 "/stations/**",
                 "/bus-routes/**",
                 "/line-segments",
-                "/ticket-types/**"
+                "/ticket-types/**",
+                "/payment/vnpay-callback"
         ));
         put(HttpMethod.POST, List.of(
                 // TODO: thêm các endpoint public cho method POST nếu có
