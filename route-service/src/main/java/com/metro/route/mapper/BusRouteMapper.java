@@ -30,6 +30,7 @@ public interface BusRouteMapper extends EntityMappers<BusRoute, BusRouteCreation
                 ? null
                 : Station.builder().id(stationId).build();
     }
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "station", source = "stationId")
     BusRoute updateToEntity(BusRouteUpdateRequest request);
 }
