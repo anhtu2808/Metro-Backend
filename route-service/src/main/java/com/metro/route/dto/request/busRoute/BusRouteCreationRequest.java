@@ -35,7 +35,6 @@ public class BusRouteCreationRequest {
 
     @NotBlank(message = "Bus station name is required")
     @Size(min = 3, max = 100, message = "Bus station name must be between 3 and 100 characters")
-    @Pattern(regexp = "^[A-Za-z0-9 ,-]+$", message = "Bus station name must contain only letters, numbers, spaces, commas, or hyphens")
     @Schema(description = "Tên ga xe buýt liên quan", example = "Ga Bến Thành")
     String busStationName;
 
@@ -46,13 +45,11 @@ public class BusRouteCreationRequest {
 
     @NotBlank(message = "Start location is required")
     @Size(min = 3, max = 100, message = "Start location must be between 3 and 100 characters")
-    @Pattern(regexp = "^[A-Za-z0-9 ,-]+$", message = "Start location must contain only letters, numbers, spaces, commas, or hyphens")
     @Schema(description = "Địa điểm bắt đầu của tuyến xe buýt", example = "Bến Thành")
     String startLocation;
 
     @NotBlank(message = "End location is required")
     @Size(min = 3, max = 100, message = "End location must be between 3 and 100 characters")
-    @Pattern(regexp = "^[A-Za-z0-9 ,-]+$", message = "End location must contain only letters, numbers, spaces, commas, or hyphens")
     @Schema(description = "Địa điểm kết thúc của tuyến xe buýt", example = "Suối Tiên")
     String endLocation;
 }
