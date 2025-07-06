@@ -47,3 +47,6 @@ app:
       url: http://localhost:8086
     user:
       url: http://localhost:8080
+
+internal:
+  secret: ${INTERNAL_SECRET}

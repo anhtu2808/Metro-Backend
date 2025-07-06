@@ -25,7 +25,7 @@ public class TicketOrder extends AbstractAuditingEntity{
     Long id;
     String ticketCode;
     Long userId;
-    Long transactionId;
+//    Long transactionId;
     Long ticketTypeId;
     @Enumerated(EnumType.STRING)
     TicketStatus status;

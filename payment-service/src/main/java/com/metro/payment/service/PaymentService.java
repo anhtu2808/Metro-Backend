@@ -6,6 +6,7 @@ import com.metro.payment.dto.response.VNPayResponse;
 import com.metro.payment.entity.Transaction;
 import com.metro.payment.enums.PaymentMethodEnum;
 import com.metro.payment.enums.PaymentStatusEnum;
+import com.metro.payment.enums.TicketStatus;
 import com.metro.payment.exception.AppException;
 import com.metro.payment.exception.ErrorCode;
 import com.metro.payment.repository.TransactionRepository;
@@ -17,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,12 +27,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentService {
     final VNPAYConfig vnPayConfig;
-    TransactionRepository transactionRepository;
+    final TransactionRepository transactionRepository;
     final TicketOrderClient ticketOrderClient;
-    UserClient userClient;
+    final UserClient userClient;
+    @Value("${internal.secret}")
+    String internalSecret;
 
     private Long getCurrentUserId() {
         try {
@@ -107,6 +111,12 @@ public class PaymentService {
             if ("00".equals(responseCode)) {
                 transaction.setStatus(PaymentStatusEnum.SUCCESS);
                 transactionRepository.save(transaction);
+                try {
+                    log.info("🔥 Sending secret: {}", internalSecret);
+                    ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.ACTIVE,internalSecret);
+                } catch (Exception ex) {
+                    log.error("Không thể cập nhật trạng thái TicketOrder sau khi thanh toán", ex);
+                }
 
                 return new VNPayResponse("00", "Thanh toán thành công", null);
             } else {

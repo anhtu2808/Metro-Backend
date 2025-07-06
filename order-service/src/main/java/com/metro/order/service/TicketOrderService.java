@@ -145,4 +145,13 @@ public class TicketOrderService extends AbstractService<
         responseEnricher.enrich(entity, response);
         return response;
     }
+
+    public void updateTicketOrderStatus(Long ticketOrderId, TicketStatus status) {
+        var ticketOrder = ticketOrderRepository.findById(ticketOrderId)
+                .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
+
+        ticketOrder.setStatus(status);
+        ticketOrderRepository.save(ticketOrder);
+    }
+
 }

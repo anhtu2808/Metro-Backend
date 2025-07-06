@@ -29,9 +29,9 @@ public class TicketOrderCreationRequest {
     @Schema(description = "ID của loại vé được chọn", example = "1")
     Long ticketTypeId;
 
-    @Positive(message = "Transaction ID must be positive")
-    @Schema(description = "ID của giao dịch thanh toán, nếu có", example = "1")
-    Long transactionId;
+//    @Positive(message = "Transaction ID must be positive")
+//    @Schema(description = "ID của giao dịch thanh toán, nếu có", example = "1")
+//    Long transactionId;
 
     @NotNull(message = "Start Station ID is required")
     @Positive(message = "Start Station ID must be positive")
@@ -43,7 +43,7 @@ public class TicketOrderCreationRequest {
     @Schema(description = "ID của ga kết thúc", example = "2")
     Long endStationId;
 
-    @NotNull(message = "Status is required")
+//    @NotNull(message = "Status is required")
     @Schema(description = "Trạng thái của vé", example = "UNPAID")
     TicketStatus status;
 
