@@ -20,9 +20,9 @@ public class TicketOrderUpdateRequest {
     @Schema(description = "Trạng thái mới của vé", example = "ACTIVE")
     TicketStatus status;
 
-    @Positive(message = "Transaction ID must be positive")
-    @Schema(description = "ID của giao dịch thanh toán, nếu cập nhật", example = "1")
-    Long transactionId;
+//    @Positive(message = "Transaction ID must be positive")
+//    @Schema(description = "ID của giao dịch thanh toán, nếu cập nhật", example = "1")
+//    Long transactionId;
 
     @FutureOrPresent(message = "Valid until date must be in the present or future")
     @Schema(description = "Thời gian vé có hiệu lực đến, nếu cập nhật", example = "2025-07-25T23:59:59")

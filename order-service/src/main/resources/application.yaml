@@ -38,3 +38,7 @@ app:
       url: http://localhost:8082
     route:
         url: http://localhost:8084
+
+
+internal:
+  secret: ${INTERNAL_SECRET}

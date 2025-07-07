@@ -36,14 +36,20 @@ public class SecurityConfig {
     };
 
     private final CustomJwtDecoder customJwtDecoder;
+    private final InternalSecretAuthFilter internalSecretAuthFilter;
 
-    public SecurityConfig(CustomJwtDecoder customJwtDecoder) {
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder, InternalSecretAuthFilter internalSecretAuthFilter) {
         this.customJwtDecoder = customJwtDecoder;
+        this.internalSecretAuthFilter = internalSecretAuthFilter;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.addFilterBefore(
+                internalSecretAuthFilter,
+                org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter.class // 🔥 Add before Bearer Token filter
+        );
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
                 .permitAll()
                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll() // Allow Swagger endpoints
