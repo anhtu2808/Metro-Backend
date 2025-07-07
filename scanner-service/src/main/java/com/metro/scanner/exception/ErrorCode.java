@@ -14,6 +14,10 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
+    SIGNER_KEY_NOT_FOUND(500, "Signer key not setup", HttpStatus.INTERNAL_SERVER_ERROR),
+    EXPIRED_TOKEN(401, "QR has expired please refresh", HttpStatus.BAD_REQUEST),
+    TICKET_ORDER_ID_NOT_FOUND(400, "Ticket order ID not found in QR", HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(400, "Invalid QR code", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
