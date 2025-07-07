@@ -8,6 +8,40 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  cloud:
+    stream:
+      bindings:
+        sendWelcomeEmail-out-0:
+          destination: metro
+          content-type: application/json
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
+          configuration:
+            auto.create.topics.enable: true
+            num.partitions: 1
+            default.replication.factor: 1
+        bindings:
+          sendWelcomeEmail-out-0:
+            producer:
+              configuration:
+                acks: all
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                value.serializer: org.springframework.kafka.support.serializer.JsonSerializer
+                spring.json.add.type.headers: true
+                spring.json.type.mapping: NotificationEvent:com.metro.event.dto.NotificationEvent
+                request.timeout.ms: 10000
+                delivery.timeout.ms: 30000
+                retries: 3
+    kafka:
+      properties:
+        spring.json.type.mapping: NotificationEvent:com.metro.event.dto.NotificationEvent
+        spring.json.add.type.headers: true
+        spring.json.trusted.packages: com.metro.event.dto
+      bootstrap.servers: localhost:9092
+    function:
+      definition: sendWelcomeEmail
   jpa:
     hibernate:
       ddl-auto: update
@@ -44,10 +78,3 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-
-
-
-
-
-
-
