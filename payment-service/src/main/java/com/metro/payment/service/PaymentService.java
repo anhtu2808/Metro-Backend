@@ -113,7 +113,7 @@ public class PaymentService {
                 transactionRepository.save(transaction);
                 try {
                     log.info("🔥 Sending secret: {}", internalSecret);
-                    ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.ACTIVE,internalSecret);
+                    ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.INACTIVE,internalSecret);
                 } catch (Exception ex) {
                     log.error("Không thể cập nhật trạng thái TicketOrder sau khi thanh toán", ex);
                 }
