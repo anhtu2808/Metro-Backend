@@ -22,7 +22,6 @@ public class TicketTypeUpdateRequest {
     String description;
 
     @Positive(message = "Validity days must be positive")
-    @Max(value = 365, message = "Validity days must not exceed 365 days")
     @Schema(description = "Số ngày hiệu lực mới của vé, nếu có", example = "30")
     Integer validityDays;
 
