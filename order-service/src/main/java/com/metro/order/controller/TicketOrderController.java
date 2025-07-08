@@ -1,7 +1,11 @@
 package com.metro.order.controller;
+
 import com.metro.common_lib.controller.AbstractController;
+import com.metro.common_lib.dto.response.ApiResponse;
+import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.service.AbstractService;
 import com.metro.order.dto.request.TicketOrderCreationRequest;
+import com.metro.order.dto.request.TicketOrderFilterRequest;
 import com.metro.order.dto.request.TicketOrderUpdateRequest;
 import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.entity.TicketOrder;
@@ -12,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +38,7 @@ public class TicketOrderController extends AbstractController<
         TicketOrderResponse> {
 
     String internalSecret;
+
     public TicketOrderController(final TicketOrderService service, @Value("${internal.secret}") String internalSecret) {
         super(service);
         this.internalSecret = internalSecret;
@@ -51,4 +57,14 @@ public class TicketOrderController extends AbstractController<
         ((TicketOrderService) service).updateTicketOrderStatus(id, status);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/filter")
+    public ApiResponse<PageResponse<TicketOrderResponse>> findAllWithFilter(@ModelAttribute TicketOrderFilterRequest filterRequest) {
+        return ApiResponse.<PageResponse<TicketOrderResponse>>builder()
+                .result(((TicketOrderService) service).getAllTicketOrders(filterRequest))
+                .message("Ticket orders retrieved successfully")
+                .code(HttpStatus.OK.value())
+                .build();
+    }
+
 }
