@@ -6,6 +6,8 @@ import com.metro.ticket.dto.request.DynamicPriceMasterRequest;
 import com.metro.ticket.dto.request.DynamicPriceMasterUpdateRequest;
 import com.metro.ticket.dto.response.DynamicPriceMasterResponse;
 import com.metro.ticket.entity.DynamicPriceMaster;
+import com.metro.ticket.exception.AppException;
+import com.metro.ticket.exception.ErrorCode;
 import com.metro.ticket.mapper.DynamicPriceMasterMapper;
 import com.metro.ticket.repository.DynamicPriceMasterRepository;
 import lombok.AccessLevel;
@@ -20,13 +22,14 @@ import java.util.Set;
 public class DynamicPriceMasterService extends AbstractService<DynamicPriceMaster,
         DynamicPriceMasterRequest, DynamicPriceMasterUpdateRequest, DynamicPriceMasterResponse> {
     DynamicPriceMasterMapper dynamicPriceMasterMapper;
-
+    DynamicPriceMasterRepository dynamicPriceMasterRepository;
 
     public DynamicPriceMasterService(DynamicPriceMasterRepository repository,
             DynamicPriceMasterMapper dynamicPriceMasterMapper
     ) {
         super(repository, dynamicPriceMasterMapper);
         this.dynamicPriceMasterMapper = dynamicPriceMasterMapper;
+        this.dynamicPriceMasterRepository = repository;
     }
 
     @Override
@@ -42,6 +45,9 @@ public class DynamicPriceMasterService extends AbstractService<DynamicPriceMaste
     @Override
     @PreAuthorize("hasAuthority('dynamicPriceMaster:create')")
     public DynamicPriceMasterResponse create(DynamicPriceMasterRequest request) {
+        if (dynamicPriceMasterRepository.existsByLineId(request.getLineId())) {
+            throw new AppException(ErrorCode.DYNAMIC_PRICE_MASTER_EXISTS);
+        }
         return super.create(request);
     }
 

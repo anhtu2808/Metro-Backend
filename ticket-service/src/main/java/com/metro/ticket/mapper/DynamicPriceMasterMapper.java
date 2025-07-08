@@ -30,4 +30,8 @@ public interface DynamicPriceMasterMapper extends EntityMappers<DynamicPriceMast
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "dynamicPrices", ignore = true)
     void updateEntity(@MappingTarget DynamicPriceMaster oldEntity, DynamicPriceMaster newEntity);
+
+    @Mapping(target = "id", source = "id")
+    DynamicPriceMasterResponse toResponse(DynamicPriceMaster entity);
+
 }
