@@ -14,6 +14,7 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
+    DYNAMIC_PRICE_MASTER_EXISTS(2001, "Dynamic price master already exists for this line", HttpStatus.BAD_REQUEST),
     DYNAMIC_PRICE_MASTER_NOT_FOUND(2001, "Dynamic price rule not found", HttpStatus.NOT_FOUND),
     LINE_SEGMENT_NOT_FOUND(2002, "Line segments not found", HttpStatus.NOT_FOUND),
     DYNAMIC_PRICE_NOT_FOUND(2002, "Dynamic price not found", HttpStatus.NOT_FOUND ),
