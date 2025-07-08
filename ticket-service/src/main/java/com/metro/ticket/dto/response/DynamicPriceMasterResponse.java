@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DynamicPriceMasterResponse {
+    Long id;
     Long lineId;
     String startPrice;
     String pricePerKm;
