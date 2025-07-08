@@ -54,6 +54,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 "/bus-routes/**",
                 "/line-segments",
                 "/ticket-types/**",
+                "/dynamic-prices/**",
+                "/dynamic-price-master/**",
                 "/payment/vnpay-callback"
         ));
         put(HttpMethod.POST, List.of(
