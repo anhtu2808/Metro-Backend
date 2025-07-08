@@ -24,7 +24,7 @@ public class TicketOrderResponseEnricher {
     }
     public void enrich(TicketOrder entity, TicketOrderResponse response) {
         try {
-            if (isAdmin()) {
+            if (hasPermission("ticket_order:viewall")) {
                 response.setUser(userClient.getUser(entity.getUserId()).getResult());
             } else {
                 response.setUser(userClient.getMyInfo().getResult());
@@ -38,5 +38,10 @@ public class TicketOrderResponseEnricher {
         } catch (Exception e) {
             log.warn("Failed to enrich TicketOrderResponse: {}", e.getMessage());
         }
+    }
+    private boolean hasPermission(String permission) {
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals(permission));
     }
 }

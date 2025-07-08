@@ -4,5 +4,6 @@ public enum TicketStatus {
     UNPAID,
     ACTIVE,
     INACTIVE,
+    USING,
     EXPIRED
 }

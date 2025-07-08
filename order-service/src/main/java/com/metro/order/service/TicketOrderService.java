@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -163,6 +164,55 @@ public class TicketOrderService extends AbstractService<
         ticketOrderRepository.save(ticketOrder);
     }
 
+    public PageResponse<TicketOrderResponse> findOrdersByUserId(Long userId, int page, int size) {
+        Long actualUserId;
+        if (page <= 0) page = 1;
+        if (size <= 0) size = 10;
+        if (hasPermission("ticket_order:viewall")) {
+            actualUserId = userId;
+        } else {
+            if (!isCurrentUser(userId)) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+            actualUserId = userId;
+        }
+
+        var sort = Sort.by(Sort.Direction.DESC, "id");
+        var pageable = PageRequest.of(page - 1, size, sort);
+        var pageResult = ticketOrderRepository.findAllByUserId(actualUserId, pageable);
+
+        var responses = pageResult.getContent().stream().map(entity -> {
+            TicketOrderResponse response = entityMapper.toResponse(entity);
+            responseEnricher.enrich(entity, response);
+            return response;
+        }).toList();
+
+        return PageResponse.<TicketOrderResponse>builder()
+                .currentPage(page)
+                .totalPages(pageResult.getTotalPages())
+                .totalElements(pageResult.getTotalElements())
+                .pageSize(size)
+                .data(responses)
+                .build();
+    }
+
+    private boolean isCurrentUser(Long userId) {
+        try {
+            var myInfo = userClient.getMyInfo().getResult();
+            return myInfo != null && Objects.equals(myInfo.getId(), userId);
+        } catch (Exception e) {
+            log.error("Lỗi xác thực người dùng", e);
+            return false;
+        }
+    }
+
+    private boolean hasPermission(String permission) {
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(auth -> auth.getAuthority().equals(permission));
+    }
+
     public PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req) {
         List<Long> staticTypeIds = null;
         if (req.getIsStatic() != null) {
@@ -195,5 +245,3 @@ public class TicketOrderService extends AbstractService<
                 .currentPage(pageable.getPageNumber())
                 .build();
     }
-
-}

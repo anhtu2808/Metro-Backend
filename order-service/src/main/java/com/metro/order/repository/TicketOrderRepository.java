@@ -18,6 +18,6 @@ import java.util.List;
 @Repository
 public interface TicketOrderRepository extends JpaRepository<TicketOrder, Long> {
     long countByPurchaseDateBetween(LocalDateTime start, LocalDateTime end);
-
+    Page<TicketOrder> findAllByUserId(Long userId, Pageable pageable);
     Page<TicketOrder> findAll(Specification<TicketOrder> spec, Pageable pageable);
 }

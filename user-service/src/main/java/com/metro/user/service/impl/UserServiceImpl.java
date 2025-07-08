@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("hasAuthority('user:read')")
+    @PreAuthorize("hasAuthority('user:read') or hasAuthority('ticket_order:viewall')")
     @Override
     public UserResponse getUser(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
