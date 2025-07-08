@@ -20,7 +20,9 @@ public enum ErrorCode {
     DYNAMIC_PRICE_NOT_FOUND(2002, "Dynamic price not found", HttpStatus.NOT_FOUND ),
     INVALID_REQUEST(3001, "Invalid request", HttpStatus.BAD_REQUEST),
     INVALID_TICKET_PRICE(3002, "Ticket price must be greater than zero", HttpStatus.BAD_REQUEST),
-    INVALID_TICKET_NAME(3003, "Ticket name cannot be empty", HttpStatus.BAD_REQUEST),;
+    INVALID_TICKET_NAME(3003, "Ticket name cannot be empty", HttpStatus.BAD_REQUEST),
+    TICKET_NAME_ALREADY_EXISTS(3004, "Ticket name already exists", HttpStatus.BAD_REQUEST),
+    ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

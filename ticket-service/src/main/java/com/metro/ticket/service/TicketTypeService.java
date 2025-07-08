@@ -40,12 +40,14 @@ public class TicketTypeService extends AbstractService<
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ticketType:read')")
     public TicketTypeResponse findById(Long id) {
         log.info("Finding TicketType with ID: {}", id);
         return super.findById(id);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ticketType:read')")
     public PageResponse<TicketTypeResponse> findAll(int page, int size, String arrange) {
         log.info("Finding all TicketTypes with page: {}, size: {}, arrange: {}", page, size, arrange);
         return super.findAll(page, size, arrange);
@@ -72,6 +74,9 @@ public class TicketTypeService extends AbstractService<
         }
         if (entity.getName() == null || entity.getName().isEmpty()) {
             throw new AppException(ErrorCode.INVALID_TICKET_NAME);
+        }
+        if (((TicketTypeRepository) repository).existsByName(entity.getName())) {
+            throw new AppException(ErrorCode.TICKET_NAME_ALREADY_EXISTS);
         }
     }
     @Override
