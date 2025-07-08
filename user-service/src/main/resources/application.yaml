@@ -16,7 +16,7 @@ spring:
           content-type: application/json
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: kafka:9092
           auto-create-topics: true
           configuration:
             auto.create.topics.enable: true
@@ -39,7 +39,7 @@ spring:
         spring.json.type.mapping: NotificationEvent:com.metro.event.dto.NotificationEvent
         spring.json.add.type.headers: true
         spring.json.trusted.packages: com.metro.event.dto
-      bootstrap.servers: localhost:9092
+#      bootstrap.servers: kafka:9092
     function:
       definition: sendWelcomeEmail
   jpa:

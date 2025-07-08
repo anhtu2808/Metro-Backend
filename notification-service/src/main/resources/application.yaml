@@ -30,7 +30,7 @@ spring:
                     max-interval: 5000
                     multiplier: 2.0
         binder:
-          brokers: localhost:9092
+          brokers: kafka:9092
           auto-create-topics: true
   security:
     user:
