@@ -1,5 +1,6 @@
 package com.metro.order.service;
 
+import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.mapper.EntityMappers;
 import com.metro.common_lib.service.AbstractService;
 import com.metro.order.TicketOrderMapper;
@@ -17,10 +18,15 @@ import com.metro.order.repository.httpClient.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -153,5 +159,55 @@ public class TicketOrderService extends AbstractService<
         ticketOrder.setStatus(status);
         ticketOrderRepository.save(ticketOrder);
     }
+
+    public PageResponse<TicketOrderResponse> findOrdersByUserId(Long userId, int page, int size) {
+        Long actualUserId;
+        if (page <= 0) page = 1;
+        if (size <= 0) size = 10;
+        if (hasPermission("ticket_order:viewall")) {
+            actualUserId = userId;
+        } else {
+            if (!isCurrentUser(userId)) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+            actualUserId = userId;
+        }
+
+        var sort = Sort.by(Sort.Direction.DESC, "id");
+        var pageable = PageRequest.of(page - 1, size, sort);
+        var pageResult = ticketOrderRepository.findAllByUserId(actualUserId, pageable);
+
+        var responses = pageResult.getContent().stream().map(entity -> {
+            TicketOrderResponse response = entityMapper.toResponse(entity);
+            responseEnricher.enrich(entity, response);
+            return response;
+        }).toList();
+
+        return PageResponse.<TicketOrderResponse>builder()
+                .currentPage(page)
+                .totalPages(pageResult.getTotalPages())
+                .totalElements(pageResult.getTotalElements())
+                .pageSize(size)
+                .data(responses)
+                .build();
+    }
+
+    private boolean isCurrentUser(Long userId) {
+        try {
+            var myInfo = userClient.getMyInfo().getResult();
+            return myInfo != null && Objects.equals(myInfo.getId(), userId);
+        } catch (Exception e) {
+            log.error("Lỗi xác thực người dùng", e);
+            return false;
+        }
+    }
+
+    private boolean hasPermission(String permission) {
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(auth -> auth.getAuthority().equals(permission));
+    }
+
 
 }
