@@ -2,24 +2,27 @@ package com.metro.route.service;
 
 import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.service.AbstractService;
-import com.metro.route.dto.request.line.LineCreationRequest;
-import com.metro.route.dto.request.line.LineUpdateRequest;
 import com.metro.route.dto.request.lineSegment.LineSegmentCreationRequest;
 import com.metro.route.dto.request.lineSegment.LineSegmentUpdateRequest;
-import com.metro.route.dto.response.LineResponse;
-import com.metro.route.dto.response.LineSegmentResponse;
+import com.metro.route.dto.response.lineSegment.EndStationResponse;
+import com.metro.route.dto.response.lineSegment.LineSegmentResponse;
+import com.metro.route.dto.response.lineSegment.StartStationResponse;
+import com.metro.route.entity.Line;
 import com.metro.route.entity.LineSegment;
 import com.metro.route.entity.Station;
 import com.metro.route.exception.AppException;
 import com.metro.route.exception.ErrorCode;
 import com.metro.route.mapper.LineSegmentMapper;
+import com.metro.route.repository.LineRepository;
 import com.metro.route.repository.LineSegmentRepository;
 import com.metro.route.repository.StationRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LineSegmentService extends AbstractService<
@@ -30,7 +33,7 @@ public class LineSegmentService extends AbstractService<
     StationRepository stationRepository;
     LineSegmentMapper lineSegmentMapper;
 
-    public LineSegmentService(LineSegmentRepository repository,LineSegmentMapper entityMapper, StationRepository stationRepository, LineSegmentMapper lineSegmentMapper) {
+    public LineSegmentService(LineSegmentRepository repository, LineSegmentMapper entityMapper, StationRepository stationRepository, LineSegmentMapper lineSegmentMapper) {
         super(repository, entityMapper);
         this.stationRepository = stationRepository;
         this.lineSegmentMapper = lineSegmentMapper;
@@ -44,6 +47,7 @@ public class LineSegmentService extends AbstractService<
         Station endStation = stationRepository.findById(entity.getEndStation().getId()).
                 orElseThrow(() -> new AppException(ErrorCode.END_STATION_NOT_FOUND));
     }
+
     @Override
     protected void beforeUpdate(LineSegment oldEntity, LineSegment newEntity) {
         if (newEntity.getStartStation() != null && newEntity.getStartStation().getId() != null) {
@@ -60,6 +64,7 @@ public class LineSegmentService extends AbstractService<
         }
         lineSegmentMapper.updateEntity(oldEntity, newEntity);
     }
+
     @Override
     @PreAuthorize("hasAuthority('lineSegment:create')")
     public LineSegmentResponse create(LineSegmentCreationRequest request) {
@@ -73,7 +78,6 @@ public class LineSegmentService extends AbstractService<
     }
 
     @Override
-    @PreAuthorize("hasAuthority('lineSegment:read')")
     public PageResponse<LineSegmentResponse> findAll(int page, int size, String arrange) {
         return super.findAll(page, size, arrange);
     }
@@ -91,4 +95,16 @@ public class LineSegmentService extends AbstractService<
         super.delete(id);
     }
 
+    public List<LineSegmentResponse> getByLineId(Long lineId) {
+        var segments = ((LineSegmentRepository) repository).findByLine_IdOrderByOrder(lineId);
+        return segments.stream()
+                .map(lineSegmentMapper::toResponse)
+                .toList();
+    }
+
+    public Long findLineIdByStartAndEndStations(Long startStationId, Long endStationId) {
+        return ((LineSegmentRepository) repository)
+                .findLineIdByStartAndEndStations(startStationId, endStationId)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_STATION_COMBINATION));
+    }
 }

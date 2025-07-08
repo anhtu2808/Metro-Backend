@@ -5,18 +5,15 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.metro.user.enums.RoleType;
-import com.metro.user.mapper.UserMapper;
-import com.metro.user.service.RoleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.auth.AuthenticationRequest;
 import com.metro.user.dto.request.auth.IntrospectRequest;
@@ -29,6 +26,8 @@ import com.metro.user.entity.Permission;
 import com.metro.user.entity.Role;
 import com.metro.user.entity.User;
 import com.metro.user.enums.ErrorCode;
+import com.metro.user.enums.RoleType;
+import com.metro.user.mapper.UserMapper;
 import com.metro.user.repository.InvalidatedTokenRepository;
 import com.metro.user.repository.UserRepository;
 import com.metro.user.service.AuthenticationService;
@@ -37,7 +36,6 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -166,11 +164,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Date expiryTime = (isRefresh)
                 ? new Date(signedJWT
-                .getJWTClaimsSet()
-                .getIssueTime()
-                .toInstant()
-                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
-                .toEpochMilli())
+                        .getJWTClaimsSet()
+                        .getIssueTime()
+                        .toInstant()
+                        .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                        .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
@@ -207,17 +205,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public AuthenticationResponse generateAuthTokenForUser(User user) {
         String token = generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        return AuthenticationResponse.builder().token(token).build();
     }
 
     @Override
     public AuthenticationResponse authenticateWithGoogle(String idTokenString) {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance())
+                            GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance())
                     .setAudience(List.of("709789750534-gt40kns8437i96kl0olichbo0og1hv97.apps.googleusercontent.com"))
                     .build();
 
@@ -233,14 +228,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             String[] nameParts = name != null ? name.trim().split("\\s+") : new String[0];
             String firstName = nameParts.length > 0 ? nameParts[0] : "";
-            String lastName = nameParts.length > 1 ? String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length)) : "";
+            String lastName =
+                    nameParts.length > 1 ? String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length)) : "";
 
-            User user = userRepository.findByEmailWithRoleAndPermissions(email)
-                    .orElseGet(() -> {
-                        Role role = roleService.getRoleWithPermissions(RoleType.CUSTOMER);
-                        User newUser = userMapper.googleOAuthToUser(email, firstName, lastName, picture, role);
-                        return userRepository.save(newUser);
-                    });
+            User user = userRepository.findByEmailWithRoleAndPermissions(email).orElseGet(() -> {
+                Role role = roleService.getRoleWithPermissions(RoleType.CUSTOMER);
+                User newUser = userMapper.googleOAuthToUser(email, firstName, lastName, picture, role);
+                return userRepository.save(newUser);
+            });
 
             return generateAuthTokenForUser(user);
 
@@ -248,5 +243,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
     }
-
 }

@@ -1,5 +1,10 @@
 package com.metro.user.service.impl;
 
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.role.PermissionRequest;
 import com.metro.user.dto.response.role.PermissionResponse;
@@ -8,14 +13,11 @@ import com.metro.user.enums.ErrorCode;
 import com.metro.user.mapper.PermissionMapper;
 import com.metro.user.repository.PermissionRepository;
 import com.metro.user.service.PermissionService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,6 @@ import java.util.List;
 public class PermissionServiceImpl implements PermissionService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
-
 
     @PreAuthorize("hasRole('MANAGER')")
     @Override
@@ -38,27 +39,23 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionMapper.toPermissionResponse(permission);
     }
 
-
     @PreAuthorize("hasRole('MANAGER')")
     @Override
     public List<PermissionResponse> getAll() {
         var permissions = permissionRepository.findAll();
-        return permissions.stream()
-                .map(permissionMapper::toPermissionResponse).toList();
+        return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
     }
-
 
     @PreAuthorize("hasRole('MANAGER')")
     @Override
     public PermissionResponse update(Long id, PermissionRequest request) {
-        Permission existing = permissionRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
+        Permission existing =
+                permissionRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
         existing.setName(request.getName());
         existing.setDescription(request.getDescription());
         Permission updated = permissionRepository.save(existing);
         return permissionMapper.toPermissionResponse(updated);
     }
-
 
     @PreAuthorize("hasRole('MANAGER')")
     @Override
@@ -68,5 +65,4 @@ public class PermissionServiceImpl implements PermissionService {
         }
         permissionRepository.deleteById(id);
     }
-
 }

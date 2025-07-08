@@ -1,11 +1,13 @@
 package com.metro.user.dto.request.studentVerification;
 
-import com.metro.user.enums.StudentVerificationStatus;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.*;
+
+import com.metro.user.enums.StudentVerificationStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -20,8 +22,7 @@ public class StudentVerificationCreationRequest {
 
     @Pattern(
             regexp = "^(https?://.*\\.(?:png|jpg|jpeg|gif|pdf))?$",
-            message = "Image URL must be a valid URL ending with .png, .jpg, .jpeg, .gif, or .pdf"
-    )
+            message = "Image URL must be a valid URL ending with .png, .jpg, .jpeg, .gif, or .pdf")
     String imageUrl;
 
     @NotNull(message = "Graduate date is required")

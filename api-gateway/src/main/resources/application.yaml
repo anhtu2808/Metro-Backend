@@ -42,7 +42,8 @@ spring:
           uri: http://${PAYMENT_SERVICE_HOST:localhost}:8081
           predicates:
             - >-
-              Path=${app.api-prefix}/transactions/**
+              Path=${app.api-prefix}/transactions/**,
+              ${app.api-prefix}/payment/**
           filters:
             - StripPrefix=2
 
@@ -59,7 +60,8 @@ spring:
           predicates:
             - >-
               Path=${app.api-prefix}/ticket-types/**,
-              ${app.api-prefix}/dynamic-prices/**
+              ${app.api-prefix}/dynamic-prices/**,
+              ${app.api-prefix}/dynamic-price-masters/**,
           filters:
             - StripPrefix=2
 
@@ -111,7 +113,8 @@ spring:
           predicates:
             - >-
               Path=${app.api-prefix}/contents/**,
-              ${app.api-prefix}/content-images/**
+              ${app.api-prefix}/content-images/**,
+              ${app.api-prefix}/uploads/**
           filters:
             - StripPrefix=2
 

@@ -93,6 +93,5 @@ public abstract class AbstractService<E, C, U, R> implements IService<E, C, U, R
         log.info("Deleting entity with ID: {}", id);
         repository.deleteById(id);
         log.info("Successfully deleted entity with ID: {}", id);
-        //        return null;
     }
 }

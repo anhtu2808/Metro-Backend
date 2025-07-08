@@ -20,6 +20,6 @@ public class TicketTypeResponse {
     Boolean isStudent = false;
     @JsonProperty("isStatic")
     boolean isStatic = true;
-    BigDecimal price;;
+    BigDecimal price;
 
 }

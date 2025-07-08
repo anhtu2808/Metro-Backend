@@ -1,11 +1,11 @@
 package com.metro.user.service;
 
+import java.util.List;
+
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.enums.RoleType;
-
-import java.util.List;
 
 public interface UserService {
     UserResponse createUser(UserRequest request, RoleType role);

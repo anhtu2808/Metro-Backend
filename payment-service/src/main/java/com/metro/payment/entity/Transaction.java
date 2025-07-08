@@ -11,7 +11,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 
-
+@Data
 @Entity
 @Builder
 @AllArgsConstructor

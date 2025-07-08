@@ -27,6 +27,7 @@ public class ContentRequest {
     String summary;
     ContentStatus status;
     LocalDateTime publishAt;
+    String imageUrl;
     @NotNull(message = "UserId is required")
     Long userId;
     List<String> imageUrls;
