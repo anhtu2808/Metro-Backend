@@ -1,7 +1,9 @@
 package com.metro.scanner.service.impl;
 
+import com.metro.scanner.client.OrderServiceClient;
 import com.metro.scanner.dto.request.ScannerRequest;
 import com.metro.scanner.dto.response.ScannerResponse;
+import com.metro.scanner.dto.response.TicketOrderResponse;
 import com.metro.scanner.exception.AppException;
 import com.metro.scanner.exception.ErrorCode;
 import com.metro.scanner.service.ScannerService;
@@ -31,6 +33,8 @@ public class ScannerServiceImpl implements ScannerService {
     public ScannerResponse validateTicket(ScannerRequest request) {
         return null;
     }
+
+    private final OrderServiceClient orderServiceClient;
 
 
     @Value("${spring.jwt.signerKey}")
@@ -74,5 +78,11 @@ public class ScannerServiceImpl implements ScannerService {
         } catch (ParseException | JOSEException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
+    }
+
+    @Override
+    public TicketOrderResponse getTicketOrderByToken(String token) {
+        Long ticketOrderId = getTicketOrderIdFromToken(token);
+        return orderServiceClient.getTicketOrderById(ticketOrderId).getResult();
     }
 }
