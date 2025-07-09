@@ -26,7 +26,7 @@ public enum ErrorCode {
     EMAIL_EXISTED(1014, "Email already existed", HttpStatus.BAD_REQUEST),
     INVALID_OTP(1015, "Invalid OTP code", HttpStatus.BAD_REQUEST),
     OTP_EXPIRED(1016, "OTP code has expired", HttpStatus.BAD_REQUEST),
-    ;
+    NOTIFICATION_SEND_FAILED(1015, "Failed to send notification", HttpStatus.INTERNAL_SERVER_ERROR);
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

@@ -1,12 +1,15 @@
 package com.metro.order.service;
 
+import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.common_lib.mapper.EntityMappers;
 import com.metro.common_lib.service.AbstractService;
 import com.metro.order.TicketOrderMapper;
 import com.metro.order.dto.request.TicketOrderCreationRequest;
+import com.metro.order.dto.request.TicketOrderFilterRequest;
 import com.metro.order.dto.request.TicketOrderUpdateRequest;
 import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.dto.response.TicketOrderResponseEnricher;
+import com.metro.order.dto.response.TicketTypeResponse;
 import com.metro.order.dto.response.UserResponse;
 import com.metro.order.entity.TicketOrder;
 import com.metro.order.enums.TicketStatus;
@@ -14,13 +17,20 @@ import com.metro.order.exception.AppException;
 import com.metro.order.exception.ErrorCode;
 import com.metro.order.repository.TicketOrderRepository;
 import com.metro.order.repository.httpClient.*;
+import com.metro.order.specification.TicketOrderSpecification;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -39,7 +49,7 @@ public class TicketOrderService extends AbstractService<
     TicketOrderResponseEnricher responseEnricher;
 
     protected TicketOrderService(TicketOrderRepository ticketOrderRepository, TicketOrderMapper entityMapper,
-                                 UserClient userClient,TicketTypeClient ticketTypeClient,
+                                 UserClient userClient, TicketTypeClient ticketTypeClient,
                                  StationClient stationClient,
                                  DynamicPriceClient dynamicPriceClient, LineSegmentClient lineSegmentClient,
                                  TicketOrderResponseEnricher responseEnricher) {
@@ -109,7 +119,7 @@ public class TicketOrderService extends AbstractService<
         }
         LocalDateTime purchaseDate = entity.getPurchaseDate();
 
-        long dailyCount =ticketOrderRepository.countByPurchaseDateBetween(
+        long dailyCount = ticketOrderRepository.countByPurchaseDateBetween(
                 purchaseDate.toLocalDate().atStartOfDay(),
                 purchaseDate.toLocalDate().plusDays(1).atStartOfDay()
         );
@@ -127,7 +137,7 @@ public class TicketOrderService extends AbstractService<
     }
 
     @Override
-    public TicketOrderResponse create(TicketOrderCreationRequest request){
+    public TicketOrderResponse create(TicketOrderCreationRequest request) {
         TicketOrder entity = entityMapper.toEntity(request);
         beforeCreate(entity);
         TicketOrder saved = repository.save(entity);
@@ -154,4 +164,84 @@ public class TicketOrderService extends AbstractService<
         ticketOrderRepository.save(ticketOrder);
     }
 
-}
+    public PageResponse<TicketOrderResponse> findOrdersByUserId(Long userId, int page, int size) {
+        Long actualUserId;
+        if (page <= 0) page = 1;
+        if (size <= 0) size = 10;
+        if (hasPermission("ticket_order:viewall")) {
+            actualUserId = userId;
+        } else {
+            if (!isCurrentUser(userId)) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+            actualUserId = userId;
+        }
+
+        var sort = Sort.by(Sort.Direction.DESC, "id");
+        var pageable = PageRequest.of(page - 1, size, sort);
+        var pageResult = ticketOrderRepository.findAllByUserId(actualUserId, pageable);
+
+        var responses = pageResult.getContent().stream().map(entity -> {
+            TicketOrderResponse response = entityMapper.toResponse(entity);
+            responseEnricher.enrich(entity, response);
+            return response;
+        }).toList();
+
+        return PageResponse.<TicketOrderResponse>builder()
+                .currentPage(page)
+                .totalPages(pageResult.getTotalPages())
+                .totalElements(pageResult.getTotalElements())
+                .pageSize(size)
+                .data(responses)
+                .build();
+    }
+
+    private boolean isCurrentUser(Long userId) {
+        try {
+            var myInfo = userClient.getMyInfo().getResult();
+            return myInfo != null && Objects.equals(myInfo.getId(), userId);
+        } catch (Exception e) {
+            log.error("Lỗi xác thực người dùng", e);
+            return false;
+        }
+    }
+
+    private boolean hasPermission(String permission) {
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(auth -> auth.getAuthority().equals(permission));
+    }
+
+    public PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req) {
+        List<Long> staticTypeIds = null;
+        if (req.getIsStatic() != null) {
+            staticTypeIds = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData().stream()
+                    .filter(t -> t.isStatic() == req.getIsStatic())
+                    .map(TicketTypeResponse::getId)
+                    .toList();
+            if (staticTypeIds.isEmpty()) {
+                return PageResponse.<TicketOrderResponse>builder()
+                        .data(List.of())
+                        .totalElements(0)
+                        .totalPages(1)
+                        .pageSize(1)
+                        .data(List.of())
+                        .build();
+            }
+        }
+        var spec = TicketOrderSpecification.withFilter(req, staticTypeIds);
+        Pageable pageable = PageRequest.of(
+                req.getPage() - 1,
+                req.getSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+        Page<TicketOrder> orders = ticketOrderRepository.findAll(spec, pageable);
+        return PageResponse.<TicketOrderResponse>builder()
+                .data(orders.getContent().stream().map(entityMapper::toResponse).toList())
+                .totalElements(orders.getTotalElements())
+                .totalPages(orders.getTotalPages())
+                .pageSize(pageable.getPageSize())
+                .currentPage(pageable.getPageNumber())
+                .build();
+    }
