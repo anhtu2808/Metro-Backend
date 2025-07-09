@@ -18,9 +18,16 @@ import com.metro.order.exception.ErrorCode;
 import com.metro.order.repository.TicketOrderRepository;
 import com.metro.order.repository.httpClient.*;
 import com.metro.order.specification.TicketOrderSpecification;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +35,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -48,11 +58,14 @@ public class TicketOrderService extends AbstractService<
     TicketOrderRepository ticketOrderRepository;
     TicketOrderResponseEnricher responseEnricher;
 
+
+    private final String SIGNER_KEY;
+
     protected TicketOrderService(TicketOrderRepository ticketOrderRepository, TicketOrderMapper entityMapper,
                                  UserClient userClient, TicketTypeClient ticketTypeClient,
                                  StationClient stationClient,
                                  DynamicPriceClient dynamicPriceClient, LineSegmentClient lineSegmentClient,
-                                 TicketOrderResponseEnricher responseEnricher) {
+                                 TicketOrderResponseEnricher responseEnricher, @Value("${spring.jwt.signerKey}") String signerSecret) {
         super(ticketOrderRepository, entityMapper);
         this.userClient = userClient;
         this.ticketTypeClient = ticketTypeClient;
@@ -61,6 +74,7 @@ public class TicketOrderService extends AbstractService<
         this.lineSegmentClient = lineSegmentClient;
         this.ticketOrderRepository = ticketOrderRepository;
         this.responseEnricher = responseEnricher;
+        this.SIGNER_KEY = signerSecret;
     }
 
     @Override
@@ -158,8 +172,10 @@ public class TicketOrderService extends AbstractService<
     public TicketOrderResponse findById(Long id) {
         TicketOrder entity = repository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
+        String ticketToken = generateTicketToken(entity.getId());
         TicketOrderResponse response = entityMapper.toResponse(entity);
         responseEnricher.enrich(entity, response);
+        response.setTicketQRToken(ticketToken); // Add QR token to response
         return response;
     }
 
@@ -251,5 +267,46 @@ public class TicketOrderService extends AbstractService<
                 .pageSize(pageable.getPageSize())
                 .currentPage(pageable.getPageNumber())
                 .build();
+    }
+
+    /**
+     * Sinh JWT chứa ticketOrderId để nhúng vào QR
+     */
+    public String generateTicketToken(Long ticketOrderId) {
+
+        // 1. Lấy đơn vé
+        TicketOrder order = ticketOrderRepository.findById(ticketOrderId)
+                .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
+
+        // 2. Lấy secret
+        if (SIGNER_KEY == null || SIGNER_KEY.isBlank()) {
+            throw new AppException(ErrorCode.SIGNER_KEY_NOT_FOUND);
+        }
+
+        // 3. Tạo JWT claims
+        Instant now = Instant.now();
+        Instant exp = now.plusSeconds(60L);
+
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                .subject("ticket")                         // tuỳ ý
+                .claim("ticketOrderId", order.getId())
+                .claim("ticketCode", order.getTicketCode())
+                .claim("userId", order.getUserId())
+                .issueTime(Date.from(now))
+                .expirationTime(Date.from(exp))
+                .build();
+
+        try {
+            // 4. Ký HMAC-SHA256
+            JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+            SignedJWT signedJWT = new SignedJWT(header, claims);
+            signedJWT.sign(new MACSigner(SIGNER_KEY.getBytes(StandardCharsets.UTF_8)));
+
+            // 5. Trả chuỗi token
+            return signedJWT.serialize();
+
+        } catch (JOSEException e) {
+            throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }
