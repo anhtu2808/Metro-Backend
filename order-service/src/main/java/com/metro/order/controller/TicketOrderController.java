@@ -40,8 +40,9 @@ public class TicketOrderController extends AbstractController<
 
     String internalSecret;
     UserClient userClient;
+
     public TicketOrderController(final TicketOrderService service, @Value("${internal.secret}") String internalSecret
-    , UserClient userClient) {
+            , UserClient userClient) {
         super(service);
         this.internalSecret = internalSecret;
         this.userClient = userClient;
@@ -99,3 +100,4 @@ public class TicketOrderController extends AbstractController<
                 .code(HttpStatus.OK.value())
                 .build();
     }
+}
