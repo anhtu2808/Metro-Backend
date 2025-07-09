@@ -92,10 +92,22 @@ public class TicketOrderController extends AbstractController<
                 .build();
     }
 
-    @GetMapping("/filter")
+    @GetMapping("")
     public ApiResponse<PageResponse<TicketOrderResponse>> findAllWithFilter(@ModelAttribute TicketOrderFilterRequest filterRequest) {
         return ApiResponse.<PageResponse<TicketOrderResponse>>builder()
                 .result(((TicketOrderService) service).getAllTicketOrders(filterRequest))
+                .message("Ticket orders retrieved successfully")
+                .code(HttpStatus.OK.value())
+                .build();
+    }
+    @Override
+    @GetMapping("/all")
+    public ApiResponse<PageResponse<TicketOrderResponse>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort) {
+        return ApiResponse.<PageResponse<TicketOrderResponse>>builder()
+                .result(((TicketOrderService) service).findAll(page, size, sort))
                 .message("Ticket orders retrieved successfully")
                 .code(HttpStatus.OK.value())
                 .build();
