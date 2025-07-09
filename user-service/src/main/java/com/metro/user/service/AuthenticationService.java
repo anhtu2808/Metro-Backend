@@ -47,4 +47,8 @@ public interface AuthenticationService {
     AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException;
 
     AuthenticationResponse authenticateWithGoogle(String idToken);
+
+    void forgotPassword(String email);
+
+    void resetPassword(String email, String otpCode, String newPassword);
 }
