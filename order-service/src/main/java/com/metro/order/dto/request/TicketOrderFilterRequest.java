@@ -1,5 +1,6 @@
 package com.metro.order.dto.request;
 
+import com.metro.order.enums.TicketStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,4 +15,5 @@ public class TicketOrderFilterRequest {
     Long userId;
     Boolean isStatic;
     Boolean isStudent;
+    String status;
 }
