@@ -272,7 +272,7 @@ public class TicketOrderService extends AbstractService<
     /**
      * Sinh JWT chứa ticketOrderId để nhúng vào QR
      */
-    private String generateTicketToken(Long ticketOrderId) {
+    public String generateTicketToken(Long ticketOrderId) {
 
         // 1. Lấy đơn vé
         TicketOrder order = ticketOrderRepository.findById(ticketOrderId)
@@ -290,7 +290,8 @@ public class TicketOrderService extends AbstractService<
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject("ticket")                         // tuỳ ý
                 .claim("ticketOrderId", order.getId())
-                .claim("ticketCode", order.getTicketCode())// thêm gì cũng được
+                .claim("ticketCode", order.getTicketCode())
+                .claim("userId", order.getUserId())
                 .issueTime(Date.from(now))
                 .expirationTime(Date.from(exp))
                 .build();
