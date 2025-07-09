@@ -4,6 +4,7 @@ import com.metro.order.enums.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -43,6 +44,9 @@ public class TicketOrderResponse {
 
     @Schema(description = "Ngày giờ mua vé", example = "2025-06-25T09:00:00")
     LocalDateTime purchaseDate;
+
+    @Schema(description = "Token để generate ra QR code", example = "2025-06-25T10:00:00")
+    String ticketQRToken;
 
     @Schema(description = "Thời gian vé có hiệu lực đến", example = "2025-07-25T23:59:59")
     LocalDateTime validUntil;
