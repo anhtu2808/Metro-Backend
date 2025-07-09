@@ -82,23 +82,30 @@ public class TicketOrderService extends AbstractService<
             throw new AppException(ErrorCode.TICKET_TYPE_NOT_FOUND);
         }
 
-        try {
-            stationClient.getStationById(entity.getStartStationId()).getResult();
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.START_STATION_NOT_FOUND);
+        boolean isUnlimited = ticketType.isStatic() || ticketType.getIsStudent();
+
+        if (!isUnlimited) {
+            try {
+                stationClient.getStationById(entity.getStartStationId()).getResult();
+            } catch (Exception e) {
+                throw new AppException(ErrorCode.START_STATION_NOT_FOUND);
+            }
+
+            try {
+                stationClient.getStationById(entity.getEndStationId()).getResult();
+            } catch (Exception e) {
+                throw new AppException(ErrorCode.END_STATION_NOT_FOUND);
+            }
+
+            if (entity.getStartStationId().equals(entity.getEndStationId())) {
+                throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
+            }
+        } else {
+            entity.setStartStationId(null);
+            entity.setEndStationId(null);
         }
 
-        try {
-            stationClient.getStationById(entity.getEndStationId()).getResult();
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.END_STATION_NOT_FOUND);
-        }
-
-        if (entity.getStartStationId().equals(entity.getEndStationId())) {
-            throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
-        }
-
-        if (ticketType.isStatic()) {
+        if (isUnlimited) {
             entity.setPrice(ticketType.getPrice());
         } else {
             Long lineId = lineSegmentClient

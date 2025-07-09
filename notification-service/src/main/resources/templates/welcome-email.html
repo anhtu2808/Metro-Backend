@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Metro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        p { color: #34495e; font-size: 16px; line-height: 1.6; }
+        .button { display: inline-block; padding: 10px 20px; background-color: #3498db; color: #ffffff; text-decoration: none; border-radius: 5px; }
+        .footer { text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Chào mừng <span th:text="${userName}"></span>!</h1>
+    <p>Chúc mừng bạn đã đăng ký thành công tài khoản tại Metro.</p>
+    <p>Thông tin tài khoản của bạn:</p>
+    <ul>
+        <li><strong>Tên:</strong> <span th:text="${userName}"></span></li>
+        <li><strong>Email:</strong> <span th:text="${email}"></span></li>
+    </ul>
+    <p th:text="${customMessage + 'Hãy khám phá các dịch vụ của chúng tôi ngay hôm nay!'}"></p>
+    <a th:href="${link ?: 'https://yourdomain.com'}" class="button">Khám phá ngay</a>
+    <div class="footer">
+        <p>© 2025 Metro. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>
