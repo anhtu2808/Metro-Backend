@@ -2,7 +2,7 @@ package com.metro.scanner.configuration;
 
 
 import com.metro.scanner.configuration.CustomJwtDecoder;
-import com.metro.scanner    .configuration.JwtAuthenticationEntryPoint;
+import com.metro.scanner.configuration.JwtAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -44,7 +44,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll() // Allow Swagger endpoints
                 .anyRequest()

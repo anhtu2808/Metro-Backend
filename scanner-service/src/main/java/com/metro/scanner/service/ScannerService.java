@@ -2,6 +2,7 @@ package com.metro.scanner.service;
 
 import com.metro.scanner.dto.request.ScannerRequest;
 import com.metro.scanner.dto.response.ScannerResponse;
+import com.metro.scanner.dto.response.TicketOrderResponse;
 
 public interface ScannerService {
 
@@ -21,6 +22,8 @@ public interface ScannerService {
      * @return a response containing a message and validation status
      */
     Long getTicketOrderIdFromToken(String token);
+
+    TicketOrderResponse getTicketOrderByToken(String token);
 
 
 }
