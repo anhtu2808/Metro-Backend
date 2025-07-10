@@ -65,19 +65,31 @@ public class TicketOrderService extends AbstractService<
 
     @Override
     protected void beforeCreate(TicketOrder entity) {
-        if (entity.getUserId() == null) {
+
+    }
+
+
+    @Override
+    protected void beforeUpdate(TicketOrder oldEntity, TicketOrder newEntity) {
+
+    }
+
+    @Override
+    public TicketOrderResponse create(TicketOrderCreationRequest request) {
+//        TicketOrder entity = new TicketOrder();
+        if (request.getUserId() == null) {
             try {
                 var userInfo = userClient.getMyInfo().getResult();
                 if (userInfo == null || userInfo.getId() == null) {
                     throw new AppException(ErrorCode.UNAUTHENTICATED);
                 }
-                entity.setUserId(userInfo.getId());
+                request.setUserId(userInfo.getId());
             } catch (Exception e) {
                 log.error("Failed to get authenticated user info", e);
                 throw new AppException(ErrorCode.USER_NOT_FOUND);
             }
         }
-        var ticketType = ticketTypeClient.getTicketTypesById(entity.getTicketTypeId()).getResult();
+        var ticketType = ticketTypeClient.getTicketTypesById(request.getTicketTypeId()).getResult();
         if (ticketType == null) {
             throw new AppException(ErrorCode.TICKET_TYPE_NOT_FOUND);
         }
@@ -86,40 +98,36 @@ public class TicketOrderService extends AbstractService<
 
         if (!isUnlimited) {
             try {
-                stationClient.getStationById(entity.getStartStationId()).getResult();
+                stationClient.getStationById(request.getStartStationId()).getResult();
             } catch (Exception e) {
                 throw new AppException(ErrorCode.START_STATION_NOT_FOUND);
             }
 
             try {
-                stationClient.getStationById(entity.getEndStationId()).getResult();
+                stationClient.getStationById(request.getEndStationId()).getResult();
             } catch (Exception e) {
                 throw new AppException(ErrorCode.END_STATION_NOT_FOUND);
             }
 
-            if (entity.getStartStationId().equals(entity.getEndStationId())) {
+            if (request.getStartStationId().equals(request.getEndStationId())) {
                 throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
             }
         } else {
-            entity.setStartStationId(null);
-            entity.setEndStationId(null);
+            request.setStartStationId(null);
+            request.setEndStationId(null);
         }
-
+        TicketOrder entity = entityMapper.toEntity(request);
         if (isUnlimited) {
             entity.setPrice(ticketType.getPrice());
         } else {
-            Long lineId = lineSegmentClient
-                    .getLineIdByStartAndEnd(entity.getStartStationId(), entity.getEndStationId())
-                    .getResult();
 
             var dynamicPrice = dynamicPriceClient
-                    .getPriceByStartAndEnd(lineId, entity.getStartStationId(), entity.getEndStationId())
+                    .getPriceByStartAndEnd(request.getLineId(), request.getStartStationId(), request.getEndStationId())
                     .getResult();
-
             entity.setPrice(dynamicPrice.getPrice());
         }
 
-        entity.setStatus(entity.getStatus() != null ? entity.getStatus() : TicketStatus.UNPAID);
+        entity.setStatus(request.getStatus() != null ? request.getStatus() : TicketStatus.UNPAID);
         entity.setPurchaseDate(LocalDateTime.now());
         if (ticketType.getValidityDays() != null) {
             entity.setValidUntil(entity.getPurchaseDate().plusDays(ticketType.getValidityDays()));
@@ -135,20 +143,8 @@ public class TicketOrderService extends AbstractService<
         String sequence = String.format("%03d", dailyCount + 1); // 001, 002...
         String ticketCode = String.format("TCKT-%s-%s", datePart, sequence);
         entity.setTicketCode(ticketCode);
-    }
 
-
-    @Override
-    protected void beforeUpdate(TicketOrder oldEntity, TicketOrder newEntity) {
-
-    }
-
-    @Override
-    public TicketOrderResponse create(TicketOrderCreationRequest request) {
-        TicketOrder entity = entityMapper.toEntity(request);
-        beforeCreate(entity);
         TicketOrder saved = repository.save(entity);
-
         TicketOrderResponse response = entityMapper.toResponse(saved);
         responseEnricher.enrich(saved, response);
         return response;
