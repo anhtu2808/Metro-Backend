@@ -43,13 +43,14 @@ public class TicketOrderCreationRequest {
     @Schema(description = "ID của ga kết thúc", example = "2")
     Long endStationId;
 
+    @Positive(message = "Line ID must be positive")
+    @Schema(description = "ID của tuyến (line) áp dụng cho loại vé lượt", example = "1")
+    Long lineId;
+
 //    @NotNull(message = "Status is required")
     @Schema(description = "Trạng thái của vé", example = "UNPAID")
     TicketStatus status;
 
-    @FutureOrPresent(message = "Valid until date must be in the present or future")
-    @Schema(description = "Thời gian vé có hiệu lực đến", example = "2025-07-25T23:59:59")
-    LocalDateTime validUntil;
 
     // Custom validation to ensure start and end stations are different
     @AssertTrue(message = "Start station and end station must be different")
