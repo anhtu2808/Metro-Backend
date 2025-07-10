@@ -13,18 +13,15 @@ import java.util.List;
 import jakarta.persistence.criteria.Predicate;
 
 public class TicketOrderSpecification {
-    public static Specification<TicketOrder> withFilter(TicketOrderFilterRequest f, List<Long> staticTypeIds) {
+    public static Specification<TicketOrder> withFilter(TicketOrderFilterRequest f, List<Long> ticketTypeIds) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (f.getUserId() != null)
                 predicates.add(cb.equal(root.get("userId"), f.getUserId()));
 
-            if (f.getIsStudent() != null)
-                predicates.add(cb.equal(root.get("isStudent"), f.getIsStudent()));
-
-            if (staticTypeIds != null && !staticTypeIds.isEmpty())
-                predicates.add(root.get("ticketTypeId").in(staticTypeIds));
+            if (ticketTypeIds != null && !ticketTypeIds.isEmpty())
+                predicates.add(root.get("ticketTypeId").in(ticketTypeIds));
             if(f.getStatus() != null)
                 try {
                     TicketStatus status = TicketStatus.valueOf(f.getStatus().toUpperCase());
