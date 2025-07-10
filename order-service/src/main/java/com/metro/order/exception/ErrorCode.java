@@ -21,6 +21,9 @@ public enum ErrorCode {
     DYNAMIC_PRICE_NOT_FOUND(1012, "Dynamic price not found for the given line and stations.", HttpStatus.NOT_FOUND),
     INVALID_STATION_COMBINATION(1019, "Invalid station combination for the ticket order.", HttpStatus.BAD_REQUEST),
     TICKET_ORDER_NOT_FOUND(1020, "Ticket order not found", HttpStatus.NOT_FOUND),
+    SIGNER_KEY_NOT_FOUND(500, "Signer key not found in the environment variables", HttpStatus.INTERNAL_SERVER_ERROR),
+    INTERNAL_SERVER_ERROR(500, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_TICKET_STATUS(1021, "Invalid ticket status", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
