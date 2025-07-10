@@ -54,14 +54,16 @@ public class PaymentService {
             throw new AppException(ErrorCode.TICKET_ORDER_NOT_EXISTED);
         }
 
-        BigDecimal amount = ticketOrder.getPrice();
+        BigDecimal rawAmount = ticketOrder.getPrice();
+        BigDecimal amountInVND = rawAmount.multiply(BigDecimal.valueOf(1000));
+//        BigDecimal amount = ticketOrder.getPrice();
         String transactionCode = VNPayUtil.getRandomNumber(10);
-        long vnpAmount = amount.multiply(BigDecimal.valueOf(100)).longValue();
+        long vnpAmount = amountInVND.multiply(BigDecimal.valueOf(100)).longValue();
 
         // 🟢 Lưu giao dịch trước với PENDING
         transactionRepository.save(Transaction.builder()
                 .transactionCode(transactionCode)
-                .amount(amount)
+                .amount(amountInVND)
                 .status(PaymentStatusEnum.PENDING)
                 .paymentMethod(PaymentMethodEnum.VNPAY)
                 .orderTicketId(ticketOrderId)
