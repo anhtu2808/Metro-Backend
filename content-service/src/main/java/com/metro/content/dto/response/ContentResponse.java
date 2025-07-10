@@ -22,6 +22,7 @@ public class ContentResponse {
     String summary;
     ContentStatus status;
     LocalDateTime publishAt;
+    String imageUrl;
     Long userId;
     List<String> imageUrls;
 }

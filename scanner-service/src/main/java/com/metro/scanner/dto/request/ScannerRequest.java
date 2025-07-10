@@ -9,5 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScannerRequest {
-    Long id;
+    Long lineId;
+    Long stationId;
+    String ticketOrderToken;
 }

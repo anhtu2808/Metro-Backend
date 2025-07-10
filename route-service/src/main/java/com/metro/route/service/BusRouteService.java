@@ -20,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -91,5 +94,29 @@ public class BusRouteService extends AbstractService<
 //    @PreAuthorize("hasAuthority('busroute:delete')")
     public void delete(Long id) {
         super.delete(id);
+    }
+
+    public PageResponse<BusRouteResponse> findByStationId(Long stationId, int page, int size, String arrange) {
+        if (arrange == null || arrange.isEmpty()) {
+            arrange = "id";
+        }
+        if (stationId == null) {
+            throw new AppException(ErrorCode.STATION_NOT_FOUND);
+        }
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new AppException(ErrorCode.STATION_NOT_FOUND));
+        Sort sort = Sort.by(Sort.Direction.ASC, arrange);
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = busRouteRepository.findByStationId(stationId, pageable);
+        var busRouteList = pageData.getContent().stream()
+                .map(busRouteMapper::toResponse)
+                .toList();
+        log.info("Fetched {} bus routes for station ID: {}", busRouteList.size(), stationId);
+        return PageResponse.<BusRouteResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(busRouteList)
+                .build();
     }
 }

@@ -2,7 +2,8 @@ package com.metro.order.enums;
 
 public enum TicketStatus {
     UNPAID,
+    INACTIVE,
     ACTIVE,
-    USED,
+    USING,
     EXPIRED
 }

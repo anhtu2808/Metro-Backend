@@ -1,5 +1,11 @@
 package com.metro.user.service.impl;
 
+import java.util.HashSet;
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.role.RoleRequest;
 import com.metro.user.dto.response.role.RoleResponse;
@@ -10,15 +16,11 @@ import com.metro.user.mapper.RoleMapper;
 import com.metro.user.repository.PermissionRepository;
 import com.metro.user.repository.RoleRepository;
 import com.metro.user.service.RoleService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,12 +49,11 @@ public class RoleServiceImpl implements RoleService {
     @PreAuthorize("hasRole('MANAGER')")
     @Override
     public RoleResponse update(Long id, RoleRequest request) {
-        var existingRole = roleRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        var existingRole = roleRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        if (request.getName() != null &&
-                (roleRepository.existsByName(RoleType.valueOf(request.getName())) &&
-                !existingRole.getName().equals(RoleType.valueOf(request.getName())))) {
+        if (request.getName() != null
+                && (roleRepository.existsByName(RoleType.valueOf(request.getName()))
+                        && !existingRole.getName().equals(RoleType.valueOf(request.getName())))) {
             throw new AppException(ErrorCode.ROLE_EXISTED);
         }
         var permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissions()));
@@ -70,15 +71,14 @@ public class RoleServiceImpl implements RoleService {
     @PreAuthorize("hasRole('MANAGER')")
     @Override
     public void delete(Long role) {
-    if (!roleRepository.existsById(role)) {
-        throw new AppException(ErrorCode.ROLE_NOT_FOUND);
-    }
+        if (!roleRepository.existsById(role)) {
+            throw new AppException(ErrorCode.ROLE_NOT_FOUND);
+        }
         roleRepository.deleteById(role);
     }
 
     @Override
     public Role getRoleWithPermissions(RoleType roleType) {
-        return roleRepository.findByName(roleType)
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        return roleRepository.findByName(roleType).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
     }
 }
