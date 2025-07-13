@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class TicketOrderFilterRequest {
     int page;
     int size;
+    String sortBy;
     Long userId;
     Boolean isStatic;
     Boolean isStudent;

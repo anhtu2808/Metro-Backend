@@ -53,7 +53,7 @@ public class PaymentService {
         if (ticketOrder == null || ticketOrder.getPrice() == null) {
             throw new AppException(ErrorCode.TICKET_ORDER_NOT_EXISTED);
         }
-
+        
         BigDecimal amount = ticketOrder.getPrice();
         String transactionCode = VNPayUtil.getRandomNumber(10);
         long vnpAmount = amount.multiply(BigDecimal.valueOf(100)).longValue();

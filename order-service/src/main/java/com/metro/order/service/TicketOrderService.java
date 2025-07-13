@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,61 +80,69 @@ public class TicketOrderService extends AbstractService<
 
     @Override
     protected void beforeCreate(TicketOrder entity) {
-        if (entity.getUserId() == null) {
+
+    }
+
+
+    @Override
+    protected void beforeUpdate(TicketOrder oldEntity, TicketOrder newEntity) {
+
+    }
+
+    @Override
+    public TicketOrderResponse create(TicketOrderCreationRequest request) {
+//        TicketOrder entity = new TicketOrder();
+        if (request.getUserId() == null) {
             try {
                 var userInfo = userClient.getMyInfo().getResult();
                 if (userInfo == null || userInfo.getId() == null) {
                     throw new AppException(ErrorCode.UNAUTHENTICATED);
                 }
-                entity.setUserId(userInfo.getId());
+                request.setUserId(userInfo.getId());
             } catch (Exception e) {
                 log.error("Failed to get authenticated user info", e);
                 throw new AppException(ErrorCode.USER_NOT_FOUND);
             }
         }
-        var ticketType = ticketTypeClient.getTicketTypesById(entity.getTicketTypeId()).getResult();
+        var ticketType = ticketTypeClient.getTicketTypesById(request.getTicketTypeId()).getResult();
         if (ticketType == null) {
             throw new AppException(ErrorCode.TICKET_TYPE_NOT_FOUND);
         }
 
-        boolean isUnlimited = ticketType.isStatic() || ticketType.getIsStudent();
+        boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
 
         if (!isUnlimited) {
             try {
-                stationClient.getStationById(entity.getStartStationId()).getResult();
+                stationClient.getStationById(request.getStartStationId()).getResult();
             } catch (Exception e) {
                 throw new AppException(ErrorCode.START_STATION_NOT_FOUND);
             }
 
             try {
-                stationClient.getStationById(entity.getEndStationId()).getResult();
+                stationClient.getStationById(request.getEndStationId()).getResult();
             } catch (Exception e) {
                 throw new AppException(ErrorCode.END_STATION_NOT_FOUND);
             }
 
-            if (entity.getStartStationId().equals(entity.getEndStationId())) {
+            if (request.getStartStationId().equals(request.getEndStationId())) {
                 throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
             }
         } else {
-            entity.setStartStationId(null);
-            entity.setEndStationId(null);
+            request.setStartStationId(null);
+            request.setEndStationId(null);
         }
-
+        TicketOrder entity = entityMapper.toEntity(request);
         if (isUnlimited) {
             entity.setPrice(ticketType.getPrice());
         } else {
-            Long lineId = lineSegmentClient
-                    .getLineIdByStartAndEnd(entity.getStartStationId(), entity.getEndStationId())
-                    .getResult();
 
             var dynamicPrice = dynamicPriceClient
-                    .getPriceByStartAndEnd(lineId, entity.getStartStationId(), entity.getEndStationId())
+                    .getPriceByStartAndEnd(request.getLineId(), request.getStartStationId(), request.getEndStationId())
                     .getResult();
-
             entity.setPrice(dynamicPrice.getPrice());
         }
 
-        entity.setStatus(entity.getStatus() != null ? entity.getStatus() : TicketStatus.UNPAID);
+        entity.setStatus(request.getStatus() != null ? request.getStatus() : TicketStatus.UNPAID);
         entity.setPurchaseDate(LocalDateTime.now());
         if (ticketType.getValidityDays() != null) {
             entity.setValidUntil(entity.getPurchaseDate().plusDays(ticketType.getValidityDays()));
@@ -149,20 +158,8 @@ public class TicketOrderService extends AbstractService<
         String sequence = String.format("%03d", dailyCount + 1); // 001, 002...
         String ticketCode = String.format("TCKT-%s-%s", datePart, sequence);
         entity.setTicketCode(ticketCode);
-    }
 
-
-    @Override
-    protected void beforeUpdate(TicketOrder oldEntity, TicketOrder newEntity) {
-
-    }
-
-    @Override
-    public TicketOrderResponse create(TicketOrderCreationRequest request) {
-        TicketOrder entity = entityMapper.toEntity(request);
-        beforeCreate(entity);
         TicketOrder saved = repository.save(entity);
-
         TicketOrderResponse response = entityMapper.toResponse(saved);
         responseEnricher.enrich(saved, response);
         return response;
@@ -237,31 +234,43 @@ public class TicketOrderService extends AbstractService<
     }
 
     public PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req) {
-        List<Long> staticTypeIds = null;
-        if (req.getIsStatic() != null) {
-            staticTypeIds = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData().stream()
-                    .filter(t -> t.isStatic() == req.getIsStatic())
+        List<Long> ticketTypeIds = null;
+        List<TicketTypeResponse> ticketTypes = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData();
+        if (req.getIsStatic() != null && req.getIsStatic().equals(Boolean.TRUE)) {
+            ticketTypeIds = ticketTypes.stream()
+                    .filter(t -> t.getIsStatic().equals(req.getIsStatic()))
                     .map(TicketTypeResponse::getId)
                     .toList();
-            if (staticTypeIds.isEmpty()) {
-                return PageResponse.<TicketOrderResponse>builder()
-                        .data(List.of())
-                        .totalElements(0)
-                        .totalPages(1)
-                        .pageSize(1)
-                        .data(List.of())
-                        .build();
+        }
+
+        if (req.getIsStudent() != null && req.getIsStudent().equals(Boolean.TRUE)) {
+            List<Long> studentTypeIds = ticketTypes.stream()
+                    .filter(t -> t.getIsStudent().equals(req.getIsStudent()))
+                    .map(TicketTypeResponse::getId)
+                    .toList();
+            if (ticketTypeIds != null) {
+                ticketTypeIds = new ArrayList<>(ticketTypeIds);
+                ticketTypeIds.retainAll(studentTypeIds);
+            } else {
+                ticketTypeIds = studentTypeIds;
             }
         }
-        var spec = TicketOrderSpecification.withFilter(req, staticTypeIds);
+        var spec = TicketOrderSpecification.withFilter(req, ticketTypeIds);
         Pageable pageable = PageRequest.of(
                 req.getPage() - 1,
                 req.getSize(),
-                Sort.by(Sort.Direction.DESC, "id")
+                Sort.by(Sort.Direction.DESC, req.getSortBy() != null ? req.getSortBy() : "id")
         );
         Page<TicketOrder> orders = ticketOrderRepository.findAll(spec, pageable);
+        List<TicketOrderResponse> ticketResponse = orders.getContent().stream()
+                .map(entity -> {
+                    TicketOrderResponse response = entityMapper.toResponse(entity);
+                    responseEnricher.enrich(entity, response);
+                    return response;
+                })
+                .toList();
         return PageResponse.<TicketOrderResponse>builder()
-                .data(orders.getContent().stream().map(entityMapper::toResponse).toList())
+                .data(ticketResponse)
                 .totalElements(orders.getTotalElements())
                 .totalPages(orders.getTotalPages())
                 .pageSize(pageable.getPageSize())

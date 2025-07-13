@@ -19,7 +19,7 @@ public class TicketTypeResponse {
     @JsonProperty("isStudent")
     Boolean isStudent = false;
     @JsonProperty("isStatic")
-    boolean isStatic = true;
+    Boolean isStatic = true;
     BigDecimal price;
 
 }
