@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import com.metro.user.event.EventBuilder;
 import com.metro.user.entity.*;
 import com.metro.user.repository.ForgotPasswordRepository;
-import com.metro.user.repository.httpClient.NotificationHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,8 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     final RoleServiceImpl roleService;
     final UserMapper userMapper;
     final ForgotPasswordRepository passwordOtpRepository;
-    final NotificationHttpClient notificationHttpClient;
-
+    final EventBuilder eventBuilder;
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
@@ -261,7 +260,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .used(false)
                 .build();
         passwordOtpRepository.save(passwordOtp);
-        notificationHttpClient.sendOtpToEmail(email, otp);
+        eventBuilder.buildOtpEvent(email, user.getUsername(), otp);
     }
 
     @Override

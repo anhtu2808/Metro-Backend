@@ -12,11 +12,15 @@ spring:
     stream:
       bindings:
         sendWelcomeEmail-out-0:
-          destination: metro
+          destination: welcome-email
           content-type: application/json
+        sendOtpToEmail-out-0:
+            destination: otp-email
+            content-type: application/json
+
       kafka:
         binder:
-          brokers: kafka:9092
+          brokers: localhost:9092
           auto-create-topics: true
           configuration:
             auto.create.topics.enable: true
@@ -34,6 +38,18 @@ spring:
                 request.timeout.ms: 10000
                 delivery.timeout.ms: 30000
                 retries: 3
+          sendOtpToEmail-out-0:
+            producer:
+              configuration:
+                acks: all
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                value.serializer: org.springframework.kafka.support.serializer.JsonSerializer
+                spring.json.add.type.headers: true
+                spring.json.type.mapping: NotificationEvent:com.metro.event.dto.NotificationEvent
+                request.timeout.ms: 10000
+                delivery.timeout.ms: 30000
+                retries: 3
+
     kafka:
       properties:
         spring.json.type.mapping: NotificationEvent:com.metro.event.dto.NotificationEvent
@@ -41,7 +57,7 @@ spring:
         spring.json.trusted.packages: com.metro.event.dto
 #      bootstrap.servers: kafka:9092
     function:
-      definition: sendWelcomeEmail
+      definition: sendWelcomeEmail; sendOtpToEmail
   jpa:
     hibernate:
       ddl-auto: update

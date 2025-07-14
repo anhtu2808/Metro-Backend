@@ -30,4 +30,21 @@ public class KafkaConsumerConfig {
             }
         };
     }
+    @Bean
+    public Consumer<NotificationEvent> consumeOtp() {
+        return message -> {
+            try {
+                if (message == null) {
+                    log.warn("Received null message from topic 'otp-email'");
+                    return;
+                }
+                log.info("📧 Received OTP event from topic 'otp-email': {}", message.getRecipient());
+                emailService.sendEmailNotification(message);
+                log.info("✅ Successfully processed OTP event for: {}", message.getRecipient());
+            } catch (Exception e) {
+                log.error("❌ Error processing OTP event: {}", e.getMessage(), e);
+                throw new RuntimeException("Failed to process event", e);
+            }
+        };
+    }
 }

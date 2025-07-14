@@ -34,7 +34,9 @@ public class SecurityConfig {
         "/login/**",
         "/oauth2/authorization/**",
         "/auth/oauth/google",
-        "/auth/oauth2/info"
+        "/auth/oauth2/info",
+        "/auth/forgot-password",
+            "/auth/reset-password",
     };
     private static final String[] PUBLIC_GET_ENDPOINTS = {
         "/bus-routes", "stations", "/lines",

@@ -24,6 +24,11 @@ public class NotificationEventProducerImpl implements NotificationEventProducer 
         sendEvent("sendWelcomeEmail-out-0", event);
     }
 
+    @Override
+    public void sendOtpToEmail(NotificationEvent event) {
+        sendEvent("sendOtpToEmail-out-0", event);
+    }
+
     private void sendEvent(String bindingName, NotificationEvent event) {
         log.info("Sending event to binding {}: {}", bindingName, event);
         try {
@@ -39,4 +44,5 @@ public class NotificationEventProducerImpl implements NotificationEventProducer 
             throw new RuntimeException("Error sending event to binding " + bindingName, e);
         }
     }
+
 }
