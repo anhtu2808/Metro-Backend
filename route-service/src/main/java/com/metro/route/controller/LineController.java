@@ -3,11 +3,9 @@ package com.metro.route.controller;
 import com.metro.common_lib.controller.AbstractController;
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.common_lib.dto.response.PageResponse;
-import com.metro.common_lib.service.AbstractService;
 import com.metro.route.dto.request.line.LineCreationRequest;
 import com.metro.route.dto.request.line.LineUpdateRequest;
 import com.metro.route.dto.response.LineResponse;
-import com.metro.route.dto.response.StationResponse;
 import com.metro.route.dto.response.lineSegment.EndStationResponse;
 import com.metro.route.dto.response.lineSegment.LineSegmentResponse;
 import com.metro.route.dto.response.lineSegment.StartStationResponse;
@@ -19,8 +17,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,10 +43,10 @@ public class LineController extends AbstractController<
 
     @GetMapping("/search/by-line-code")
     public ApiResponse<PageResponse<LineResponse>> findByLineCode(
-          @RequestParam String lineCode,
-          @RequestParam(defaultValue = "1") int page,
-          @RequestParam(defaultValue = "10") int size,
-          @RequestParam(defaultValue = "id") String sort
+            @RequestParam String lineCode,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort
     ) {
         try {
             PageResponse<LineResponse> response = lineService.findByLineCode(lineCode, page, size, sort);
@@ -67,6 +63,7 @@ public class LineController extends AbstractController<
                     .build();
         }
     }
+
     @GetMapping("/{lineId}/segments")
     public ApiResponse<List<LineSegmentResponse>> getSegmentsByLine(@PathVariable Long lineId) {
         return ApiResponse.<List<LineSegmentResponse>>builder()
