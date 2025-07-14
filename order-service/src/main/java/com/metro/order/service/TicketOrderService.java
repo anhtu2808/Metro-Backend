@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,7 +109,7 @@ public class TicketOrderService extends AbstractService<
             throw new AppException(ErrorCode.TICKET_TYPE_NOT_FOUND);
         }
 
-        boolean isUnlimited = ticketType.isStatic() || ticketType.getIsStudent();
+        boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
 
         if (!isUnlimited) {
             try {
@@ -233,31 +234,43 @@ public class TicketOrderService extends AbstractService<
     }
 
     public PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req) {
-        List<Long> staticTypeIds = null;
-        if (req.getIsStatic() != null) {
-            staticTypeIds = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData().stream()
-                    .filter(t -> t.isStatic() == req.getIsStatic())
+        List<Long> ticketTypeIds = null;
+        List<TicketTypeResponse> ticketTypes = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData();
+        if (req.getIsStatic() != null && req.getIsStatic().equals(Boolean.TRUE)) {
+            ticketTypeIds = ticketTypes.stream()
+                    .filter(t -> t.getIsStatic().equals(req.getIsStatic()))
                     .map(TicketTypeResponse::getId)
                     .toList();
-            if (staticTypeIds.isEmpty()) {
-                return PageResponse.<TicketOrderResponse>builder()
-                        .data(List.of())
-                        .totalElements(0)
-                        .totalPages(1)
-                        .pageSize(1)
-                        .data(List.of())
-                        .build();
+        }
+
+        if (req.getIsStudent() != null && req.getIsStudent().equals(Boolean.TRUE)) {
+            List<Long> studentTypeIds = ticketTypes.stream()
+                    .filter(t -> t.getIsStudent().equals(req.getIsStudent()))
+                    .map(TicketTypeResponse::getId)
+                    .toList();
+            if (ticketTypeIds != null) {
+                ticketTypeIds = new ArrayList<>(ticketTypeIds);
+                ticketTypeIds.retainAll(studentTypeIds);
+            } else {
+                ticketTypeIds = studentTypeIds;
             }
         }
-        var spec = TicketOrderSpecification.withFilter(req, staticTypeIds);
+        var spec = TicketOrderSpecification.withFilter(req, ticketTypeIds);
         Pageable pageable = PageRequest.of(
                 req.getPage() - 1,
                 req.getSize(),
-                Sort.by(Sort.Direction.DESC, "id")
+                Sort.by(Sort.Direction.DESC, req.getSortBy() != null ? req.getSortBy() : "id")
         );
         Page<TicketOrder> orders = ticketOrderRepository.findAll(spec, pageable);
+        List<TicketOrderResponse> ticketResponse = orders.getContent().stream()
+                .map(entity -> {
+                    TicketOrderResponse response = entityMapper.toResponse(entity);
+                    responseEnricher.enrich(entity, response);
+                    return response;
+                })
+                .toList();
         return PageResponse.<TicketOrderResponse>builder()
-                .data(orders.getContent().stream().map(entityMapper::toResponse).toList())
+                .data(ticketResponse)
                 .totalElements(orders.getTotalElements())
                 .totalPages(orders.getTotalPages())
                 .pageSize(pageable.getPageSize())

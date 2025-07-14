@@ -65,4 +65,10 @@ public class UserController {
         var result = userService.getAllUsers();
         return ApiResponse.<List<UserResponse>>builder().result(result).build();
     }
+
+    @GetMapping("/role/{roleType}")
+    public ApiResponse<List<UserResponse>> getUsersByRole(@PathVariable RoleType roleType) {
+        var result = userService.getUsersByRole(roleType);
+        return ApiResponse.<List<UserResponse>>builder().result(result).build();
+    }
 }

@@ -1,7 +1,9 @@
 package com.metro.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.metro.user.enums.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u JOIN FETCH u.role r JOIN FETCH r.permissions WHERE u.email = :email")
     Optional<User> findByEmailWithRoleAndPermissions(@Param("email") String email);
+    List<User> findAllByRole_Name(RoleType name);
+
 }

@@ -24,4 +24,5 @@ public interface UserService {
     UserResponse getMyInfo();
 
     List<UserResponse> getAllUsers();
+    List<UserResponse> getUsersByRole(RoleType roleType);
 }

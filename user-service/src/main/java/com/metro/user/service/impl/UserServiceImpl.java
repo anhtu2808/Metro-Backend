@@ -160,4 +160,15 @@ public class UserServiceImpl implements UserService {
             // Không ném exception để không làm gián đoạn luồng chính
         }
     }
+
+    @Override
+    @PreAuthorize("hasRole('MANAGER')")
+    public List<UserResponse> getUsersByRole(RoleType roleType) {
+        Role role = roleRepository.findByName(roleType)
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        List<User> users = userRepository.findAllByRole_Name(role.getName());
+        return users.stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
+    }
 }
