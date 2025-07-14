@@ -22,10 +22,12 @@ public enum ErrorCode {
     FINAL_STATION_NOT_FOUND(1013, "Final station does not exist", HttpStatus.NOT_FOUND),
     END_STATION_NOT_FOUND(1014, "End station does not exist", HttpStatus.NOT_FOUND),
     LINE_NOT_FOUND(1015, "Line not found", HttpStatus.NOT_FOUND),
+    LINE_SEGMENT_NOT_FOUND(404, "Line segment not found", HttpStatus.NOT_FOUND),
     INVALID_LINE_ID(1016, "Invalid line ID", HttpStatus.BAD_REQUEST),
     INVALID_START_STATION_ID(1017, "Invalid start station ID", HttpStatus.BAD_REQUEST),
     DYNAMIC_PRICE_NOT_FOUND(1018, "Dynamic price not found", HttpStatus.NOT_FOUND),
-    INVALID_STATION_COMBINATION(1019,"Line not found for the given station combination", HttpStatus.BAD_REQUEST),;
+    INVALID_STATION_COMBINATION(1019, "Line not found for the given station combination", HttpStatus.BAD_REQUEST),
+    ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
