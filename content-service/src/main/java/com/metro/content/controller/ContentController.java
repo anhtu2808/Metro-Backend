@@ -28,29 +28,29 @@ public class ContentController{
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ContentResponse createContent(@Valid @RequestBody ContentRequest request) {
-        return contentService.create(request);
+        return contentService.createContent(request);
     }
 
     @GetMapping("/{id}")
     public ContentResponse getContentById(@PathVariable Long id) {
-        return contentService.findById(id);
+        return contentService.getContentById(id);
     }
 
     @GetMapping
-    public PageResponse<ContentResponse> getContents(@RequestParam(defaultValue = "0") int page,
+    public PageResponse<ContentResponse> getContents(@RequestParam(defaultValue = "1") int page,
                                                      @RequestParam(defaultValue = "10") int size,
-                                                     @RequestParam(required = false) String arrange) {
-        return contentService.findAll(page, size, arrange);
+                                                     @RequestParam(required = false) String sort) {
+        return contentService.getAllContents(page, size, sort);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteContent(@PathVariable Long id) {
-        contentService.delete(id);
+        contentService.deleteContent(id);
     }
 
     @GetMapping("/by-type")
-    public PageResponse<ContentResponse> getByType(@RequestParam ContentType type,@RequestParam(defaultValue = "0") int page,
+    public PageResponse<ContentResponse> getContentByType(@RequestParam ContentType type,@RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size)
     {
         return contentService.getContentByType(type, page, size);

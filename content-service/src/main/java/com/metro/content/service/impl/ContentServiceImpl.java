@@ -33,7 +33,7 @@ public class ContentServiceImpl implements ContentService {
     ContentRepository contentRepository;
 
     @Override
-    public ContentResponse create(ContentRequest request) {
+    public ContentResponse createContent(ContentRequest request) {
         Content entity = contentMapper.toEntity(request);
         if (entity.getImages() != null) {
             entity.getImages().forEach(img -> img.setContent(entity));
@@ -43,7 +43,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public ContentResponse update(Long id, ContentUpdateRequest request) {
+    public ContentResponse updateContent(Long id, ContentUpdateRequest request) {
         Content oldEntity = contentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTENT_NOT_FOUND));
 
@@ -61,15 +61,15 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public ContentResponse findById(Long id) {
+    public ContentResponse getContentById(Long id) {
         Content content = contentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTENT_NOT_FOUND));
         return contentMapper.toResponse(content);
     }
 
     @Override
-    public PageResponse<ContentResponse> findAll(int page, int size, String arrange) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ContentResponse> getAllContents(int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         Page<Content> contentPage = contentRepository.findAll(pageable);
         List<ContentResponse> responses = contentPage.getContent().stream()
                 .map(contentMapper::toResponse)
@@ -85,7 +85,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteContent(Long id) {
         if (!contentRepository.existsById(id)) {
             throw new AppException(ErrorCode.CONTENT_NOT_FOUND);
         }
@@ -94,7 +94,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public PageResponse<ContentResponse> getContentByType(ContentType type, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         Page<Content> contentPage = contentRepository.findByType(type, pageable);
         List<ContentResponse> contentResponses = contentPage.getContent().stream()
                 .map(contentMapper::toResponse)
