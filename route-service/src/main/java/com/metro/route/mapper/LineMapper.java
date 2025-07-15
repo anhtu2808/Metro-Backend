@@ -23,7 +23,5 @@ public interface LineMapper {
 
     @Mapping(target = "startStation", source = "startStation")
     @Mapping(target = "finalStation", source = "finalStation")
-    @Mapping(target = "finalStationId", source = "finalStation.id")
-    @Mapping(target = "startStationId", source = "startStation.id")
     LineResponse toResponse(Line entity);
 }
