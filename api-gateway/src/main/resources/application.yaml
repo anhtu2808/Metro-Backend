@@ -43,7 +43,7 @@ spring:
           predicates:
             - >-
               Path=${app.api-prefix}/transactions/**,
-              ${app.api-prefix}/payment/**
+              ${app.api-prefix}/payments/**
           filters:
             - StripPrefix=2
 
