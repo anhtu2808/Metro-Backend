@@ -24,7 +24,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(1013, "User not found", HttpStatus.NOT_FOUND),
     INCORRECT_USERNAME_PASSWORD(1009, "Incorrect username or password", HttpStatus.UNAUTHORIZED),
     EMAIL_EXISTED(1014, "Email already existed", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_SEND_FAILED(1015, "Failed to send notification", HttpStatus.INTERNAL_SERVER_ERROR)
+    NOTIFICATION_SEND_FAILED(1015, "Failed to send notification", HttpStatus.INTERNAL_SERVER_ERROR),
+    STUDENT_VERIFICATION_NOT_FOUND(1016, "Student verification not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
