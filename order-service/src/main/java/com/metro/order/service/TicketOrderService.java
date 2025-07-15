@@ -5,6 +5,7 @@ import com.metro.order.dto.request.TicketOrderCreationRequest;
 import com.metro.order.dto.request.TicketOrderFilterRequest;
 import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.enums.TicketStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface TicketOrderService {
     TicketOrderResponse createTicketOrder(TicketOrderCreationRequest request);
@@ -15,6 +16,7 @@ public interface TicketOrderService {
 
     PageResponse<TicketOrderResponse> getOrdersByUserId(Long userId, int page, int size);
 
+    @PreAuthorize("hasAuthority('TICKET_ORDER_READ_ALL')")
     PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req);
 
     String generateTicketToken(Long ticketOrderId);

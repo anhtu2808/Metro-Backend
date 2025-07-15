@@ -157,7 +157,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         Long actualUserId;
         if (page <= 0) page = 1;
         if (size <= 0) size = 10;
-        if (hasPermission("ticket_order:viewall")) {
+        if (hasPermission("TICKET_ORDER_READ_ALL")) {
             actualUserId = userId;
         } else {
             if (!isCurrentUser(userId)) {
