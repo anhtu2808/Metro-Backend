@@ -59,7 +59,7 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public PageResponse<StationResponse> getStations(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(sort));
         Page<Station> pages = stationRepository.findAll(pageable);
         List<StationResponse> data = pages.getContent().stream()
                 .map(stationMapper::toResponse)

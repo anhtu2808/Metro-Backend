@@ -44,7 +44,7 @@ public class StationController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponse<StationResponse>> getStations(@RequestParam(defaultValue = "0") int page,
+    public ApiResponse<PageResponse<StationResponse>> getStations(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
                                                                   @RequestParam(defaultValue = "id") String sort
     ) {
