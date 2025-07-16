@@ -17,7 +17,7 @@ public class LineResponse {
     String lineCode;
     String name;
     String description;
-    Station startStation;
-    Station finalStation;
+    StationResponse startStation;
+    StationResponse finalStation;
     List<LineSegmentResponse> lineSegments;
 }
