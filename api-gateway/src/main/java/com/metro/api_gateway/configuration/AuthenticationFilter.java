@@ -56,7 +56,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 "/ticket-types/**",
                 "/dynamic-prices/**",
                 "/dynamic-price-masters/**",
-                "/payment/vnpay-callback"
+                "/payments/vnpay-callback"
         ));
         put(HttpMethod.POST, List.of(
                 // TODO: thêm các endpoint public cho method POST nếu có
