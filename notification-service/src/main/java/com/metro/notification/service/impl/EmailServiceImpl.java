@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
     public EmailResponse sendEmail(SendEmailRequest request) {
         EmailRequest emailRequest = EmailRequest.builder()
                 .sender(Sender.builder()
-                        .name("Metro")
+                        .name("HCMC Metro")
                         .email("trankhang0990@gmail.com")
                         .build())
                 .to(List.of(Recipient.builder()

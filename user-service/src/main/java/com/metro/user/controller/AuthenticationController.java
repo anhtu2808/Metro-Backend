@@ -3,6 +3,8 @@ package com.metro.user.controller;
 import java.text.ParseException;
 import java.util.Map;
 
+import com.metro.user.dto.request.forgotPassword.ForgotPasswordRequest;
+import com.metro.user.dto.request.forgotPassword.ResetPasswordRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -63,5 +65,21 @@ public class AuthenticationController {
         String idToken = payload.get("idToken");
         var result = authenticationService.authenticateWithGoogle(idToken);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authenticationService.forgotPassword(request.getEmail());
+        return ApiResponse.<Void>builder().message("OTP sent to your email.").build();
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(
+                request.getEmail(),
+                request.getOtpCode(),
+                request.getNewPassword()
+        );
+        return ApiResponse.<Void>builder().message("Password has been reset successfully.").build();
     }
 }
