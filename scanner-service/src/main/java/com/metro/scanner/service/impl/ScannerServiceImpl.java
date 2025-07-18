@@ -111,10 +111,10 @@ public class ScannerServiceImpl implements ScannerService {
             throw new AppException(ErrorCode.TICKET_STATUS_INVALID);
         }
         if (ticketOrder.getTicketType().isStatic()) {
-            orderServiceClient.updateTicketOrderStatus(ticketOrder.getId(), TicketStatus.ACTIVE, INTERNAL_SECRET);
+            orderServiceClient.updateTicketOrderStatus(ticketOrder.getId(), TicketStatus.USING, INTERNAL_SECRET);
         } else {
             if (request.getStationId().equals(ticketOrder.getStartStation().getId())) {
-                orderServiceClient.updateTicketOrderStatus(ticketOrder.getId(), TicketStatus.ACTIVE, INTERNAL_SECRET);
+                orderServiceClient.updateTicketOrderStatus(ticketOrder.getId(), TicketStatus.USING, INTERNAL_SECRET);
             } else {
                 throw new AppException(ErrorCode.INVALID_CHECKIN_STATION);
             }
