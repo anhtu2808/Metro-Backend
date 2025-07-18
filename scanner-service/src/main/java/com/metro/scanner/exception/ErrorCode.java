@@ -15,10 +15,16 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     SIGNER_KEY_NOT_FOUND(500, "Signer key not setup", HttpStatus.INTERNAL_SERVER_ERROR),
-    EXPIRED_TOKEN(401, "QR has expired please refresh", HttpStatus.BAD_REQUEST),
+    EXPIRED_TOKEN(401, "Mã QR đã hết hạn, vui lòng làm mới!", HttpStatus.BAD_REQUEST),
     TICKET_ORDER_ID_NOT_FOUND(400, "Ticket order ID not found in QR", HttpStatus.BAD_REQUEST),
-    INVALID_TOKEN(400, "Invalid QR code", HttpStatus.BAD_REQUEST),
-    ;
+    INVALID_TOKEN(400, "Mã QR không hợp lệ", HttpStatus.BAD_REQUEST),
+    TICKET_ORDER_UNPAID(400, "Vé chưa được thanh toán, vui lòng hoàn tất thanh toán", HttpStatus.BAD_REQUEST),
+    TICKET_ORDER_EXPIRED(400, "Vé đã hết hạn", HttpStatus.BAD_REQUEST),
+    TICKET_ORDER_INACTIVE(400, "Vé chưa được kích hoạt vui lòng kích hoat để sử dụng", HttpStatus.BAD_REQUEST),
+    TICKET_STATUS_INVALID(400, "Trạng thái vé không hợp lệ, vui lòng liên hệ nhân viên để nhận hỗ trợ", HttpStatus.BAD_REQUEST),
+    INVALID_CHECKIN_STATION(400, "Ga check-in không hợp lệ, vui lòng kiểm tra lại ga check-in", HttpStatus.BAD_REQUEST),
+    INVALID_CHECKOUT_STATION(400, "Ga check-out không hợp lệ, vui lòng kiểm tra lại ga check-out", HttpStatus.BAD_REQUEST);
+
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
