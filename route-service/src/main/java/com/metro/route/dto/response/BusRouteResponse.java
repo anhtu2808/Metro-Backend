@@ -34,4 +34,6 @@ public class BusRouteResponse {
 
     @Schema(description = "Tên ga xe buýt liên quan", example = "Ga Bến Thành")
     String busStationName;
+    StationResponse station;
+    String stationId;
 }

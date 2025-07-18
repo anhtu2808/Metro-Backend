@@ -1,39 +1,27 @@
 package com.metro.route.mapper;
 
-import com.metro.common_lib.mapper.DefaultConfigMapper;
-import com.metro.common_lib.mapper.EntityMappers;
-import com.metro.route.dto.request.busRoute.BusRouteUpdateRequest;
 import com.metro.route.dto.request.line.LineCreationRequest;
 import com.metro.route.dto.request.line.LineUpdateRequest;
 import com.metro.route.dto.response.LineResponse;
-import com.metro.route.entity.BusRoute;
 import com.metro.route.entity.Line;
-import com.metro.route.entity.Station;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 @Mapper(
-        config = DefaultConfigMapper.class
+        componentModel = "spring",
+        uses = {StationMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface LineMapper extends EntityMappers<Line, LineCreationRequest, LineUpdateRequest, LineResponse> {
-    @Mapping(target = "id", ignore = true)
-    void updateEntity(@MappingTarget Line oldEntity, Line newEntity);
-
-    @Mapping(target = "startStation", source = "startStationId", qualifiedByName = "mapToStation")
-    @Mapping(target = "finalStation", source = "finalStationId", qualifiedByName = "mapToStation")
+public interface LineMapper {
+    @Mapping(target = "startStation", ignore = true)
+    @Mapping(target = "finalStation", ignore = true)
     Line toEntity(LineCreationRequest request);
 
-    @Mapping(target = "startStation", source = "startStationId", qualifiedByName = "mapToStation")
-    @Mapping(target = "finalStation", source = "finalStationId", qualifiedByName = "mapToStation")
-    Line updateToEntity(LineUpdateRequest request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "startStation", ignore = true)
+    @Mapping(target = "finalStation", ignore = true)
+    void updateEntity(LineUpdateRequest request, @MappingTarget Line entity);
 
-    @Named("mapToStation")
-    default Station mapToStation(Long stationId) {
-        if (stationId == null) {
-            return null;
-        }
-        return Station.builder().id(stationId).build();
-    }
+    @Mapping(target = "startStation", source = "startStation")
+    @Mapping(target = "finalStation", source = "finalStation")
+    LineResponse toResponse(Line entity);
 }

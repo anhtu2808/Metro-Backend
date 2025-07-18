@@ -17,7 +17,7 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         config = DefaultConfigMapper.class
 )
-public interface ContentMapper  extends EntityMappers<Content, ContentRequest, ContentUpdateRequest, ContentResponse> {
+public interface ContentMapper{
 
     @Mapping(target = "id", ignore = true)
     void updateEntity(@MappingTarget Content oldEntity, Content newEntity);
@@ -26,6 +26,7 @@ public interface ContentMapper  extends EntityMappers<Content, ContentRequest, C
     @Mapping(target = "images", source = "imageUrls", qualifiedByName = "mapImageUrls")
     Content toEntity(ContentRequest request);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "images", source = "imageUrls", qualifiedByName = "mapImageUrls")
     Content updateToEntity(ContentUpdateRequest request);
 
@@ -47,5 +48,4 @@ public interface ContentMapper  extends EntityMappers<Content, ContentRequest, C
                 .map(ContentImage::getImageUrl)
                 .toList();
     }
-
 }
