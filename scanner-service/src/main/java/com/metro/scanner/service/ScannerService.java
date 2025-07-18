@@ -14,15 +14,12 @@ public interface ScannerService {
      */
     ScannerResponse validateTicket(ScannerRequest request);
 
-
     /**
-     * Decode the ticket order token to retrieve the order ID.
+     * Retrieves a ticket order by its token(QR code).
      *
-     * @param token ticket order token
-     * @return a response containing a message and validation status
+     * @param token the token of the ticket order
+     * @return the ticket order response containing details of the order
      */
-    Long getTicketOrderIdFromToken(String token);
-
     TicketOrderResponse getTicketOrderByToken(String token);
 
 
