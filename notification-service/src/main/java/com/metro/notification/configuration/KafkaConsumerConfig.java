@@ -1,7 +1,6 @@
 package com.metro.notification.configuration;
 
 import com.metro.event.dto.NotificationEvent;
-import com.metro.notification.service.EmailService;
 import com.metro.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,10 +20,10 @@ public class KafkaConsumerConfig {
         return message -> {
             try {
                 if (message == null) {
-                    log.warn("Received null message from topic 'metro'");
+                    log.warn("Received null message from topic 'welcome-email'");
                     return;
                 }
-                log.info("📧 Received welcome event from topic 'metro': {}", message.getRecipient());
+                log.info("📧 Received welcome event from topic 'welcome-email': {}", message.getRecipient());
                 notificationService.sendEmailNotification(message);
                 log.info("✅ Successfully processed welcome event for: {}", message.getRecipient());
             } catch (Exception e) {
@@ -42,7 +41,7 @@ public class KafkaConsumerConfig {
                     return;
                 }
                 log.info("📧 Received OTP event from topic 'otp-email': {}", message.getRecipient());
-                emailService.sendEmailNotification(message);
+                notificationService.sendEmailNotification(message);
                 log.info("✅ Successfully processed OTP event for: {}", message.getRecipient());
             } catch (Exception e) {
                 log.error("❌ Error processing OTP event: {}", e.getMessage(), e);

@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         User user = userMapper.toUser(request, role, hashedPassword);
         user = userRepository.save(user);
-        eventBuilder.sendWelcomeNotification(user.getEmail(), user.getUsername());
+        eventBuilder.buildWelcomeEvent(user.getEmail(), user.getUsername());
         return userMapper.toUserResponse(user);
     }
 
@@ -143,26 +143,6 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
     }
-//    private void sendWelcomeNotification(String email, String username) {
-//        try {
-//            NotificationEvent event = NotificationEvent.builder()
-//                    .channel("email")
-//                    .recipient(email)
-//                    .templateCode("welcome-email")
-//                    .param(Map.of(
-//                            "userName", username,
-//                            "customMessage", "Chúc mừng bạn đã đăng ký thành công!"
-//                    ))
-//                    .subject("Chào mừng bạn đến với Metro!")
-//                    .build();
-//            notificationEventProducer.sendWelcomeEmailEvent(event);
-//            log.info("Welcome notification sent for user: {}", username);
-//        } catch (Exception e) {
-//            log.error("Failed to send welcome notification for user: {}, error: {}", username, e.getMessage());
-//            // Không ném exception để không làm gián đoạn luồng chính
-//        }
-//    }
-
     @Override
     @PreAuthorize("hasRole('MANAGER')")
     public List<UserResponse> getUsersByRole(RoleType roleType) {

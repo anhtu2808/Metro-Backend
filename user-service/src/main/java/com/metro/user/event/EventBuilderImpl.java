@@ -39,8 +39,7 @@ public class EventBuilderImpl implements EventBuilder {
                     .recipient(email)
                     .templateCode("welcome-email")
                     .param(Map.of(
-                            "userName", username,
-                            "customMessage", "Chúc mừng bạn đã đăng ký thành công!"
+                            "userName", username
                     ))
                     .subject("Chào mừng bạn đến với Metro!")
                     .build();

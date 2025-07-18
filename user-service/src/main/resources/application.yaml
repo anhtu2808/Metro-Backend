@@ -17,7 +17,6 @@ spring:
         sendOtpToEmail-out-0:
             destination: otp-email
             content-type: application/json
-
       kafka:
         binder:
           brokers: localhost:9092
@@ -49,7 +48,6 @@ spring:
                 request.timeout.ms: 10000
                 delivery.timeout.ms: 30000
                 retries: 3
-
     kafka:
       properties:
         spring.json.type.mapping: NotificationEvent:com.metro.event.dto.NotificationEvent
