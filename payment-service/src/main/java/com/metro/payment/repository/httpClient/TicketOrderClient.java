@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
         name = "ticket-order-client",
-        url = "${app.services.ticket_order.url}", configuration = FeignClientConfig.class
+        url = "${ORDER_SERVICE_HOST:http://localhost:8086}", configuration = FeignClientConfig.class
 )
 public interface TicketOrderClient {
     @GetMapping("/ticket-orders/{id}")
