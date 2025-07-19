@@ -18,4 +18,11 @@ public class TicketStatusSchedulerService {
         int updated = ticketOrderRepository.activateTicketsAfter30Days();
         log.info("[Scheduler] Đã chuyển {} vé từ INACTIVE → ACTIVE", updated);
     }
+
+    @Scheduled(cron = "0 */5 * * * *")
+    @Transactional
+    public void expireTickets() {
+        int expired = ticketOrderRepository.expireTickets();
+        log.info("[Scheduler] Đã chuyển {} vé từ ACTIVE → EXPIRED", expired);
+    }
 }
