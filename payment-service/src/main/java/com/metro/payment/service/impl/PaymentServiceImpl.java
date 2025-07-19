@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Service
@@ -98,6 +100,8 @@ public class PaymentServiceImpl implements PaymentService {
     public VNPayResponse handleVNPayCallback(HttpServletRequest request) {
         String responseCode = request.getParameter("vnp_ResponseCode");
         String transactionCode = request.getParameter("vnp_TxnRef");
+        LocalDateTime purchaseDate = LocalDateTime.now();
+        String formattedPurchaseDate = purchaseDate.format(DateTimeFormatter.ISO_DATE_TIME);
 
         try {
             var transactionOpt = transactionRepository.findByTransactionCode(transactionCode);
@@ -116,7 +120,7 @@ public class PaymentServiceImpl implements PaymentService {
                 transactionRepository.save(transaction);
                 try {
                     log.info("🔥 Sending secret: {}", internalSecret);
-                    ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.INACTIVE,internalSecret);
+                    ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.INACTIVE,formattedPurchaseDate,internalSecret);
                 } catch (Exception ex) {
                     log.error("Không thể cập nhật trạng thái TicketOrder sau khi thanh toán", ex);
                 }

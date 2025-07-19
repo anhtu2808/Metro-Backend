@@ -7,6 +7,8 @@ import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.enums.TicketStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import java.time.LocalDateTime;
+
 public interface TicketOrderService {
     TicketOrderResponse createTicketOrder(TicketOrderCreationRequest request);
 
@@ -20,4 +22,6 @@ public interface TicketOrderService {
     PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req);
 
     String generateTicketToken(Long ticketOrderId);
+
+    void updateTicketOrderStatusAndPurchase(Long ticketOrderId, TicketStatus status, LocalDateTime purchaseDate);
 }
