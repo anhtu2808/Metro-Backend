@@ -113,18 +113,21 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         }
 
         entity.setStatus(request.getStatus() != null ? request.getStatus() : TicketStatus.UNPAID);
-        entity.setPurchaseDate(LocalDateTime.now());
-        if (ticketType.getValidityDays() != null) {
-            entity.setValidUntil(entity.getPurchaseDate().plusDays(ticketType.getValidityDays()));
-        }
-        LocalDateTime purchaseDate = entity.getPurchaseDate();
+//        entity.setPurchaseDate(LocalDateTime.now());
+//        if (ticketType.getValidityDays() != null) {
+//            entity.setValidUntil(entity.getPurchaseDate().plusDays(ticketType.getValidityDays()));
+//        }
+        entity.setPurchaseDate(null);
+        entity.setValidUntil(null);
+        ticketOrderRepository.saveAndFlush(entity);
+        LocalDateTime create = entity.getCreateAt();
 
         long dailyCount = ticketOrderRepository.countByPurchaseDateBetween(
-                purchaseDate.toLocalDate().atStartOfDay(),
-                purchaseDate.toLocalDate().plusDays(1).atStartOfDay()
+                create.toLocalDate().atStartOfDay(),
+                create.toLocalDate().plusDays(1).atStartOfDay()
         );
 
-        String datePart = purchaseDate.toLocalDate().toString().replace("-", "");
+        String datePart = create.toLocalDate().toString().replace("-", "");
         String sequence = String.format("%03d", dailyCount + 1); // 001, 002...
         String ticketCode = String.format("TCKT-%s-%s", datePart, sequence);
         entity.setTicketCode(ticketCode);
@@ -148,7 +151,19 @@ public class TicketOrderServiceImpl implements TicketOrderService {
     public void updateTicketOrderStatus(Long ticketOrderId, TicketStatus status) {
         var ticketOrder = ticketOrderRepository.findById(ticketOrderId)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
-
+        TicketStatus oldStatus = ticketOrder.getStatus();
+        if (oldStatus == TicketStatus.INACTIVE && status == TicketStatus.ACTIVE) {
+            LocalDateTime purchaseDate = ticketOrder.getPurchaseDate();
+            if (purchaseDate == null) {
+                throw new AppException(ErrorCode.INVALID_PURCHASE_DATE);
+            }
+            var ticketType = ticketTypeClient.getTicketTypesById(ticketOrder.getTicketTypeId()).getResult();
+            if (ticketType != null && ticketType.getValidityDays() != null) {
+                ticketOrder.setValidUntil(purchaseDate.plusDays(ticketType.getValidityDays()));
+            } else {
+                throw new AppException(ErrorCode.INVALID_TICKET_TYPE);
+            }
+        }
         ticketOrder.setStatus(status);
         ticketOrderRepository.save(ticketOrder);
     }
@@ -286,5 +301,15 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         } catch (JOSEException e) {
             throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    public void updateTicketOrderStatusAndPurchase(Long ticketOrderId, TicketStatus status, LocalDateTime purchaseDate) {
+        var ticketOrder = ticketOrderRepository.findById(ticketOrderId)
+                .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
+        ticketOrder.setStatus(status);
+        if (purchaseDate != null) {
+            ticketOrder.setPurchaseDate(purchaseDate);
+        }
+        ticketOrderRepository.save(ticketOrder);
     }
 }

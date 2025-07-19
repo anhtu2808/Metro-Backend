@@ -24,6 +24,8 @@ public enum ErrorCode {
     SIGNER_KEY_NOT_FOUND(500, "Signer key not found in the environment variables", HttpStatus.INTERNAL_SERVER_ERROR),
     INTERNAL_SERVER_ERROR(500, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_TICKET_STATUS(1021, "Invalid ticket status", HttpStatus.BAD_REQUEST),
+    INVALID_PURCHASE_DATE(1022, "Invalid purchase date format", HttpStatus.BAD_REQUEST),
+    INVALID_TICKET_TYPE(1023, "Invalid ticket type", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

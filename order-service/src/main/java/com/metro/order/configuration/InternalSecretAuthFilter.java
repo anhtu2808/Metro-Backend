@@ -32,7 +32,7 @@ public class InternalSecretAuthFilter extends OncePerRequestFilter {
 
         log.info("🔐 Path: {}, Header secret: {}", path, secret);
 
-        if (path.matches("^/ticket-orders/\\d+/status$") && internalSecret.equals(secret)) {
+        if (path.matches("^/ticket-orders/\\d+/status$")|| path.matches("^/ticket-orders/\\d+/status-purchase$") && internalSecret.equals(secret)) {
             log.info("✅ Internal secret matched. Bypassing JWT and authenticating manually.");
 
             // Tạo một Authentication object giả để bypass security
