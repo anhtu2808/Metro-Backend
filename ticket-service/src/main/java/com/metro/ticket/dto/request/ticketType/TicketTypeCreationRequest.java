@@ -32,7 +32,7 @@ public class TicketTypeCreationRequest {
     Boolean isStudent = false;
 
     @Schema(description = "Loại vé có giá cố định hay không", example = "true")
-    boolean isStatic = true;
+    Boolean isStatic = true;
 
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be positive")

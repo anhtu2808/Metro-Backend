@@ -29,7 +29,7 @@ public class TicketTypeUpdateRequest {
     Boolean isStudent;
 
     @Schema(description = "Loại vé có giá cố định hay không", example = "true")
-    boolean isStatic;
+    Boolean isStatic;
 
     @Positive(message = "Price must be positive")
     @DecimalMin(value = "0.01", message = "Price must be at least 0.01")
