@@ -27,4 +27,14 @@ public interface TicketOrderRepository extends JpaRepository<TicketOrder, Long> 
             "AND purchase_date IS NOT NULL " +
             "AND purchase_date <= NOW() - INTERVAL 30 DAY", nativeQuery = true)
     int activateTicketsAfter30Days();
+
+    @Modifying
+    @Query(value = """
+    UPDATE ticket_order 
+    SET status = 'EXPIRED'
+    WHERE status = 'ACTIVE'
+    AND valid_until IS NOT NULL
+    AND valid_until < NOW()
+""", nativeQuery = true)
+    int expireTickets();
 }
