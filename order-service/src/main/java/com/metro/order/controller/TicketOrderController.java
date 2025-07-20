@@ -131,4 +131,9 @@ public class TicketOrderController{
                 .code(HttpStatus.OK.value())
                 .build();
     }
+    @PutMapping("/{id}")
+    public ApiResponse<TicketOrderResponse> updateTicketOrder(@PathVariable Long id, @RequestBody TicketOrderUpdateRequest request) {
+        TicketOrderResponse response = ticketOrderService.updateTicketOrder(id, request);
+        return ApiResponse.<TicketOrderResponse>builder().result(response).build();
+    }
 }

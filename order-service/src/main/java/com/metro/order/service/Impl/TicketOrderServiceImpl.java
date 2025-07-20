@@ -4,9 +4,8 @@ import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.order.TicketOrderMapper;
 import com.metro.order.dto.request.TicketOrderCreationRequest;
 import com.metro.order.dto.request.TicketOrderFilterRequest;
-import com.metro.order.dto.response.TicketOrderResponse;
-import com.metro.order.dto.response.TicketOrderResponseEnricher;
-import com.metro.order.dto.response.TicketTypeResponse;
+import com.metro.order.dto.request.TicketOrderUpdateRequest;
+import com.metro.order.dto.response.*;
 import com.metro.order.entity.TicketOrder;
 import com.metro.order.enums.TicketStatus;
 import com.metro.order.exception.AppException;
@@ -21,6 +20,7 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
@@ -80,14 +81,12 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         }
 
         boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
-
         if (!isUnlimited) {
             try {
                 stationClient.getStationById(request.getStartStationId()).getResult();
             } catch (Exception e) {
                 throw new AppException(ErrorCode.START_STATION_NOT_FOUND);
             }
-
             try {
                 stationClient.getStationById(request.getEndStationId()).getResult();
             } catch (Exception e) {
@@ -119,7 +118,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         }
         LocalDateTime purchaseDate = entity.getPurchaseDate();
 
-        long dailyCount = ticketOrderRepository.countByPurchaseDateBetween(
+        long dailyCount = ticketOrderRepository.countByPurchaseDateBetween(  // tạo ticketCode theo ngày
                 purchaseDate.toLocalDate().atStartOfDay(),
                 purchaseDate.toLocalDate().plusDays(1).atStartOfDay()
         );
@@ -285,6 +284,73 @@ public class TicketOrderServiceImpl implements TicketOrderService {
 
         } catch (JOSEException e) {
             throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+    @Transactional
+    public TicketOrderResponse updateTicketOrder(Long id, TicketOrderUpdateRequest request) {
+        TicketOrder ticketOrder = ticketOrderRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
+
+        UserResponse userResponse =  userClient.getMyInfo().getResult();
+        TicketTypeResponse ticketType = requireTicketTypeById(request, ticketOrder);
+        StationResponse startStation = new StationResponse();
+        StationResponse endStation = new StationResponse();
+        DynamicPriceResponse dynamicPrice = new DynamicPriceResponse();
+
+        if (request.getValidUntil() != null && request.getValidUntil().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.VALID_UNTIL_MUST_BE_FUTURE);
+        }
+        boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
+        if (isUnlimited){
+            dynamicPrice = dynamicPriceClient
+                    .getPriceByStartAndEnd(request.getLineId(), request.getStartStationId(), request.getEndStationId())
+                    .getResult();
+            if (dynamicPrice == null || dynamicPrice.getPrice() == null || dynamicPrice.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new AppException(ErrorCode.DYNAMIC_PRICE_NOT_FOUND);
+            }else {
+                ticketOrder.setPrice(dynamicPrice.getPrice());
+            }        }
+        else{
+            ticketOrder.setPrice(ticketType.getPrice());
+
+            if (request.getStartStationId() != null) {
+                startStation = requireStationById(request.getStartStationId(), ErrorCode.START_STATION_NOT_FOUND);
+            }
+            if (request.getEndStationId() != null) {
+                endStation = requireStationById(request.getEndStationId(), ErrorCode.END_STATION_NOT_FOUND);
+            }
+            if (request.getStartStationId() != null && request.getEndStationId() != null &&
+                    request.getStartStationId().equals(request.getEndStationId())) {
+                throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
+            }else {
+                ticketOrder.setStartStationId(null);
+                ticketOrder.setEndStationId(null);
+            }
+        }
+
+        ticketOrderMapper.updateEntity(request, ticketOrder);
+
+        TicketOrder saved = ticketOrderRepository.save(ticketOrder);
+        TicketOrderResponse response = ticketOrderMapper.toResponse(saved);
+        response.setEndStation(endStation);
+        response.setStartStation(startStation);
+        response.setTicketType(ticketType);
+        response.setUser(userResponse);
+        return response;
+    }
+    private TicketTypeResponse requireTicketTypeById(TicketOrderUpdateRequest request, TicketOrder ticketOrder) {
+        Long ticketTypeId = request.getTicketTypeId() != null ? request.getTicketTypeId() : ticketOrder.getTicketTypeId();
+        TicketTypeResponse ticketType = ticketTypeClient.getTicketTypesById(ticketTypeId).getResult();
+        if (ticketType == null) {
+            throw new AppException(ErrorCode.TICKET_TYPE_NOT_FOUND);
+        }
+        return ticketType;
+    }
+    private StationResponse requireStationById(Long stationId, ErrorCode errorCode) {
+        try {
+            return stationClient.getStationById(stationId).getResult();
+        } catch (Exception e) {
+            throw new AppException(errorCode);
         }
     }
 }
