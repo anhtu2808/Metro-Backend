@@ -71,4 +71,13 @@ public class UserController {
         var result = userService.getUsersByRole(roleType);
         return ApiResponse.<List<UserResponse>>builder().result(result).build();
     }
+
+    @PutMapping("/{id}/unban")
+    public ApiResponse<Void> unBanUser(@PathVariable Long id) {
+        userService.unBanUser(id);
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("User unbanned successfully")
+                .build();
+    }
 }

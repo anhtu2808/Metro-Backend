@@ -6,6 +6,7 @@ import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.enums.RoleType;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface UserService {
     UserResponse createUser(UserRequest request, RoleType role);
@@ -25,4 +26,7 @@ public interface UserService {
 
     List<UserResponse> getAllUsers();
     List<UserResponse> getUsersByRole(RoleType roleType);
+
+    @PreAuthorize("hasAuthority('user:unban')")
+    void unBanUser(Long id);
 }

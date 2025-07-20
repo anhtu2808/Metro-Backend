@@ -110,6 +110,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
+
+    @Override
+    public void unBanUser(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userRepository.unBan(userId);
+    }
+
     @PreAuthorize("hasAuthority('user:read') or hasAuthority('TICKET_ORDER_READ_ALL')")
     @Override
     public UserResponse getUser(long id) {

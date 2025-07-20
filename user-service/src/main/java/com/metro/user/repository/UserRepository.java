@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.metro.user.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -22,5 +23,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u JOIN FETCH u.role r JOIN FETCH r.permissions WHERE u.email = :email")
     Optional<User> findByEmailWithRoleAndPermissions(@Param("email") String email);
     List<User> findAllByRole_Name(RoleType name);
+
+    @Query("UPDATE User u SET u.deleted = true WHERE u.id = :id")
+    @Transactional
+    void unBan(Long id);
 
 }
