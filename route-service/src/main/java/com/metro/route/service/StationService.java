@@ -17,7 +17,7 @@ public interface StationService {
 
     StationResponse getStationById(Long id);
 
-    PageResponse<StationResponse> getStations(int page, int size, String sort);
+    PageResponse<StationResponse> getStations(String search, int page, int size, String sort);
 
     @PreAuthorize("hasAuthority('STATION_UPDATE')")
     StationResponse updateStation(Long id, StationUpdateRequest request);
