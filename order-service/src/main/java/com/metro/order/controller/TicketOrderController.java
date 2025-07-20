@@ -18,9 +18,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/ticket-orders")
@@ -135,5 +138,18 @@ public class TicketOrderController{
     public ApiResponse<TicketOrderResponse> updateTicketOrder(@PathVariable Long id, @RequestBody TicketOrderUpdateRequest request) {
         TicketOrderResponse response = ticketOrderService.updateTicketOrder(id, request);
         return ApiResponse.<TicketOrderResponse>builder().result(response).build();
+    }
+    @PutMapping("/{id}/status-purchase")
+    public ResponseEntity<Void> updateTicketOrderStatus(@PathVariable Long id,
+                                                        @RequestParam TicketStatus status,
+                                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime purchaseDate,
+                                                        @RequestHeader(value = "X-INTERNAL-SECRET", required = false) String providedSecret) {
+        log.info("💡 Provided secret: {}", providedSecret);
+        log.info("🔐 Expected secret: {}", internalSecret);
+        if (providedSecret == null || !providedSecret.equals(internalSecret)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        ticketOrderService.updateTicketOrderStatusAndPurchase(id, status, purchaseDate);
+        return ResponseEntity.ok().build();
     }
 }

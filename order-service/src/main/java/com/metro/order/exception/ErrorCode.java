@@ -27,7 +27,8 @@ public enum ErrorCode {
     TICKET_ORDER_EXPIRED(1022, "Ticket order has expired", HttpStatus.BAD_REQUEST),
     LINE_ID_REQUIRED_FOR_DYNAMIC_TICKET(1023, "Line ID is required for dynamic ticket orders", HttpStatus.BAD_REQUEST),
     VALID_UNTIL_MUST_BE_FUTURE(1024, "Valid until date must be in the future", HttpStatus.BAD_REQUEST),
-
+    INVALID_PURCHASE_DATE(1022, "Invalid purchase date format", HttpStatus.BAD_REQUEST),
+    INVALID_TICKET_TYPE(1023, "Invalid ticket type", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

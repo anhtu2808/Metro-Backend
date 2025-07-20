@@ -9,19 +9,18 @@ import com.metro.ticket.entity.TicketType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-        config = DefaultConfigMapper.class
+        config = DefaultConfigMapper.class,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface TicketTypeMapper extends EntityMappers<
-        TicketType,
-        TicketTypeCreationRequest,
-        TicketTypeUpdateRequest,
-        TicketTypeResponse
-        > {
+public interface TicketTypeMapper{
     TicketType toEntity(TicketTypeCreationRequest request);
-    @Mapping(target = "isStatic",source = "static")
+
     TicketTypeResponse toResponse(TicketType entity);
+
     @Mapping(target = "id", ignore = true)
-    void updateEntity(@MappingTarget TicketType oldEntity, TicketType newEntity);
+    void updateEntity(TicketTypeUpdateRequest request, @MappingTarget TicketType entity);
+
 }
