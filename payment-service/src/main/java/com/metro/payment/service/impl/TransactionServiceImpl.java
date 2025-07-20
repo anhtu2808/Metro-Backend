@@ -39,9 +39,9 @@ public class TransactionServiceImpl implements TransactionService {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
         boolean canViewAll = authorities.stream()
-                .anyMatch(a -> a.getAuthority().equals("transaction:view:all"));
+                .anyMatch(a -> a.getAuthority().equals("TRANSACTION_VIEW_ALL"));
         boolean canViewSelf = authorities.stream()
-                .anyMatch(a -> a.getAuthority().equals("transaction:view:self"));
+                .anyMatch(a -> a.getAuthority().equals("TRANSACTION_VIEW_SELF"));
 
         if (!canViewAll) {
             if (!canViewSelf) {
