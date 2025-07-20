@@ -219,19 +219,12 @@ public class TicketOrderServiceImpl implements TicketOrderService {
     public PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req) {
         List<Long> ticketTypeIds = null;
         List<TicketTypeResponse> ticketTypes = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData();
-        if (req.getIsStatic() != null && req.getIsStatic().equals(Boolean.TRUE)) {
+        if (req.getIsStatic() != null ) {
             ticketTypeIds = ticketTypes.stream()
                     .filter(t -> t.getIsStatic().equals(req.getIsStatic()))
                     .map(TicketTypeResponse::getId)
                     .toList();
         }
-        if (req.getIsStatic() != null && req.getIsStatic().equals(Boolean.FALSE)) {
-            ticketTypeIds = ticketTypes.stream()
-                    .filter(t -> !t.getIsStatic().equals(req.getIsStatic()))
-                    .map(TicketTypeResponse::getId)
-                    .toList();
-        }
-
         if (req.getIsStudent() != null && req.getIsStudent().equals(Boolean.TRUE)) {
             List<Long> studentTypeIds = ticketTypes.stream()
                     .filter(t -> t.getIsStudent().equals(req.getIsStudent()))
