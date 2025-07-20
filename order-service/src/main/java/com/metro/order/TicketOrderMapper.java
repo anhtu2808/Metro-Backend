@@ -26,4 +26,7 @@ public interface TicketOrderMapper{
     @Mapping(target = "startStation", ignore = true)
     @Mapping(target = "endStation", ignore = true)
     TicketOrderResponse toResponse(TicketOrder entity);
+
+    @Mapping(target = "userId", ignore = true)
+    void updateEntity(TicketOrderUpdateRequest request, @MappingTarget TicketOrder entity);
 }
