@@ -50,10 +50,11 @@ public class BusRouteController {
     @GetMapping
     @Operation(summary = "Lấy danh sách tất cả tuyến xe buýt", description = "Trả về danh sách tất cả tuyến xe buýt, hỗ trợ phân trang và sắp xếp")
     public ApiResponse<PageResponse<BusRouteResponse>> getBusRoutes(
+            @RequestParam(required = false) Long stationId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sort) {
-        PageResponse<BusRouteResponse> response = busRouteService.getBusRoutes(page, size, sort);
+        PageResponse<BusRouteResponse> response = busRouteService.getBusRoutes(stationId, page, size, sort);
         return ApiResponse.<PageResponse<BusRouteResponse>>builder()
                 .result(response)
                 .message("Bus routes fetched successfully")
@@ -86,18 +87,5 @@ public class BusRouteController {
                 .build();
     }
 
-    @GetMapping("/{stationId}/station")
-    @Operation(summary = "Lấy danh sách các tuyến xe buýt theo Station ID", description = "Trả về danh sách các tuyến xe buýt (Bus Routes) liên quan đến ga được xác định bởi stationId, hỗ trợ phân trang và sắp xếp")
-    public ApiResponse<PageResponse<BusRouteResponse>> getBusRoutesByStationId(
-            @PathVariable("stationId") Long stationId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort) {
-        PageResponse<BusRouteResponse> response = busRouteService.getBusRoutesByStationId(stationId, page, size, sort);
-        return ApiResponse.<PageResponse<BusRouteResponse>>builder()
-                .result(response)
-                .message(String.format("Bus routes found by station ID: %d", stationId))
-                .code(HttpStatus.OK.value())
-                .build();
-    }
+
 }

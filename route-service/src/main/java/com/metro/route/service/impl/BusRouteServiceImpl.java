@@ -1,7 +1,7 @@
 package com.metro.route.service.impl;
 
-import com.metro.route.dto.response.StationResponse;
 import com.metro.route.service.BusRouteService;
+import com.metro.route.specification.BusRouteSpecification;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -61,9 +61,13 @@ public class BusRouteServiceImpl implements BusRouteService {
     }
 
     @Override
-    public PageResponse<BusRouteResponse> getBusRoutes(int page, int size, String sort) {
+    public PageResponse<BusRouteResponse> getBusRoutes(Long stationId, int page, int size, String sort) {
+        if (sort == null || sort.isEmpty()) {
+            sort = "id";
+        }
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort));
-        Page<BusRoute> pages = busRouteRepository.findAll(pageable);
+        var spec = BusRouteSpecification.stationSpec(stationId);
+        Page<BusRoute> pages = busRouteRepository.findAll(spec, pageable);
         List<BusRouteResponse> data = pages.getContent().stream()
                 .map(busRouteMapper::toResponse)
                 .collect(Collectors.toList());
@@ -95,29 +99,5 @@ public class BusRouteServiceImpl implements BusRouteService {
         BusRoute busRoute = busRouteRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BUS_ROUTE_NOT_FOUND));
         busRouteRepository.delete(busRoute);
-    }
-
-    @Override
-    public PageResponse<BusRouteResponse> getBusRoutesByStationId(Long stationId, int page, int size, String sort) {
-        if (sort == null || sort.isEmpty()) {
-            sort = "id";
-        }
-        if (stationId == null) {
-            throw new AppException(ErrorCode.STATION_NOT_FOUND);
-        }
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new AppException(ErrorCode.STATION_NOT_FOUND));
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort));
-        Page<BusRoute> pages = busRouteRepository.findByStationId(stationId, pageable);
-        List<BusRouteResponse> data = pages.getContent().stream()
-                .map(busRouteMapper::toResponse)
-                .collect(Collectors.toList());
-        return PageResponse.<BusRouteResponse>builder()
-                .data(data)
-                .pageSize(pages.getSize())
-                .totalPages(pages.getNumber())
-                .totalElements(pages.getTotalElements())
-                .currentPage(page)
-                .build();
     }
 }
