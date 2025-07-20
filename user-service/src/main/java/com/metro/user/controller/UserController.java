@@ -2,10 +2,13 @@ package com.metro.user.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.metro.common_lib.dto.response.ApiResponse;
+import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.dto.request.user.UserFilterRequest;
@@ -62,9 +65,16 @@ public class UserController {
     }
 
     @GetMapping
-    public ApiResponse<List<UserResponse>> getAllUsers(@ModelAttribute UserFilterRequest filter) {
+    public ApiResponse<PageResponse<UserResponse>> getAllUsers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @ModelAttribute UserFilterRequest filter) {
+        filter.setPage(page);
+        filter.setSize(size);
+        filter.setSort(sort);
         var result = userService.getAllUsers(filter);
-        return ApiResponse.<List<UserResponse>>builder().result(result).build();
+        return ApiResponse.<PageResponse<UserResponse>>builder().result(result).build();
     }
 
     @PutMapping("/{id}/unban")

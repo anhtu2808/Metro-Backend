@@ -32,6 +32,11 @@ import com.metro.user.repository.RoleRepository;
 import com.metro.user.repository.UserRepository;
 import com.metro.user.specification.UserSpecification;
 import com.metro.user.service.UserService;
+import com.metro.common_lib.dto.response.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -149,9 +154,22 @@ public class UserServiceImpl implements UserService {
 
     @PreAuthorize("hasAnyAuthority('user:read')")
     @Override
-    public List<UserResponse> getAllUsers(UserFilterRequest filter) {
+    public PageResponse<UserResponse> getAllUsers(UserFilterRequest filter) {
         var spec = UserSpecification.withFilter(filter);
-        List<User> users = userRepository.findAll(spec);
-        return users.stream().map(userMapper::toUserResponse).collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(
+                Math.max(filter.getPage() - 1, 0),
+                filter.getSize(),
+                Sort.by(filter.getSort() != null ? filter.getSort() : "id"));
+        Page<User> pages = userRepository.findAll(spec, pageable);
+        List<UserResponse> data = pages.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
+        return PageResponse.<UserResponse>builder()
+                .data(data)
+                .pageSize(pages.getSize())
+                .totalPages(pages.getTotalPages())
+                .totalElements(pages.getTotalElements())
+                .currentPage(filter.getPage())
+                .build();
     }
 }
