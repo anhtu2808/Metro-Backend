@@ -26,6 +26,8 @@ public enum ErrorCode {
     INVALID_TICKET_STATUS(1021, "Invalid ticket status", HttpStatus.BAD_REQUEST),
     INVALID_PURCHASE_DATE(1022, "Invalid purchase date format", HttpStatus.BAD_REQUEST),
     INVALID_TICKET_TYPE(1023, "Invalid ticket type", HttpStatus.BAD_REQUEST),
+    SAGA_STATE_NOT_FOUND(1024, "Saga state not found for the given ticket order ID", HttpStatus.NOT_FOUND),
+    SAGA_STATE_INVALID_STATUS(1025, "Saga state has an invalid status", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
