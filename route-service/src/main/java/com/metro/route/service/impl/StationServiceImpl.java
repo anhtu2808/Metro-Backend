@@ -16,6 +16,7 @@ import com.metro.route.exception.ErrorCode;
 import com.metro.route.mapper.StationMapper;
 import com.metro.route.repository.LineRepository;
 import com.metro.route.repository.StationRepository;
+import com.metro.route.specification.StationSpecification;
 import com.metro.route.service.StationService;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -58,9 +59,10 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public PageResponse<StationResponse> getStations(int page, int size, String sort) {
+    public PageResponse<StationResponse> getStations(String search, int page, int size, String sort) {
         Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(sort));
-        Page<Station> pages = stationRepository.findAll(pageable);
+        var spec = StationSpecification.search(search);
+        Page<Station> pages = stationRepository.findAll(spec, pageable);
         List<StationResponse> data = pages.getContent().stream()
                 .map(stationMapper::toResponse)
                 .toList();
