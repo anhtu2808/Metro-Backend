@@ -10,7 +10,6 @@ import com.metro.user.entity.User;
 
 @Mapper(
         componentModel = "spring",
-        uses = {StudentVerificationMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 

@@ -24,5 +24,5 @@ public class UserResponse {
     Set<String> permissions;
     Boolean isStudentVerified;
     int deleted;
-    List<StudentVerificationResponse> studentVerifications;
+
 }
