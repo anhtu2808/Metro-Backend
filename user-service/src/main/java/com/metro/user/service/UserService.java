@@ -1,6 +1,6 @@
 package com.metro.user.service;
 
-import java.util.List;
+import com.metro.common_lib.dto.response.PageResponse;
 
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
@@ -25,7 +25,7 @@ public interface UserService {
      */
     UserResponse getMyInfo();
 
-    List<UserResponse> getAllUsers(UserFilterRequest filter);
+    PageResponse<UserResponse> getAllUsers(UserFilterRequest filter);
 
     @PreAuthorize("hasAuthority('user:unban')")
     void unBanUser(Long id);

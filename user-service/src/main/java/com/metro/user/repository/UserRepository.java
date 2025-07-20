@@ -7,6 +7,7 @@ import com.metro.user.enums.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,6 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     List<User> findAll(Specification<User> spec);
 
     @Query("UPDATE User u SET u.deleted = 0 WHERE u.id = :id")
+    @Modifying
     @Transactional
     void unBan(Long id);
 

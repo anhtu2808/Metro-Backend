@@ -10,6 +10,21 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserFilterRequest {
+    /**
+     * Page number starting from 1
+     */
+    int page;
+
+    /**
+     * Page size
+     */
+    int size;
+
+    /**
+     * Sort field
+     */
+    String sort;
+
     RoleType role;
     Integer deleted;
     String username;
