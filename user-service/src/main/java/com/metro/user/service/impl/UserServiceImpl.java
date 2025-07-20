@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
+import com.metro.user.dto.request.user.UserFilterRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.entity.Permission;
 import com.metro.user.entity.Role;
@@ -29,6 +30,7 @@ import com.metro.user.enums.RoleType;
 import com.metro.user.mapper.UserMapper;
 import com.metro.user.repository.RoleRepository;
 import com.metro.user.repository.UserRepository;
+import com.metro.user.specification.UserSpecification;
 import com.metro.user.service.UserService;
 
 import lombok.AccessLevel;
@@ -147,17 +149,9 @@ public class UserServiceImpl implements UserService {
 
     @PreAuthorize("hasAnyAuthority('user:read')")
     @Override
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
-    }
-    @Override
-    @PreAuthorize("hasRole('MANAGER')")
-    public List<UserResponse> getUsersByRole(RoleType roleType) {
-        Role role = roleRepository.findByName(roleType)
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        List<User> users = userRepository.findAllByRole_Name(role.getName());
-        return users.stream()
-                .map(userMapper::toUserResponse)
-                .collect(Collectors.toList());
+    public List<UserResponse> getAllUsers(UserFilterRequest filter) {
+        var spec = UserSpecification.withFilter(filter);
+        List<User> users = userRepository.findAll(spec);
+        return users.stream().map(userMapper::toUserResponse).collect(Collectors.toList());
     }
 }
