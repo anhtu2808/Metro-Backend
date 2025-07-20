@@ -317,7 +317,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
             throw new AppException(ErrorCode.VALID_UNTIL_MUST_BE_FUTURE);
         }
         boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
-        if (isUnlimited){
+        if (!isUnlimited){
             dynamicPrice = dynamicPriceClient
                     .getPriceByStartAndEnd(request.getLineId(), request.getStartStationId(), request.getEndStationId())
                     .getResult();
@@ -325,7 +325,8 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                 throw new AppException(ErrorCode.DYNAMIC_PRICE_NOT_FOUND);
             }else {
                 ticketOrder.setPrice(dynamicPrice.getPrice());
-            }        }
+            }
+        }
         else{
             ticketOrder.setPrice(ticketType.getPrice());
 
