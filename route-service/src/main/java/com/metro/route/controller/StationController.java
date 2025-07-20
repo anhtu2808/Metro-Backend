@@ -44,11 +44,12 @@ public class StationController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponse<StationResponse>> getStations(@RequestParam(defaultValue = "1") int page,
+    public ApiResponse<PageResponse<StationResponse>> getStations(@RequestParam(required = false) String search,
+                                                                  @RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
                                                                   @RequestParam(defaultValue = "id") String sort
     ) {
-        PageResponse<StationResponse> pageResp = stationService.getStations(page, size, sort);
+        PageResponse<StationResponse> pageResp = stationService.getStations(search, page, size, sort);
         return ApiResponse.<PageResponse<StationResponse>>builder()
                 .code(HttpStatus.OK.value())
                 .message("Stations fetched successfully")

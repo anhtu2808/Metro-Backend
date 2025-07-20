@@ -225,6 +225,12 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                     .map(TicketTypeResponse::getId)
                     .toList();
         }
+        if (req.getIsStatic() != null && req.getIsStatic().equals(Boolean.FALSE)) {
+            ticketTypeIds = ticketTypes.stream()
+                    .filter(t -> !t.getIsStatic().equals(req.getIsStatic()))
+                    .map(TicketTypeResponse::getId)
+                    .toList();
+        }
 
         if (req.getIsStudent() != null && req.getIsStudent().equals(Boolean.TRUE)) {
             List<Long> studentTypeIds = ticketTypes.stream()

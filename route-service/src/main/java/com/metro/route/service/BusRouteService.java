@@ -13,7 +13,7 @@ public interface BusRouteService {
 
     BusRouteResponse getBusRouteById(Long id);
 
-    PageResponse<BusRouteResponse> getBusRoutes(int page, int size, String sort);
+    PageResponse<BusRouteResponse> getBusRoutes(Long stationId, int page, int size, String sort);
 
     @PreAuthorize("hasAuthority('BUS_ROUTE_UPDATE')")
     BusRouteResponse updateBusRoute(Long id, BusRouteUpdateRequest request);
@@ -21,5 +21,5 @@ public interface BusRouteService {
     @PreAuthorize("hasAuthority('BUS_ROUTE_DELETE')")
     void deleteBusRoute(Long id);
 
-    PageResponse<BusRouteResponse> getBusRoutesByStationId(Long stationId, int page, int size, String sort);
+
 }

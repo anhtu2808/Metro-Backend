@@ -1,11 +1,13 @@
 package com.metro.user.service;
 
-import java.util.List;
+import com.metro.common_lib.dto.response.PageResponse;
 
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.enums.RoleType;
+import com.metro.user.dto.request.user.UserFilterRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface UserService {
     UserResponse createUser(UserRequest request, RoleType role);
@@ -23,6 +25,8 @@ public interface UserService {
      */
     UserResponse getMyInfo();
 
-    List<UserResponse> getAllUsers();
-    List<UserResponse> getUsersByRole(RoleType roleType);
+    PageResponse<UserResponse> getAllUsers(UserFilterRequest filter);
+
+    @PreAuthorize("hasAuthority('user:unban')")
+    void unBanUser(Long id);
 }

@@ -37,5 +37,6 @@ public class Transaction extends AbstractAuditingEntity {
     PaymentMethodEnum paymentMethod;
     @Column(name = "ticket_order_id", nullable = false)
     Long orderTicketId;
+    Long sagaId;
 }
 

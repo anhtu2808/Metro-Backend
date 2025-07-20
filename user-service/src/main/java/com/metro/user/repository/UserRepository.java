@@ -5,14 +5,18 @@ import java.util.Optional;
 
 import com.metro.user.enums.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.metro.user.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);
@@ -21,6 +25,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u JOIN FETCH u.role r JOIN FETCH r.permissions WHERE u.email = :email")
     Optional<User> findByEmailWithRoleAndPermissions(@Param("email") String email);
-    List<User> findAllByRole_Name(RoleType name);
+
+    List<User> findAll(Specification<User> spec);
+
+    @Query("UPDATE User u SET u.deleted = 0 WHERE u.id = :id")
+    @Modifying
+    @Transactional
+    void unBan(Long id);
 
 }

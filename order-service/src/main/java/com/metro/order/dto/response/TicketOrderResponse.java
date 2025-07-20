@@ -50,4 +50,5 @@ public class TicketOrderResponse {
 
     @Schema(description = "Thời gian vé có hiệu lực đến", example = "2025-07-25T23:59:59")
     LocalDateTime validUntil;
+    String paymentUrl;
 }

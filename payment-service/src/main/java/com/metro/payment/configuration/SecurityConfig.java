@@ -18,7 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-
+            "payments/internal/**",
+            "payments/**"
     };
     private final String[] SWAGGER_ENDPOINTS = {
             "/swagger-ui/**",

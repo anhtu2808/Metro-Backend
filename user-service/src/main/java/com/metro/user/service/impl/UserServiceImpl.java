@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
+import com.metro.user.dto.request.user.UserFilterRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.entity.Permission;
 import com.metro.user.entity.Role;
@@ -29,7 +30,13 @@ import com.metro.user.enums.RoleType;
 import com.metro.user.mapper.UserMapper;
 import com.metro.user.repository.RoleRepository;
 import com.metro.user.repository.UserRepository;
+import com.metro.user.specification.UserSpecification;
 import com.metro.user.service.UserService;
+import com.metro.common_lib.dto.response.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -110,6 +117,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
+
+    @Override
+    public void unBanUser(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userRepository.unBan(userId);
+    }
+
     @PreAuthorize("hasAuthority('user:read') or hasAuthority('TICKET_ORDER_READ_ALL')")
     @Override
     public UserResponse getUser(long id) {
@@ -140,17 +154,22 @@ public class UserServiceImpl implements UserService {
 
     @PreAuthorize("hasAnyAuthority('user:read')")
     @Override
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
-    }
-    @Override
-    @PreAuthorize("hasRole('MANAGER')")
-    public List<UserResponse> getUsersByRole(RoleType roleType) {
-        Role role = roleRepository.findByName(roleType)
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        List<User> users = userRepository.findAllByRole_Name(role.getName());
-        return users.stream()
+    public PageResponse<UserResponse> getAllUsers(UserFilterRequest filter) {
+        var spec = UserSpecification.withFilter(filter);
+        Pageable pageable = PageRequest.of(
+                Math.max(filter.getPage() - 1, 0),
+                filter.getSize(),
+                Sort.by(filter.getSort() != null ? filter.getSort() : "id"));
+        Page<User> pages = userRepository.findAll(spec, pageable);
+        List<UserResponse> data = pages.getContent().stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
+        return PageResponse.<UserResponse>builder()
+                .data(data)
+                .pageSize(pages.getSize())
+                .totalPages(pages.getTotalPages())
+                .totalElements(pages.getTotalElements())
+                .currentPage(filter.getPage())
+                .build();
     }
 }

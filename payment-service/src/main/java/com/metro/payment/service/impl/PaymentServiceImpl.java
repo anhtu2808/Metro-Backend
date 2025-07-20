@@ -10,6 +10,7 @@ import com.metro.payment.enums.TicketStatus;
 import com.metro.payment.exception.AppException;
 import com.metro.payment.exception.ErrorCode;
 import com.metro.payment.repository.TransactionRepository;
+import com.metro.payment.repository.httpClient.OrderClient;
 import com.metro.payment.repository.httpClient.TicketOrderClient;
 import com.metro.payment.repository.httpClient.UserClient;
 import com.metro.payment.service.PaymentService;
@@ -36,6 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
     final TransactionRepository transactionRepository;
     final TicketOrderClient ticketOrderClient;
     final UserClient userClient;
+    final OrderClient orderClient;
     @Value("${internal.secret}")
     String internalSecret;
 
@@ -64,6 +66,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 🟢 Lưu giao dịch trước với PENDING
         transactionRepository.save(Transaction.builder()
+                .sagaId(null) // Saga ID can be set later if needed
                 .transactionCode(transactionCode)
                 .amount(amount)
                 .status(PaymentStatusEnum.PENDING)
@@ -120,7 +123,15 @@ public class PaymentServiceImpl implements PaymentService {
                 transactionRepository.save(transaction);
                 try {
                     log.info("🔥 Sending secret: {}", internalSecret);
-                    ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.INACTIVE,formattedPurchaseDate,internalSecret);
+                    if (transaction.getSagaId() == null) {
+                        ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.INACTIVE, formattedPurchaseDate, internalSecret);
+                    }else {
+                        orderClient.handleAdjustmentCallback
+                                (transaction.getSagaId(),
+                                        true,
+                                        "Thanh toán thành công",
+                                        internalSecret);  // Sync call to Order (add FeignClient for Order if needed)
+                    }
                 } catch (Exception ex) {
                     log.error("Không thể cập nhật trạng thái TicketOrder sau khi thanh toán", ex);
                 }
@@ -135,5 +146,58 @@ public class PaymentServiceImpl implements PaymentService {
             log.error("Lỗi xử lý callback VNPay", e);
             return new VNPayResponse("99", "Lỗi xử lý callback", null);
         }
+    }
+    @Override
+    public VNPayResponse createAdjustmentPayment(
+            Long sagaId,
+            Long ticketOrderId,
+            BigDecimal adjustmentAmount,
+            String bankCode,
+            HttpServletRequest request
+            ) {
+        Long userId = getCurrentUserId();
+
+        var ticketOrder = ticketOrderClient.getTicketOrderById(ticketOrderId).getResult();
+        if (ticketOrder == null || ticketOrder.getPrice() == null) {
+            throw new AppException(ErrorCode.TICKET_ORDER_NOT_EXISTED);
+        }
+
+        String transactionCode = VNPayUtil.getRandomNumber(10);
+        long vnpAmount = adjustmentAmount.multiply(BigDecimal.valueOf(100)).longValue();
+
+        // 🟢 Lưu giao dịch trước với PENDING
+        transactionRepository.save(Transaction.builder()
+                .sagaId(sagaId)
+                .transactionCode(transactionCode)
+                .amount(adjustmentAmount)
+                .status(PaymentStatusEnum.PENDING)
+                .paymentMethod(PaymentMethodEnum.VNPAY)
+                .orderTicketId(ticketOrderId)
+                .userId(userId)
+                .build());
+//        HttpServletRequest request = ipAddr;
+        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+        vnpParamsMap.put("vnp_Amount", String.valueOf(vnpAmount));
+        vnpParamsMap.put("vnp_TxnRef", transactionCode);
+        vnpParamsMap.put("vnp_OrderInfo", ticketOrderId.toString()); // chỉ cần ticketOrderId
+//        vnpParamsMap.put("vnp_IpAddr",ipAddr);
+        vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
+
+        if (bankCode != null && !bankCode.isEmpty()) {
+            vnpParamsMap.put("vnp_BankCode", bankCode);
+        }
+
+        String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);
+        String hashData = VNPayUtil.getPaymentURL(vnpParamsMap, false);
+        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
+        queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
+
+        String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
+
+        return VNPayResponse.builder()
+                .code("ok")
+                .message("success")
+                .paymentUrl(paymentUrl)
+                .build();
     }
 }

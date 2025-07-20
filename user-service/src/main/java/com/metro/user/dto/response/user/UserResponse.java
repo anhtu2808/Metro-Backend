@@ -23,5 +23,6 @@ public class UserResponse {
     String role;
     Set<String> permissions;
     Boolean isStudentVerified;
-    List<StudentVerificationResponse> studentVerifications;
+    int deleted;
+
 }

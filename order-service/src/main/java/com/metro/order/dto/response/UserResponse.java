@@ -3,6 +3,7 @@ package com.metro.order.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -19,4 +20,7 @@ public class UserResponse {
     String phone;
     String avatarUrl;
     String address;
+    boolean isStudentVerified;
+    LocalDateTime createdAt;
+
 }

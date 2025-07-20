@@ -17,5 +17,7 @@ public class StudentVerificationResponse {
     String schoolName;
     String imageUrl;
     LocalDate graduateDate;
+    UserResponse user;
     StudentVerificationStatus status;
+
 }

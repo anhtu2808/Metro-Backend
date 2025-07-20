@@ -10,9 +10,11 @@ import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.entity.TicketOrder;
 import com.metro.order.enums.TicketStatus;
 import com.metro.order.repository.httpClient.UserClient;
+import com.metro.order.saga.FareAdjustmentOrchestrator;
 import com.metro.order.service.Impl.TicketOrderServiceImpl;
 import com.metro.order.service.TicketOrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -42,6 +44,7 @@ public class TicketOrderController{
     String internalSecret;
     final UserClient userClient;
     final TicketOrderService ticketOrderService;
+    final FareAdjustmentOrchestrator fareAdjustmentOrchestrator;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -66,17 +69,23 @@ public class TicketOrderController{
 
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Void> updateTicketOrderStatus(@PathVariable Long id,
+    public ApiResponse<Void> updateTicketOrderStatus(@PathVariable Long id,
                                                         @RequestParam TicketStatus status,
                                                         @RequestHeader(value = "X-INTERNAL-SECRET", required = false) String providedSecret) {
         log.info("💡 Provided secret: {}", providedSecret);
         log.info("🔐 Expected secret: {}", internalSecret);
         if (providedSecret == null || !providedSecret.equals(internalSecret)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ApiResponse.<Void>builder()
+                    .code(HttpStatus.UNAUTHORIZED.value())
+                    .message("Unauthorized: Invalid internal secret")
+                    .build();
         }
 
         ticketOrderService.updateTicketOrderStatus(id, status);
-        return ResponseEntity.ok().build();
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Ticket order status updated successfully")
+                .build();
     }
 
     @GetMapping("/by-user/{userId}") //all order cua user find theo userId cho permission ticket_order:viewall
@@ -151,5 +160,17 @@ public class TicketOrderController{
         }
         ticketOrderService.updateTicketOrderStatusAndPurchase(id, status, purchaseDate);
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/{ticketOrderId}/adjust-fare")
+    public ApiResponse<TicketOrderResponse> adjustFare(
+            @PathVariable Long ticketOrderId,
+            @RequestParam Long newEndStationId,
+            HttpServletRequest request) {
+        TicketOrderResponse response = fareAdjustmentOrchestrator.execute(ticketOrderId, newEndStationId, request);
+        return ApiResponse.<TicketOrderResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Yêu cầu điều chỉnh giá vé đã được xử lý")
+                .result(response)
+                .build();
     }
 }
