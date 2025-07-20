@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
+import com.metro.user.dto.request.user.UserFilterRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.enums.RoleType;
 import com.metro.user.service.UserService;
@@ -61,14 +62,17 @@ public class UserController {
     }
 
     @GetMapping
-    public ApiResponse<List<UserResponse>> getAllUsers() {
-        var result = userService.getAllUsers();
+    public ApiResponse<List<UserResponse>> getAllUsers(@ModelAttribute UserFilterRequest filter) {
+        var result = userService.getAllUsers(filter);
         return ApiResponse.<List<UserResponse>>builder().result(result).build();
     }
 
-    @GetMapping("/role/{roleType}")
-    public ApiResponse<List<UserResponse>> getUsersByRole(@PathVariable RoleType roleType) {
-        var result = userService.getUsersByRole(roleType);
-        return ApiResponse.<List<UserResponse>>builder().result(result).build();
+    @PutMapping("/{id}/unban")
+    public ApiResponse<Void> unBanUser(@PathVariable Long id) {
+        userService.unBanUser(id);
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("User unbanned successfully")
+                .build();
     }
 }

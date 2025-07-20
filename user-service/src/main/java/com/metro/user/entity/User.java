@@ -20,7 +20,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @SQLDelete(sql = "UPDATE user SET deleted = 1 WHERE id = ?")
-@SQLRestriction("deleted = 0")
 public class User extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

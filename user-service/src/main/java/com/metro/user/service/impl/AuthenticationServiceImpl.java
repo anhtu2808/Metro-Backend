@@ -67,6 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     final UserMapper userMapper;
     final ForgotPasswordRepository passwordOtpRepository;
     final EventBuilder eventBuilder;
+
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
@@ -91,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated) throw new AppException(ErrorCode.INCORRECT_USERNAME_PASSWORD);
-
+        if (user.getDeleted() == 1) throw new AppException(ErrorCode.USER_HAS_BEEN_BANNED);
         var token = generateToken(user);
 
         return AuthenticationResponse.builder().token(token).build();
@@ -165,11 +166,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Date expiryTime = (isRefresh)
                 ? new Date(signedJWT
-                        .getJWTClaimsSet()
-                        .getIssueTime()
-                        .toInstant()
-                        .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
-                        .toEpochMilli())
+                .getJWTClaimsSet()
+                .getIssueTime()
+                .toInstant()
+                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
@@ -213,7 +214,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse authenticateWithGoogle(String idTokenString) {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                            GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance())
+                    GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance())
                     .setAudience(List.of("709789750534-gt40kns8437i96kl0olichbo0og1hv97.apps.googleusercontent.com"))
                     .build();
 
