@@ -18,18 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(
         config = DefaultConfigMapper.class
 )
-public interface TicketOrderMapper extends EntityMappers<
-        TicketOrder,
-        TicketOrderCreationRequest,
-        TicketOrderUpdateRequest,
-        TicketOrderResponse> {
-    @Override
+public interface TicketOrderMapper{
     TicketOrder toEntity(TicketOrderCreationRequest request);
 
-    @Override
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "ticketType", ignore = true)
     @Mapping(target = "startStation", ignore = true)
     @Mapping(target = "endStation", ignore = true)
     TicketOrderResponse toResponse(TicketOrder entity);
+
+    @Mapping(target = "userId", ignore = true)
+    void updateEntity(TicketOrderUpdateRequest request, @MappingTarget TicketOrder entity);
 }

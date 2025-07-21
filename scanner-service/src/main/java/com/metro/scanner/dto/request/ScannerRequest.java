@@ -12,4 +12,5 @@ public class ScannerRequest {
     Long lineId;
     Long stationId;
     String ticketOrderToken;
+    Boolean isCheckIn; // true: check-in, false: check-out
 }

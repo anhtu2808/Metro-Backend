@@ -107,8 +107,8 @@ public class DynamicPriceServiceImpl implements DynamicPriceService {
         if (distance.compareTo(rule.getStartRange()) > 0) {
             BigDecimal extra = distance.subtract(rule.getStartRange());
             price = price.add(extra.multiply(rule.getPricePerKm()));
-            price = price.setScale(0, RoundingMode.FLOOR);
         }
+        price = roundToNearestThousand(price);
 
         prices.add(DynamicPrice.builder()
                 .startStationId(startStationId)
@@ -117,6 +117,11 @@ public class DynamicPriceServiceImpl implements DynamicPriceService {
                 .price(price)
                 .dynamicPriceMaster(rule)
                 .build());
+    }
+
+    private BigDecimal roundToNearestThousand(BigDecimal price) {
+        return price.divide(BigDecimal.valueOf(1000), 0, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(1000));
     }
 
     @Override

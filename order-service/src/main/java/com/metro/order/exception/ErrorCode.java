@@ -24,6 +24,13 @@ public enum ErrorCode {
     SIGNER_KEY_NOT_FOUND(500, "Signer key not found in the environment variables", HttpStatus.INTERNAL_SERVER_ERROR),
     INTERNAL_SERVER_ERROR(500, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_TICKET_STATUS(1021, "Invalid ticket status", HttpStatus.BAD_REQUEST),
+    TICKET_ORDER_EXPIRED(1022, "Ticket order has expired", HttpStatus.BAD_REQUEST),
+    LINE_ID_REQUIRED_FOR_DYNAMIC_TICKET(1023, "Line ID is required for dynamic ticket orders", HttpStatus.BAD_REQUEST),
+    VALID_UNTIL_MUST_BE_FUTURE(1024, "Valid until date must be in the future", HttpStatus.BAD_REQUEST),
+    INVALID_PURCHASE_DATE(1022, "Invalid purchase date format", HttpStatus.BAD_REQUEST),
+    INVALID_TICKET_TYPE(1023, "Invalid ticket type", HttpStatus.BAD_REQUEST),
+    SAGA_STATE_NOT_FOUND(1024, "Saga state not found for the given ticket order ID", HttpStatus.NOT_FOUND),
+    SAGA_STATE_INVALID_STATUS(1025, "Saga state has an invalid status", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

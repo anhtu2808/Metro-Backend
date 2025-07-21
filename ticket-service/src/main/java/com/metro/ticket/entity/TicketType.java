@@ -29,6 +29,6 @@ public class TicketType extends AbstractAuditingEntity {
     @Builder.Default
     Boolean isStudent = false;
     @Builder.Default
-    boolean isStatic = true;
+    Boolean isStatic = true;
     BigDecimal price;
 }

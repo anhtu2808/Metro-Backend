@@ -24,7 +24,7 @@ public class TicketOrderResponseEnricher {
     }
     public void enrich(TicketOrder entity, TicketOrderResponse response) {
         try {
-            if (hasPermission("ticket_order:viewall")) {
+            if (hasPermission("TICKET_ORDER_READ_ALL")) {
                 response.setUser(userClient.getUser(entity.getUserId()).getResult());
             } else {
                 response.setUser(userClient.getMyInfo().getResult());

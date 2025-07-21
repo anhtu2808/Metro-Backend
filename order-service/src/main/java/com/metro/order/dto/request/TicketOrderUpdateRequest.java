@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -27,4 +28,24 @@ public class TicketOrderUpdateRequest {
     @FutureOrPresent(message = "Valid until date must be in the present or future")
     @Schema(description = "Thời gian vé có hiệu lực đến, nếu cập nhật", example = "2025-07-25T23:59:59")
     LocalDateTime validUntil;
+
+    @Positive(message = "Ticket Type ID must be positive")
+    @Schema(description = "ID của loại vé mới, nếu cập nhật", example = "1")
+    Long ticketTypeId;
+
+    @Positive(message = "Start Station ID must be positive")
+    @Schema(description = "ID của ga bắt đầu mới, nếu cập nhật", example = "1")
+    Long startStationId;
+
+    @Positive(message = "End Station ID must be positive")
+    @Schema(description = "ID của ga kết thúc mới, nếu cập nhật", example = "2")
+    Long endStationId;
+
+    @Positive(message = "Line ID must be positive")
+    @Schema(description = "ID của tuyến (line) mới, nếu cập nhật", example = "1")
+    Long lineId;
+
+//    @Schema(description = "Giá mới của vé, nếu cập nhật", example = "7000.00")
+//    BigDecimal price;
+
 }

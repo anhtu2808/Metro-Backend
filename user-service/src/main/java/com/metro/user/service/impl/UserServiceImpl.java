@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.metro.event.dto.NotificationEvent;
+import com.metro.user.event.EventBuilder;
 import com.metro.user.service.NotificationEventProducer;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.metro.user.Exception.AppException;
 import com.metro.user.dto.request.user.UserRequest;
 import com.metro.user.dto.request.user.UserUpdateRequest;
+import com.metro.user.dto.request.user.UserFilterRequest;
 import com.metro.user.dto.response.user.UserResponse;
 import com.metro.user.entity.Permission;
 import com.metro.user.entity.Role;
@@ -28,7 +30,13 @@ import com.metro.user.enums.RoleType;
 import com.metro.user.mapper.UserMapper;
 import com.metro.user.repository.RoleRepository;
 import com.metro.user.repository.UserRepository;
+import com.metro.user.specification.UserSpecification;
 import com.metro.user.service.UserService;
+import com.metro.common_lib.dto.response.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -48,16 +56,18 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
     NotificationEventProducer notificationEventProducer;
+    EventBuilder eventBuilder;
 
     @Override
     @Transactional
     public UserResponse createUser(UserRequest request, RoleType roleType) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
+        if (userRepository.existsByEmail(request.getEmail())) throw new AppException(ErrorCode.EMAIL_EXISTED);
         Role role = roleRepository.findByName(roleType).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         User user = userMapper.toUser(request, role, hashedPassword);
         user = userRepository.save(user);
-        sendWelcomeNotification(user.getEmail(), user.getUsername());
+        eventBuilder.buildWelcomeEvent(user.getEmail(), user.getUsername());
         return userMapper.toUserResponse(user);
     }
 
@@ -108,7 +118,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("hasAuthority('user:read') or hasAuthority('ticket_order:viewall')")
+
+    @Override
+    public void unBanUser(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userRepository.unBan(userId);
+    }
+
+    @PreAuthorize("hasAuthority('user:read') or hasAuthority('TICKET_ORDER_READ_ALL')")
     @Override
     public UserResponse getUser(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -138,37 +155,22 @@ public class UserServiceImpl implements UserService {
 
     @PreAuthorize("hasAnyAuthority('user:read')")
     @Override
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
-    }
-    private void sendWelcomeNotification(String email, String username) {
-        try {
-            NotificationEvent event = NotificationEvent.builder()
-                    .channel("email")
-                    .recipient(email)
-                    .templateCode("welcome-email")
-                    .param(Map.of(
-                            "userName", username,
-                            "customMessage", "Chúc mừng bạn đã đăng ký thành công!"
-                    ))
-                    .subject("Chào mừng bạn đến với Metro!")
-                    .build();
-            notificationEventProducer.sendWelcomeEmailEvent(event);
-            log.info("Welcome notification sent for user: {}", username);
-        } catch (Exception e) {
-            log.error("Failed to send welcome notification for user: {}, error: {}", username, e.getMessage());
-            // Không ném exception để không làm gián đoạn luồng chính
-        }
-    }
-
-    @Override
-    @PreAuthorize("hasRole('MANAGER')")
-    public List<UserResponse> getUsersByRole(RoleType roleType) {
-        Role role = roleRepository.findByName(roleType)
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        List<User> users = userRepository.findAllByRole_Name(role.getName());
-        return users.stream()
+    public PageResponse<UserResponse> getAllUsers(UserFilterRequest filter) {
+        var spec = UserSpecification.withFilter(filter);
+        Pageable pageable = PageRequest.of(
+                Math.max(filter.getPage() - 1, 0),
+                filter.getSize(),
+                Sort.by(filter.getSort() != null ? filter.getSort() : "id"));
+        Page<User> pages = userRepository.findAll(spec, pageable);
+        List<UserResponse> data = pages.getContent().stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
+        return PageResponse.<UserResponse>builder()
+                .data(data)
+                .pageSize(pages.getSize())
+                .totalPages(pages.getTotalPages())
+                .totalElements(pages.getTotalElements())
+                .currentPage(filter.getPage())
+                .build();
     }
 }
