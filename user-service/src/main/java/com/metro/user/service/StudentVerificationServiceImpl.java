@@ -65,7 +65,7 @@ public class StudentVerificationServiceImpl implements StudentVerificationServic
 
     @Override
     public PageResponse<StudentVerificationResponse> getStudentVerifications(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort));
         Page<StudentVerification> pages = studentVerificationRepository.findAll(pageable);
         List<StudentVerificationResponse> data = pages.getContent().stream()
                 .map(studentVerificationMapper::toResponse)
@@ -76,7 +76,8 @@ public class StudentVerificationServiceImpl implements StudentVerificationServic
                 .totalPages(pages.getNumber())
                 .totalElements(pages.getTotalElements())
                 .currentPage(page)
-                .build();}
+                .build();
+    }
 
     @Override
     public StudentVerificationResponse updateStudentVerification(Long id, StudentVerificationUpdateRequest request) {
@@ -85,7 +86,8 @@ public class StudentVerificationServiceImpl implements StudentVerificationServic
                 .orElseThrow(() -> new AppException(ErrorCode.STUDENT_VERIFICATION_NOT_FOUND));
         studentVerificationMapper.updateEntity(request, entity);
         entity = studentVerificationRepository.save(entity);
-        return studentVerificationMapper.toResponse(entity);    }
+        return studentVerificationMapper.toResponse(entity);
+    }
 
     @Override
     public void deleteStudentVerification(Long id) {
