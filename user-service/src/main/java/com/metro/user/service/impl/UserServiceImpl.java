@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse createUser(UserRequest request, RoleType roleType) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
+        if (userRepository.existsByEmail(request.getEmail())) throw new AppException(ErrorCode.EMAIL_EXISTED);
         Role role = roleRepository.findByName(roleType).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         User user = userMapper.toUser(request, role, hashedPassword);

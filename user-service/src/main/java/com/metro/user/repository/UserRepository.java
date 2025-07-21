@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.metro.user.enums.RoleType;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -33,4 +35,5 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Transactional
     void unBan(Long id);
 
+    boolean existsByEmail(@Email @NotBlank String email);
 }
