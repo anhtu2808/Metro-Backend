@@ -29,10 +29,8 @@ public class StationCreationRequest {
     String address;
 
     @NotBlank(message = "Latitude is required")
-    @Pattern(regexp = "^-?([1-8]?[0-9]|[1-9]0)\\.{1}\\d{1,6}$", message = "Invalid latitude format")
     String latitude;
 
     @NotBlank(message = "Longitude is required")
-    @Pattern(regexp = "^-?((1[0-7]|[1-9])?[0-9]|180)\\.{1}\\d{1,6}$", message = "Invalid longitude format")
     String longitude;
 }
