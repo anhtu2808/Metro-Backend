@@ -7,6 +7,7 @@ import com.metro.order.exception.AppException;
 import com.metro.order.exception.ErrorCode;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,5 +32,11 @@ public class TicketOrderSpecification {
                 }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+    public static Specification<TicketOrder> withDateRange(LocalDateTime fromDate, LocalDateTime toDate) {
+        return (root, query, cb) -> cb.and(
+                cb.greaterThanOrEqualTo(root.get("createAt"), fromDate),
+                cb.lessThanOrEqualTo(root.get("createAt"), toDate)
+        );
     }
 }

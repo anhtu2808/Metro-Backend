@@ -4,6 +4,7 @@ import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.order.dto.request.TicketOrderCreationRequest;
 import com.metro.order.dto.request.TicketOrderFilterRequest;
 import com.metro.order.dto.request.TicketOrderUpdateRequest;
+import com.metro.order.dto.response.DashboardResponse;
 import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.enums.TicketStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,4 +28,5 @@ public interface TicketOrderService {
     TicketOrderResponse updateTicketOrder(Long ticketOrderId, TicketOrderUpdateRequest request);
 
     void updateTicketOrderStatusAndPurchase(Long ticketOrderId, TicketStatus status, LocalDateTime purchaseDate);
-}
+    DashboardResponse getDashboardTicketOrder(LocalDateTime fromDate, LocalDateTime toDate);
+    }
