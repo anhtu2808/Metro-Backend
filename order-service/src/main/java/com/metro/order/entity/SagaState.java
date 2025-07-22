@@ -20,6 +20,7 @@ public class SagaState {
     Long sagaId;
     Long ticketOrderId;
     BigDecimal adjustmentAmount;
+    BigDecimal newPrice;  // New price after adjustment
     Long newEndStationId;
     @Enumerated(EnumType.STRING)
     SagaStatus status;  // PENDING, COMPLETED, FAILED

@@ -1,17 +1,18 @@
 package com.metro.order.controller;
 
-import com.metro.common_lib.controller.AbstractController;
 import com.metro.common_lib.dto.response.ApiResponse;
 import com.metro.common_lib.dto.response.PageResponse;
 import com.metro.order.dto.request.TicketOrderCreationRequest;
 import com.metro.order.dto.request.TicketOrderFilterRequest;
 import com.metro.order.dto.request.TicketOrderUpdateRequest;
+import com.metro.order.dto.response.DashboardResponse;
+import com.metro.order.dto.response.FareAdjustmentReponse;
 import com.metro.order.dto.response.TicketOrderResponse;
-import com.metro.order.entity.TicketOrder;
 import com.metro.order.enums.TicketStatus;
+import com.metro.order.exception.AppException;
+import com.metro.order.exception.ErrorCode;
 import com.metro.order.repository.httpClient.UserClient;
-import com.metro.order.saga.FareAdjustmentOrchestrator;
-import com.metro.order.service.Impl.TicketOrderServiceImpl;
+import com.metro.order.saga.service.FareAdjustmentOrchestrator;
 import com.metro.order.service.TicketOrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -162,15 +163,32 @@ public class TicketOrderController{
         return ResponseEntity.ok().build();
     }
     @PostMapping("/{ticketOrderId}/adjust-fare")
-    public ApiResponse<TicketOrderResponse> adjustFare(
+    public ApiResponse<FareAdjustmentReponse> adjustFare(
             @PathVariable Long ticketOrderId,
             @RequestParam Long newEndStationId,
             HttpServletRequest request) {
-        TicketOrderResponse response = fareAdjustmentOrchestrator.execute(ticketOrderId, newEndStationId, request);
-        return ApiResponse.<TicketOrderResponse>builder()
+        FareAdjustmentReponse response = fareAdjustmentOrchestrator.execute(ticketOrderId, newEndStationId, request);
+        return ApiResponse.<FareAdjustmentReponse>builder()
                 .code(HttpStatus.OK.value())
                 .message("Yêu cầu điều chỉnh giá vé đã được xử lý")
                 .result(response)
                 .build();
     }
+    @GetMapping("/dashboard")
+    public ApiResponse<DashboardResponse> getDashboardData(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate) {
+
+        if (toDate.isBefore(fromDate)) {
+            throw new AppException(ErrorCode.INVALID_DATE_RANGE, "To date must be after From date");
+        }
+        DashboardResponse response = ticketOrderService.getDashboardTicketOrder(fromDate, toDate);
+
+        return ApiResponse.<DashboardResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Fetched dashboard data successfully")
+                .result(response)
+                .build();
+    }
+
 }
