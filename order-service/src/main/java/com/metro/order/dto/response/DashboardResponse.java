@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DashboardResponse  {
     Long totalOrders;
-    Long totalTicketsSold;  // Vé bán thành công
     Long totalUsers;  // Unique users mua vé
     BigDecimal totalRevenue;  // Sum price/amount
 
@@ -26,8 +25,6 @@ public class DashboardResponse  {
     Long studentTicketCount;
     BigDecimal studentTicketRevenue;
 
-//    Long nonStudentTicketCount;
-//    BigDecimal nonStudentTicketRevenue;
 
     Long completedOrderCount;
     BigDecimal completedOrderRevenue;

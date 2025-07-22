@@ -307,52 +307,35 @@ public class TicketOrderServiceImpl implements TicketOrderService {
     public TicketOrderResponse updateTicketOrder(Long ticketOrderId, TicketOrderUpdateRequest request) {
         TicketOrder ticketOrder = ticketOrderRepository.findById(ticketOrderId)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
-
-        UserResponse userResponse = userClient.getMyInfo().getResult();
         TicketTypeResponse ticketType = requireTicketTypeById(request, ticketOrder);
-        StationResponse startStation = new StationResponse();
-        StationResponse endStation = new StationResponse();
-        DynamicPriceResponse dynamicPrice = new DynamicPriceResponse();
 
         if (request.getValidUntil() != null && request.getValidUntil().isBefore(LocalDateTime.now())) {
             throw new AppException(ErrorCode.VALID_UNTIL_MUST_BE_FUTURE);
         }
         boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
+        ticketOrderMapper.updateEntity(request, ticketOrder);
+
         if (!isUnlimited) {
-            dynamicPrice = dynamicPriceClient
+            DynamicPriceResponse dynamicPrice = dynamicPriceClient
                     .getPriceByStartAndEnd(request.getLineId(), request.getStartStationId(), request.getEndStationId())
                     .getResult();
             if (dynamicPrice == null || dynamicPrice.getPrice() == null || dynamicPrice.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new AppException(ErrorCode.DYNAMIC_PRICE_NOT_FOUND);
             } else {
                 ticketOrder.setPrice(dynamicPrice.getPrice());
+                ticketOrder.setStartStationId(request.getStartStationId());
+                ticketOrder.setEndStationId(request.getEndStationId());
+                ticketOrder.setLineId(request.getLineId());
             }
         } else {
             ticketOrder.setPrice(ticketType.getPrice());
-
-            if (request.getStartStationId() != null) {
-                startStation = requireStationById(request.getStartStationId(), ErrorCode.START_STATION_NOT_FOUND);
-            }
-            if (request.getEndStationId() != null) {
-                endStation = requireStationById(request.getEndStationId(), ErrorCode.END_STATION_NOT_FOUND);
-            }
-            if (request.getStartStationId() != null && request.getEndStationId() != null &&
-                    request.getStartStationId().equals(request.getEndStationId())) {
-                throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
-            } else {
                 ticketOrder.setStartStationId(null);
                 ticketOrder.setEndStationId(null);
-            }
+                ticketOrder.setLineId(null);
         }
-
-        ticketOrderMapper.updateEntity(request, ticketOrder);
-
         TicketOrder saved = ticketOrderRepository.save(ticketOrder);
         TicketOrderResponse response = ticketOrderMapper.toResponse(saved);
-        response.setEndStation(endStation);
-        response.setStartStation(startStation);
-        response.setTicketType(ticketType);
-        response.setUser(userResponse);
+        responseEnricher.enrich(saved, response);
         return response;
     }
 
@@ -415,6 +398,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                 .toList();
          return DashboardResponse.builder()
                 .totalOrders((long)orders.size())
+                .totalUsers(user)
                 .totalRevenue(sumRevenue(staticOrders).add(sumRevenue(dynamicOrders)))
                 .staticTicketCount((long) staticOrders.size())
                 .staticTicketRevenue(sumRevenue(staticOrders))

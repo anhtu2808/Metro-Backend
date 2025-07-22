@@ -24,6 +24,7 @@ public interface TicketOrderService {
     PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req);
 
     String generateTicketToken(Long ticketOrderId);
+
     @PreAuthorize("hasAuthority('TICKET_ORDER_UPDATE')")
     TicketOrderResponse updateTicketOrder(Long ticketOrderId, TicketOrderUpdateRequest request);
 
