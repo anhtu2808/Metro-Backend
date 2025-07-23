@@ -10,7 +10,6 @@ import com.metro.payment.enums.TicketStatus;
 import com.metro.payment.exception.AppException;
 import com.metro.payment.exception.ErrorCode;
 import com.metro.payment.repository.TransactionRepository;
-import com.metro.payment.repository.httpClient.OrderClient;
 import com.metro.payment.repository.httpClient.TicketOrderClient;
 import com.metro.payment.repository.httpClient.UserClient;
 import com.metro.payment.service.PaymentService;
@@ -37,7 +36,6 @@ public class PaymentServiceImpl implements PaymentService {
     final TransactionRepository transactionRepository;
     final TicketOrderClient ticketOrderClient;
     final UserClient userClient;
-    final OrderClient orderClient;
     @Value("${internal.secret}")
     String internalSecret;
 
@@ -126,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
                     if (transaction.getSagaId() == null) {
                         ticketOrderClient.updateTicketOrderStatus(transaction.getOrderTicketId(), TicketStatus.INACTIVE, formattedPurchaseDate, internalSecret);
                     }else {
-                        orderClient.handleAdjustmentCallback
+                        ticketOrderClient.handleAdjustmentCallback
                                 (transaction.getSagaId(),
                                         true,
                                         "Thanh toán thành công",

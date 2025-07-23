@@ -23,4 +23,11 @@ public interface TicketOrderClient {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String purchaseDate,
             @RequestHeader("X-INTERNAL-SECRET") String internalSecret
     );
+    @PostMapping("/ticket-orders/internal/adjust-fare/callback")
+    void handleAdjustmentCallback(
+            @RequestParam Long sagaId,
+            @RequestParam boolean success,
+            @RequestParam(required = false) String reason,
+            @RequestHeader("X-INTERNAL-SECRET") String internalSecret
+    );
 }
