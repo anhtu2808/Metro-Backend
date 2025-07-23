@@ -12,11 +12,11 @@ import java.math.BigDecimal;
 
 @FeignClient(
         name = "payment-service",
-        url = "${PAYMENT_SERVICE_HOST:http://localhost:8081/payments}",
+        url = "${PAYMENT_SERVICE_HOST:http://localhost:8081}",
         configuration = FeignClientConfig.class
 )
 public interface PaymentClient {
-    @GetMapping("/internal/vnpay-adjustment")
+    @GetMapping("/payments/internal/vnpay-adjustment")
     ApiResponse<VNPayResponse> createAdjustmentPayment(
             @RequestParam Long sagaId,
             @RequestParam Long ticketOrderId,

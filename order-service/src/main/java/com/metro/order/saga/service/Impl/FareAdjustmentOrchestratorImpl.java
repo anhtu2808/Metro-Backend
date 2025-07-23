@@ -46,8 +46,7 @@ public class FareAdjustmentOrchestratorImpl implements FareAdjustmentOrchestrato
                 .getResult();
         BigDecimal oldPrice = ticketOrder.getPrice();
         BigDecimal newPrice = dynamicPriceResponse.getPrice();
-//        BigDecimal adjustmentAmount = newPrice.subtract(oldPrice);
-        BigDecimal adjustmentAmount = BigDecimal.valueOf(1000000L);
+        BigDecimal adjustmentAmount = newPrice.subtract(oldPrice);
 
         SagaState sagaState = SagaState.builder()
                 .ticketOrderId(ticketOrderId)
