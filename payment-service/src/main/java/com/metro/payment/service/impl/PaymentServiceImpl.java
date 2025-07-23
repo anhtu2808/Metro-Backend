@@ -36,7 +36,6 @@ public class PaymentServiceImpl implements PaymentService {
     final TransactionRepository transactionRepository;
     final TicketOrderClient ticketOrderClient;
     final UserClient userClient;
-    final OrderClient orderClient;
     @Value("${internal.secret}")
     String internalSecret;
 
