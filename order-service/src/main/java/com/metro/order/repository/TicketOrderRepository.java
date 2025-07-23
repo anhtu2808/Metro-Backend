@@ -21,6 +21,7 @@ public interface TicketOrderRepository extends JpaRepository<TicketOrder, Long> 
     long countByPurchaseDateBetween(LocalDateTime start, LocalDateTime end);
     Page<TicketOrder> findAllByUserId(Long userId, Pageable pageable);
     Page<TicketOrder> findAll(Specification<TicketOrder> spec, Pageable pageable);
+    List<TicketOrder> findAll(Specification<TicketOrder> spec);
     @Modifying
     @Query(value = "UPDATE ticket_order SET status = 'ACTIVE',valid_until = valid_until + INTERVAL 30 DAY " +
             "WHERE status = 'INACTIVE' " +

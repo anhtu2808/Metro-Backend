@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -219,7 +220,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
     public PageResponse<TicketOrderResponse> getAllTicketOrders(TicketOrderFilterRequest req) {
         List<Long> ticketTypeIds = null;
         List<TicketTypeResponse> ticketTypes = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData();
-        if (req.getIsStatic() != null ) {
+        if (req.getIsStatic() != null) {
             ticketTypeIds = ticketTypes.stream()
                     .filter(t -> t.getIsStatic().equals(req.getIsStatic()))
                     .map(TicketTypeResponse::getId)
@@ -300,60 +301,44 @@ public class TicketOrderServiceImpl implements TicketOrderService {
             throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
     @Override
     @Transactional
     public TicketOrderResponse updateTicketOrder(Long ticketOrderId, TicketOrderUpdateRequest request) {
         TicketOrder ticketOrder = ticketOrderRepository.findById(ticketOrderId)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
-
-        UserResponse userResponse =  userClient.getMyInfo().getResult();
         TicketTypeResponse ticketType = requireTicketTypeById(request, ticketOrder);
-        StationResponse startStation = new StationResponse();
-        StationResponse endStation = new StationResponse();
-        DynamicPriceResponse dynamicPrice = new DynamicPriceResponse();
 
         if (request.getValidUntil() != null && request.getValidUntil().isBefore(LocalDateTime.now())) {
             throw new AppException(ErrorCode.VALID_UNTIL_MUST_BE_FUTURE);
         }
         boolean isUnlimited = ticketType.getIsStatic() || ticketType.getIsStudent();
-        if (!isUnlimited){
-            dynamicPrice = dynamicPriceClient
+        ticketOrderMapper.updateEntity(request, ticketOrder);
+
+        if (!isUnlimited) {
+            DynamicPriceResponse dynamicPrice = dynamicPriceClient
                     .getPriceByStartAndEnd(request.getLineId(), request.getStartStationId(), request.getEndStationId())
                     .getResult();
             if (dynamicPrice == null || dynamicPrice.getPrice() == null || dynamicPrice.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new AppException(ErrorCode.DYNAMIC_PRICE_NOT_FOUND);
-            }else {
+            } else {
                 ticketOrder.setPrice(dynamicPrice.getPrice());
+                ticketOrder.setStartStationId(request.getStartStationId());
+                ticketOrder.setEndStationId(request.getEndStationId());
+                ticketOrder.setLineId(request.getLineId());
             }
-        }
-        else{
+        } else {
             ticketOrder.setPrice(ticketType.getPrice());
-
-            if (request.getStartStationId() != null) {
-                startStation = requireStationById(request.getStartStationId(), ErrorCode.START_STATION_NOT_FOUND);
-            }
-            if (request.getEndStationId() != null) {
-                endStation = requireStationById(request.getEndStationId(), ErrorCode.END_STATION_NOT_FOUND);
-            }
-            if (request.getStartStationId() != null && request.getEndStationId() != null &&
-                    request.getStartStationId().equals(request.getEndStationId())) {
-                throw new AppException(ErrorCode.INVALID_STATION_COMBINATION);
-            }else {
                 ticketOrder.setStartStationId(null);
                 ticketOrder.setEndStationId(null);
-            }
+                ticketOrder.setLineId(null);
         }
-
-        ticketOrderMapper.updateEntity(request, ticketOrder);
-
         TicketOrder saved = ticketOrderRepository.save(ticketOrder);
         TicketOrderResponse response = ticketOrderMapper.toResponse(saved);
-        response.setEndStation(endStation);
-        response.setStartStation(startStation);
-        response.setTicketType(ticketType);
-        response.setUser(userResponse);
+        responseEnricher.enrich(saved, response);
         return response;
     }
+
     private TicketTypeResponse requireTicketTypeById(TicketOrderUpdateRequest request, TicketOrder ticketOrder) {
         Long ticketTypeId = request.getTicketTypeId() != null ? request.getTicketTypeId() : ticketOrder.getTicketTypeId();
         TicketTypeResponse ticketType = ticketTypeClient.getTicketTypesById(ticketTypeId).getResult();
@@ -362,6 +347,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         }
         return ticketType;
     }
+
     private StationResponse requireStationById(Long stationId, ErrorCode errorCode) {
         try {
             return stationClient.getStationById(stationId).getResult();
@@ -369,6 +355,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
             throw new AppException(errorCode);
         }
     }
+
     public void updateTicketOrderStatusAndPurchase(Long ticketOrderId, TicketStatus status, LocalDateTime purchaseDate) {
         var ticketOrder = ticketOrderRepository.findById(ticketOrderId)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
@@ -377,5 +364,63 @@ public class TicketOrderServiceImpl implements TicketOrderService {
             ticketOrder.setPurchaseDate(purchaseDate);
         }
         ticketOrderRepository.save(ticketOrder);
+    }
+    @Override
+    public DashboardResponse getDashboardTicketOrder(LocalDateTime fromDate, LocalDateTime toDate) {
+        List<TicketTypeResponse> ticketTypes = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData();
+
+        Specification<TicketOrder> spec = TicketOrderSpecification.withDateRange(fromDate, toDate);
+
+        List<TicketOrder> orders = ticketOrderRepository.findAll(spec);
+
+        var user = orders.stream()
+                .map(TicketOrder::getUserId)
+                .distinct()
+                .count();
+        var totalPrice = orders.stream()
+                .map(TicketOrder::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        var staticOrders = orders.stream()
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && t.getIsStatic()))
+                .toList();
+        var dynamicOrders = orders.stream()
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && !t.getIsStatic()))
+                .toList();
+        var studentOrders = orders.stream()
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && t.getIsStudent()))
+                .toList();
+        var completedOrders = orders.stream()
+                .filter(o -> o.getStatus() == TicketStatus.INACTIVE || o.getStatus() == TicketStatus.ACTIVE || o.getStatus() == TicketStatus.USING)
+                .toList();
+        var uncompletedOrders = orders.stream()
+                .filter(o -> o.getStatus() == TicketStatus.UNPAID)
+                .toList();
+         return DashboardResponse.builder()
+                .totalOrders((long)orders.size())
+                .totalUsers(user)
+                .totalRevenue(sumRevenue(staticOrders).add(sumRevenue(dynamicOrders)))
+                .staticTicketCount((long) staticOrders.size())
+                .staticTicketRevenue(sumRevenue(staticOrders))
+                .dynamicTicketCount((long) dynamicOrders.size())
+                .dynamicTicketRevenue(sumRevenue(dynamicOrders))
+                .studentTicketCount((long) studentOrders.size())
+                .studentTicketRevenue(sumRevenue(studentOrders))
+                .completedOrderCount((long) completedOrders.size())
+                .completedOrderRevenue( sumRevenue(orders.stream()
+                        .filter(o -> o.getStatus() == TicketStatus.INACTIVE || o.getStatus() == TicketStatus.ACTIVE || o.getStatus() == TicketStatus.USING)
+                        .filter(o -> o.getPrice() != null)
+                        .toList()))
+                .cancelledOrderCount((long) uncompletedOrders.size())
+                 .fromDate(fromDate)
+                 .toDate(toDate)
+                .build();
+
+    }
+    private BigDecimal sumRevenue(List<TicketOrder> orders) {
+        return orders.stream()
+                .map(TicketOrder::getPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

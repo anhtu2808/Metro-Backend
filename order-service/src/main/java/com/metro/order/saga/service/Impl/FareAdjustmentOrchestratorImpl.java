@@ -1,9 +1,7 @@
-package com.metro.order.saga;
+package com.metro.order.saga.service.Impl;
 
 import com.metro.order.TicketOrderMapper;
-import com.metro.order.dto.response.DynamicPriceResponse;
-import com.metro.order.dto.response.TicketOrderResponse;
-import com.metro.order.dto.response.VNPayResponse;
+import com.metro.order.dto.response.*;
 import com.metro.order.entity.SagaState;
 import com.metro.order.entity.TicketOrder;
 import com.metro.order.enums.SagaStatus;
@@ -13,6 +11,8 @@ import com.metro.order.repository.SagaStateRepository;
 import com.metro.order.repository.TicketOrderRepository;
 import com.metro.order.repository.httpClient.DynamicPriceClient;
 import com.metro.order.repository.httpClient.PaymentClient;
+import com.metro.order.saga.mapper.FareAjustmentMapper;
+import com.metro.order.saga.service.FareAdjustmentOrchestrator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -33,10 +33,12 @@ public class FareAdjustmentOrchestratorImpl implements FareAdjustmentOrchestrato
     PaymentClient paymentClient;
     SagaStateRepository sagaStateRepository;
     TicketOrderMapper ticketOrderMapper;
+    FareAjustmentMapper fareAjustmentMapper;
+    TicketOrderResponseEnricher ticketOrderResponseEnricher;
 
     @Override
     @Transactional
-    public TicketOrderResponse execute(Long ticketOrderId, Long newEndStationId, HttpServletRequest request) {
+    public FareAdjustmentReponse execute(Long ticketOrderId, Long newEndStationId, HttpServletRequest request) {
         TicketOrder ticketOrder = ticketOrderRepository.findById(ticketOrderId)
                 .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
         DynamicPriceResponse dynamicPriceResponse = dynamicPriceClient
@@ -45,6 +47,7 @@ public class FareAdjustmentOrchestratorImpl implements FareAdjustmentOrchestrato
         BigDecimal oldPrice = ticketOrder.getPrice();
         BigDecimal newPrice = dynamicPriceResponse.getPrice();
         BigDecimal adjustmentAmount = newPrice.subtract(oldPrice);
+
         SagaState sagaState = SagaState.builder()
                 .ticketOrderId(ticketOrderId)
                 .adjustmentAmount(adjustmentAmount)
@@ -66,16 +69,24 @@ public class FareAdjustmentOrchestratorImpl implements FareAdjustmentOrchestrato
             sagaState.setPaymentUrl(vnPayResponse.getPaymentUrl());
             sagaState.setStatus(SagaStatus.PENDING);
             sagaState = sagaStateRepository.save(sagaState);
-            return response;
-
+            FareAdjustmentReponse fareAdjustmentReponse = fareAjustmentMapper.toFareAdjustmentResponse(response);
+            fareAdjustmentReponse.setSagaId(sagaState.getSagaId());
+            fareAdjustmentReponse.setPrice(newPrice);
+            fareAdjustmentReponse.setVnPayResponse(vnPayResponse);
+             return fareAdjustmentReponse;
         } else {
             sagaState.setStatus(SagaStatus.COMPLETED);
             sagaState = sagaStateRepository.save(sagaState);
             ticketOrder.setEndStationId(newEndStationId);
             ticketOrder.setPrice(newPrice);
             ticketOrderRepository.save(ticketOrder);
+
             TicketOrderResponse response = ticketOrderMapper.toResponse(ticketOrder);
-            return response;
+            ticketOrderResponseEnricher.enrich(ticketOrder, response);
+            FareAdjustmentReponse fareAdjustmentReponse = fareAjustmentMapper.toFareAdjustmentResponse(response);
+            fareAdjustmentReponse.setSagaId(sagaState.getSagaId());
+            fareAdjustmentReponse.setPrice(newPrice);
+            return fareAdjustmentReponse;
         }
     }
     @Override
@@ -89,7 +100,7 @@ public class FareAdjustmentOrchestratorImpl implements FareAdjustmentOrchestrato
        if (success){
            TicketOrder ticketOrder = ticketOrderRepository.findById(sagaState.getTicketOrderId())
                    .orElseThrow(() -> new AppException(ErrorCode.TICKET_ORDER_NOT_FOUND));
-           BigDecimal newPrice = sagaState.getAdjustmentAmount();
+           BigDecimal newPrice = sagaState.getNewPrice() != null ? sagaState.getNewPrice() : ticketOrder.getPrice().add(sagaState.getAdjustmentAmount());
            updateTicketOrder(ticketOrder, newPrice, sagaState.getNewEndStationId());
            sagaState.setStatus(SagaStatus.COMPLETED);
 
@@ -99,10 +110,12 @@ public class FareAdjustmentOrchestratorImpl implements FareAdjustmentOrchestrato
        }
          sagaStateRepository.save(sagaState);
     }
-    private void updateTicketOrder(TicketOrder ticketOrder, BigDecimal newPrice, Long newEndStationId) {
+    private TicketOrderResponse updateTicketOrder(TicketOrder ticketOrder, BigDecimal newPrice, Long newEndStationId) {
         log.info("Updating ticket order after successful payment adjustment.");
         ticketOrder.setPrice(newPrice);
         ticketOrder.setEndStationId(newEndStationId);
-        ticketOrderRepository.save(ticketOrder);
+        TicketOrderResponse ticketOrderResponse = ticketOrderMapper.toResponse(ticketOrderRepository.save(ticketOrder));
+        ticketOrderResponseEnricher.enrich(ticketOrder, ticketOrderResponse);
+        return ticketOrderResponse;
     }
 }
