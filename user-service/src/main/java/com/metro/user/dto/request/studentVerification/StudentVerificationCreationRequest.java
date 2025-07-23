@@ -26,7 +26,6 @@ public class StudentVerificationCreationRequest {
     String imageUrl;
 
     @NotNull(message = "Graduate date is required")
-    @PastOrPresent(message = "Graduate date must be in the present or future")
     LocalDate graduateDate;
 
     StudentVerificationStatus status = StudentVerificationStatus.PENDING; // Default status set to PENDING
