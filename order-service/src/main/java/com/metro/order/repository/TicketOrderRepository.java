@@ -22,6 +22,39 @@ public interface TicketOrderRepository extends JpaRepository<TicketOrder, Long> 
     Page<TicketOrder> findAllByUserId(Long userId, Pageable pageable);
     Page<TicketOrder> findAll(Specification<TicketOrder> spec, Pageable pageable);
     List<TicketOrder> findAll(Specification<TicketOrder> spec);
+
+    @Query(value = """
+            SELECT DATE(purchase_date) AS period, SUM(price) AS revenue
+            FROM ticket_order
+            WHERE purchase_date BETWEEN :fromDate AND :toDate
+              AND status IN ('INACTIVE','ACTIVE','USING')
+            GROUP BY DATE(purchase_date)
+            ORDER BY DATE(purchase_date)
+            """, nativeQuery = true)
+    List<Object[]> getRevenueByDay(@Param("fromDate") LocalDateTime fromDate,
+                                   @Param("toDate") LocalDateTime toDate);
+
+    @Query(value = """
+            SELECT DATE_FORMAT(purchase_date, '%Y-%m') AS period, SUM(price) AS revenue
+            FROM ticket_order
+            WHERE purchase_date BETWEEN :fromDate AND :toDate
+              AND status IN ('INACTIVE','ACTIVE','USING')
+            GROUP BY DATE_FORMAT(purchase_date, '%Y-%m')
+            ORDER BY DATE_FORMAT(purchase_date, '%Y-%m')
+            """, nativeQuery = true)
+    List<Object[]> getRevenueByMonth(@Param("fromDate") LocalDateTime fromDate,
+                                     @Param("toDate") LocalDateTime toDate);
+
+    @Query(value = """
+            SELECT YEAR(purchase_date) AS period, SUM(price) AS revenue
+            FROM ticket_order
+            WHERE purchase_date BETWEEN :fromDate AND :toDate
+              AND status IN ('INACTIVE','ACTIVE','USING')
+            GROUP BY YEAR(purchase_date)
+            ORDER BY YEAR(purchase_date)
+            """, nativeQuery = true)
+    List<Object[]> getRevenueByYear(@Param("fromDate") LocalDateTime fromDate,
+                                    @Param("toDate") LocalDateTime toDate);
     @Modifying
     @Query(value = "UPDATE ticket_order SET status = 'ACTIVE',valid_until = valid_until + INTERVAL 30 DAY " +
             "WHERE status = 'INACTIVE' " +
