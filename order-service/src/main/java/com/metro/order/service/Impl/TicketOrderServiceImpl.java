@@ -8,6 +8,7 @@ import com.metro.order.dto.request.TicketOrderUpdateRequest;
 import com.metro.order.dto.response.*;
 import com.metro.order.entity.TicketOrder;
 import com.metro.order.enums.TicketStatus;
+import com.metro.order.enums.TimeGrouping;
 import com.metro.order.exception.AppException;
 import com.metro.order.exception.ErrorCode;
 import com.metro.order.repository.TicketOrderRepository;
@@ -42,6 +43,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.metro.order.dto.response.TicketTypeStatisticResponse;
 
 @Slf4j
 @Service
@@ -329,9 +332,9 @@ public class TicketOrderServiceImpl implements TicketOrderService {
             }
         } else {
             ticketOrder.setPrice(ticketType.getPrice());
-                ticketOrder.setStartStationId(null);
-                ticketOrder.setEndStationId(null);
-                ticketOrder.setLineId(null);
+            ticketOrder.setStartStationId(null);
+            ticketOrder.setEndStationId(null);
+            ticketOrder.setLineId(null);
         }
         TicketOrder saved = ticketOrderRepository.save(ticketOrder);
         TicketOrderResponse response = ticketOrderMapper.toResponse(saved);
@@ -365,30 +368,31 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         }
         ticketOrderRepository.save(ticketOrder);
     }
+
     @Override
     public DashboardResponse getDashboardTicketOrder(LocalDateTime fromDate, LocalDateTime toDate) {
         List<TicketTypeResponse> ticketTypes = ticketTypeClient.getAllTicketTypes(1, 1000).getResult().getData();
 
         Specification<TicketOrder> spec = TicketOrderSpecification.withDateRange(fromDate, toDate);
 
-        List<TicketOrder> orders = ticketOrderRepository.findAll(spec);
+        List<TicketOrder> orders = ticketOrderRepository.findAll(spec).stream()
+                .filter(ticketOrder -> ticketOrder.getStatus() != TicketStatus.UNPAID)
+                .toList();
 
         var user = orders.stream()
                 .map(TicketOrder::getUserId)
                 .distinct()
                 .count();
-        var totalPrice = orders.stream()
-                .map(TicketOrder::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
 
         var staticOrders = orders.stream()
-                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && t.getIsStatic()))
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && Boolean.TRUE.equals(t.getIsStatic())))
                 .toList();
         var dynamicOrders = orders.stream()
-                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && !t.getIsStatic()))
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && !Boolean.TRUE.equals(t.getIsStatic())))
                 .toList();
         var studentOrders = orders.stream()
-                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && t.getIsStudent()))
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && Boolean.TRUE.equals(t.getIsStudent())))
                 .toList();
         var completedOrders = orders.stream()
                 .filter(o -> o.getStatus() == TicketStatus.INACTIVE || o.getStatus() == TicketStatus.ACTIVE || o.getStatus() == TicketStatus.USING)
@@ -396,8 +400,23 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         var uncompletedOrders = orders.stream()
                 .filter(o -> o.getStatus() == TicketStatus.UNPAID)
                 .toList();
-         return DashboardResponse.builder()
-                .totalOrders((long)orders.size())
+        List<TicketTypeStatisticResponse> ticketTypeStats = ticketTypes.stream()
+                .map(tt -> {
+                    List<TicketOrder> orderByType = orders.stream()
+                            .filter(o -> tt.getId().equals(o.getTicketTypeId()))
+                            .toList();
+                    return TicketTypeStatisticResponse.builder()
+                            .ticketTypeId(tt.getId())
+                            .name(tt.getName())
+                            .isStatic(tt.getIsStatic())
+                            .isStudent(tt.getIsStudent())
+                            .ticketCount((long) orderByType.size())
+                            .revenue(sumRevenue(orderByType))
+                            .build();
+                })
+                .toList();
+        return DashboardResponse.builder()
+                .totalOrders((long) orders.size())
                 .totalUsers(user)
                 .totalRevenue(sumRevenue(staticOrders).add(sumRevenue(dynamicOrders)))
                 .staticTicketCount((long) staticOrders.size())
@@ -406,21 +425,43 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                 .dynamicTicketRevenue(sumRevenue(dynamicOrders))
                 .studentTicketCount((long) studentOrders.size())
                 .studentTicketRevenue(sumRevenue(studentOrders))
+                .ticketTypeStats(ticketTypeStats)
                 .completedOrderCount((long) completedOrders.size())
-                .completedOrderRevenue( sumRevenue(orders.stream()
+                .completedOrderRevenue(sumRevenue(orders.stream()
                         .filter(o -> o.getStatus() == TicketStatus.INACTIVE || o.getStatus() == TicketStatus.ACTIVE || o.getStatus() == TicketStatus.USING)
                         .filter(o -> o.getPrice() != null)
                         .toList()))
                 .cancelledOrderCount((long) uncompletedOrders.size())
-                 .fromDate(fromDate)
-                 .toDate(toDate)
+                .fromDate(fromDate)
+                .toDate(toDate)
                 .build();
 
     }
+
+    @Override
+    public List<RevenueStatisticResponse> getRevenueStatistics(LocalDateTime fromDate, LocalDateTime toDate, TimeGrouping period) {
+        List<Object[]> rows;
+        switch (period) {
+            case MONTH -> rows = ticketOrderRepository.getRevenueByMonth(fromDate, toDate);
+            case YEAR -> rows = ticketOrderRepository.getRevenueByYear(fromDate, toDate);
+            default -> rows = ticketOrderRepository.getRevenueByDay(fromDate, toDate);
+        }
+
+        return rows.stream()
+                .map(r -> RevenueStatisticResponse.builder()
+                        .period(String.valueOf(r[0]))
+                        .revenue((BigDecimal) r[1])
+                        .build())
+                .toList();
+    }
+
     private BigDecimal sumRevenue(List<TicketOrder> orders) {
         return orders.stream()
+                .filter(o -> o.getStatus() != TicketStatus.UNPAID)
                 .map(TicketOrder::getPrice)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+
 }
