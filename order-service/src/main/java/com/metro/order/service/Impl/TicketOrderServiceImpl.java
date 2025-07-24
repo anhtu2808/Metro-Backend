@@ -43,6 +43,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import com.metro.order.dto.response.TicketTypeStatisticResponse;
 
 @Slf4j
@@ -374,7 +375,9 @@ public class TicketOrderServiceImpl implements TicketOrderService {
 
         Specification<TicketOrder> spec = TicketOrderSpecification.withDateRange(fromDate, toDate);
 
-        List<TicketOrder> orders = ticketOrderRepository.findAll(spec);
+        List<TicketOrder> orders = ticketOrderRepository.findAll(spec).stream()
+                .filter(ticketOrder -> ticketOrder.getStatus() != TicketStatus.UNPAID)
+                .toList();
 
         var user = orders.stream()
                 .map(TicketOrder::getUserId)
@@ -412,8 +415,8 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                             .build();
                 })
                 .toList();
-         return DashboardResponse.builder()
-                .totalOrders((long)orders.size())
+        return DashboardResponse.builder()
+                .totalOrders((long) orders.size())
                 .totalUsers(user)
                 .totalRevenue(sumRevenue(staticOrders).add(sumRevenue(dynamicOrders)))
                 .staticTicketCount((long) staticOrders.size())
