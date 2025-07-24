@@ -43,6 +43,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.metro.order.dto.response.TicketTypeStatisticResponse;
 
 @Slf4j
 @Service
@@ -379,18 +380,16 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                 .map(TicketOrder::getUserId)
                 .distinct()
                 .count();
-        var totalPrice = orders.stream()
-                .map(TicketOrder::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
 
         var staticOrders = orders.stream()
-                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && t.getIsStatic()))
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && Boolean.TRUE.equals(t.getIsStatic())))
                 .toList();
         var dynamicOrders = orders.stream()
-                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && !t.getIsStatic()))
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && !Boolean.TRUE.equals(t.getIsStatic())))
                 .toList();
         var studentOrders = orders.stream()
-                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && t.getIsStudent()))
+                .filter(o -> ticketTypes.stream().anyMatch(t -> t.getId().equals(o.getTicketTypeId()) && Boolean.TRUE.equals(t.getIsStudent())))
                 .toList();
         var completedOrders = orders.stream()
                 .filter(o -> o.getStatus() == TicketStatus.INACTIVE || o.getStatus() == TicketStatus.ACTIVE || o.getStatus() == TicketStatus.USING)
@@ -398,8 +397,23 @@ public class TicketOrderServiceImpl implements TicketOrderService {
         var uncompletedOrders = orders.stream()
                 .filter(o -> o.getStatus() == TicketStatus.UNPAID)
                 .toList();
-        return DashboardResponse.builder()
-                .totalOrders((long) orders.size())
+        List<TicketTypeStatisticResponse> ticketTypeStats = ticketTypes.stream()
+                .map(tt -> {
+                    List<TicketOrder> orderByType = orders.stream()
+                            .filter(o -> tt.getId().equals(o.getTicketTypeId()))
+                            .toList();
+                    return TicketTypeStatisticResponse.builder()
+                            .ticketTypeId(tt.getId())
+                            .name(tt.getName())
+                            .isStatic(tt.getIsStatic())
+                            .isStudent(tt.getIsStudent())
+                            .ticketCount((long) orderByType.size())
+                            .revenue(sumRevenue(orderByType))
+                            .build();
+                })
+                .toList();
+         return DashboardResponse.builder()
+                .totalOrders((long)orders.size())
                 .totalUsers(user)
                 .totalRevenue(sumRevenue(staticOrders).add(sumRevenue(dynamicOrders)))
                 .staticTicketCount((long) staticOrders.size())
@@ -408,6 +422,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
                 .dynamicTicketRevenue(sumRevenue(dynamicOrders))
                 .studentTicketCount((long) studentOrders.size())
                 .studentTicketRevenue(sumRevenue(studentOrders))
+                .ticketTypeStats(ticketTypeStats)
                 .completedOrderCount((long) completedOrders.size())
                 .completedOrderRevenue(sumRevenue(orders.stream()
                         .filter(o -> o.getStatus() == TicketStatus.INACTIVE || o.getStatus() == TicketStatus.ACTIVE || o.getStatus() == TicketStatus.USING)
@@ -439,6 +454,7 @@ public class TicketOrderServiceImpl implements TicketOrderService {
 
     private BigDecimal sumRevenue(List<TicketOrder> orders) {
         return orders.stream()
+                .filter(o -> o.getStatus() != TicketStatus.UNPAID)
                 .map(TicketOrder::getPrice)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

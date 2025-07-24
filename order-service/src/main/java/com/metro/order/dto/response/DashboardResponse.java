@@ -5,6 +5,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.metro.order.dto.response.TicketTypeStatisticResponse;
 
 @Data
 @NoArgsConstructor
@@ -24,6 +27,8 @@ public class DashboardResponse  {
 
     Long studentTicketCount;
     BigDecimal studentTicketRevenue;
+
+    List<TicketTypeStatisticResponse> ticketTypeStats;
 
 
     Long completedOrderCount;
