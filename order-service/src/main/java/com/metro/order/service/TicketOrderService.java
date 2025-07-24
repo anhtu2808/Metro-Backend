@@ -5,11 +5,14 @@ import com.metro.order.dto.request.TicketOrderCreationRequest;
 import com.metro.order.dto.request.TicketOrderFilterRequest;
 import com.metro.order.dto.request.TicketOrderUpdateRequest;
 import com.metro.order.dto.response.DashboardResponse;
+import com.metro.order.dto.response.RevenueStatisticResponse;
 import com.metro.order.dto.response.TicketOrderResponse;
 import com.metro.order.enums.TicketStatus;
+import com.metro.order.enums.TimeGrouping;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface TicketOrderService {
     TicketOrderResponse createTicketOrder(TicketOrderCreationRequest request);
@@ -30,4 +33,5 @@ public interface TicketOrderService {
 
     void updateTicketOrderStatusAndPurchase(Long ticketOrderId, TicketStatus status, LocalDateTime purchaseDate);
     DashboardResponse getDashboardTicketOrder(LocalDateTime fromDate, LocalDateTime toDate);
+    List<RevenueStatisticResponse> getRevenueStatistics(LocalDateTime fromDate, LocalDateTime toDate, TimeGrouping period);
     }

@@ -8,7 +8,9 @@ import com.metro.order.dto.request.TicketOrderUpdateRequest;
 import com.metro.order.dto.response.DashboardResponse;
 import com.metro.order.dto.response.FareAdjustmentReponse;
 import com.metro.order.dto.response.TicketOrderResponse;
+import com.metro.order.dto.response.RevenueStatisticResponse;
 import com.metro.order.enums.TicketStatus;
+import com.metro.order.enums.TimeGrouping;
 import com.metro.order.exception.AppException;
 import com.metro.order.exception.ErrorCode;
 import com.metro.order.repository.httpClient.UserClient;
@@ -27,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ticket-orders")
@@ -188,6 +191,22 @@ public class TicketOrderController{
                 .code(HttpStatus.OK.value())
                 .message("Fetched dashboard data successfully")
                 .result(response)
+                .build();
+    }
+
+    @GetMapping("/revenue-statistics")
+    public ApiResponse<List<RevenueStatisticResponse>> getRevenueStatistics(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(defaultValue = "DAY") TimeGrouping period) {
+        if (toDate.isBefore(fromDate)) {
+            throw new AppException(ErrorCode.INVALID_DATE_RANGE, "To date must be after From date");
+        }
+        var result = ticketOrderService.getRevenueStatistics(fromDate, toDate, period);
+        return ApiResponse.<List<RevenueStatisticResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Fetched revenue statistics successfully")
+                .result(result)
                 .build();
     }
 
